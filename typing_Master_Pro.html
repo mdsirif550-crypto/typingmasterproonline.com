@@ -147,6 +147,26 @@
         .live-logo { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; background: #dc2626; color: white; font-size: 8px; font-weight: 900; letter-spacing: 0.06em; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3); }
         .live-logo-dot { width: 6px; height: 6px; border-radius: 50%; background: white; animation: pulse 1s infinite; }
         .lvl-badge { background: #1e293b; color: #facc15; padding: 1px 8px; border-radius: 999px; font-size: 9px; font-weight: 800; border: 1px solid #facc15; }
+        .sprint-meter { display: flex; min-width: 94px; flex-direction: column; align-items: center; gap: 1px; }
+        .sprint-track { position: relative; width: 76px; height: 20px; overflow: hidden; border: 1px solid #cbd5e1; border-radius: 999px; background: linear-gradient(90deg, #e2e8f0, #f8fafc); }
+        .sprint-runner { position: absolute; top: 0; left: 0; line-height: 18px; animation: sprintRun var(--sprint-duration, 4s) linear infinite; }
+        @keyframes sprintRun { from { left: 0; } to { left: calc(100% - 20px); } }
+        .sprint-meter.is-running .sprint-track { border-color: #86efac; background: linear-gradient(90deg, #dcfce7, #f0fdf4); }
+        .sprint-wpm { color: #475569; font-size: 8px; font-weight: 900; white-space: nowrap; }
+        .sprint-meter.is-running .sprint-wpm { color: #15803d; }
+        .typing-signal { display: inline-flex; width: 8px; height: 8px; flex: 0 0 auto; margin-left: 4px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 2px #dcfce7; animation: pulse 1.5s infinite; vertical-align: middle; }
+        .leaderboard-table { width: 100%; max-width: 920px; margin-inline: auto; table-layout: fixed; }
+        .leaderboard-player { display: flex; min-width: 0; align-items: center; gap: 8px; }
+        .leaderboard-player-details { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; }
+        .all-users-table { min-width: 560px; }
+        .all-users-table .all-users-player-cell { display: table-cell; }
+        .all-users-player { display: flex; min-width: 0; align-items: center; gap: 8px; }
+        .all-users-player .leader-img { width: 32px; height: 32px; }
+        .all-users-player-details { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 3px; }
+        .all-users-player-name { max-width: 190px; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .all-users-player-id { max-width: 190px; overflow: hidden; overflow-wrap: normal; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+        .all-users-table th, .all-users-table td { padding: 5px 6px; }
+        @media (prefers-reduced-motion: reduce) { .sprint-runner { animation: none; left: calc(100% - 20px); } }
         .user-id-chip { display: inline-flex; align-items: center; width: fit-content; max-width: 100%; padding: 2px 6px; border: 1px solid hsl(var(--id-hue) 65% 72%); border-radius: 999px; background: hsl(var(--id-hue) 85% 90%); color: hsl(var(--id-hue) 65% 28%); font-size: 7px; font-weight: 800; line-height: 1.3; overflow-wrap: anywhere; }
         .clickable-row { cursor: pointer; transition: filter 0.15s; }
         .clickable-row:hover { filter: brightness(0.96); }
@@ -154,6 +174,7 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+        #all-users-modal .all-users-modal-box { max-width: min(760px, calc(100vw - 32px)); }
         .modal-box h2 { font-size: 18px; font-weight: 900; margin-bottom: 16px; text-transform: uppercase; color: #0f172a; }
         
         .slim-input { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc; }
@@ -208,6 +229,26 @@
             .leader-img { width: 32px; height: 32px; }
             .control-select { font-size: 10px; padding: 4px 8px; }
             .banner-avatar { width: 34px; height: 34px; }
+            #leaderboard-section .leaderboard-table { display: block; width: 100%; max-width: none; table-layout: auto; }
+            #leaderboard-section .leaderboard-table thead { display: none; }
+            #leaderboard-section .leaderboard-table tbody { display: grid; gap: 8px; }
+            #leaderboard-section .leaderboard-table tbody tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 9px; border: 0; border-radius: 14px; box-shadow: 0 2px 7px rgba(15, 23, 42, 0.12); }
+            #leaderboard-section .leaderboard-table tbody tr:not(:last-child) { border-top: 0; }
+            #leaderboard-section .leaderboard-table tbody td { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 5px 3px; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 9px; background: rgba(255, 255, 255, 0.58); font-size: 11px; }
+            #leaderboard-section .leaderboard-table tbody td::before { content: attr(data-label); color: #64748b; font-size: 8px; font-weight: 900; line-height: 1.2; text-transform: uppercase; }
+            #leaderboard-section .leaderboard-table tbody td.leaderboard-player-cell { grid-column: 1 / -1; align-items: flex-start; padding: 2px 2px 8px; border: 0; border-bottom: 1px solid rgba(100, 116, 139, 0.25); border-radius: 0; background: transparent; }
+            #leaderboard-section .leaderboard-table tbody td.leaderboard-player-cell::before { content: none; }
+            #leaderboard-section .leaderboard-player { width: 100%; gap: 10px; }
+            #leaderboard-section .leaderboard-player .leader-img { width: 38px; height: 38px; }
+            #leaderboard-section .leaderboard-player-details { gap: 3px; }
+            #leaderboard-section .leaderboard-player-name { max-width: min(65vw, 260px); overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+            #leaderboard-section .leaderboard-player-id { max-width: min(65vw, 260px); overflow: hidden; overflow-wrap: normal; text-overflow: ellipsis; white-space: nowrap; }
+            #leaderboard-section .leaderboard-table tbody td.typing-sprint-cell { grid-column: span 1; }
+            #leaderboard-section .leaderboard-table tbody tr:only-child td:only-child { grid-column: 1 / -1; }
+            #leaderboard-section .sprint-meter { min-width: 0; }
+            #leaderboard-section .sprint-track { width: 64px; height: 18px; }
+            #leaderboard-section .sprint-runner { line-height: 16px; }
+            #leaderboard-section .lvl-badge { padding: 1px 7px; }
         }
     </style>
 </head>
@@ -378,7 +419,6 @@
                     <input id="search-box" oninput="searchPlayers()" placeholder="🔍 Search..." class="flex-1 md:w-48 p-2 rounded-xl border border-slate-300 bg-slate-50 outline-none font-bold text-[11px] text-slate-800 placeholder:text-slate-400 focus:border-blue-500">
                     <button onclick="openAllUsers()" class="bg-blue-600 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] hover:bg-blue-700">All</button>
                 </div>
-                </div>
             </div>
             <div id="monthly-event-panel" class="mb-3 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 text-[10px] text-slate-700">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -399,9 +439,9 @@
                 <span>মাসিক পয়েন্ট স্কোর সেভের সময়ই টোটালে যোগ হয়। মাস শেষে শুধু মাসিক পয়েন্ট ০ হবে; টোটাল পয়েন্ট আগের মতোই থাকবে।</span>
             </div>
         <div class="overflow-x-auto">
-                <table class="w-full text-[10px]">
+                <table class="leaderboard-table text-[10px]">
                     <thead class="bg-slate-900 text-white uppercase tracking-wider">
-                        <tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th></tr>
+                        <tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">Typing speed</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th></tr>
                     </thead>
                     <tbody id="leaderboard-body" class="divide-y divide-slate-100 font-bold"></tbody>
                 </table>
@@ -477,14 +517,15 @@
 
     <!-- All Users Modal -->
     <div id="all-users-modal" class="modal-overlay">
-        <div class="modal-box">
+        <div class="modal-box all-users-modal-box">
             <div class="flex justify-between items-center mb-3">
                 <h2>👥 All Players</h2>
                 <button onclick="closeAllUsers()" class="text-2xl font-bold text-red-500">×</button>
             </div>
             <div class="overflow-x-auto max-h-96 overflow-y-auto">
-                <table class="w-full text-[10px]">
-                    <thead class="bg-slate-900 text-white uppercase sticky top-0"><tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">WPM</th></tr></thead>
+                <table class="leaderboard-table all-users-table text-[10px]">
+                    <colgroup><col style="width:38%"><col style="width:22%"><col style="width:12%"><col style="width:14%"><col style="width:14%"></colgroup>
+                    <thead class="bg-slate-900 text-white uppercase sticky top-0"><tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">Typing speed</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">WPM</th></tr></thead>
                     <tbody id="all-users-body" class="divide-y divide-slate-100 font-bold"></tbody>
                 </table>
             </div>
@@ -594,6 +635,8 @@
         let typingPresenceRef = null;
         let typingIdleTimer = null;
         let isTypingNow = false;
+        let liveTypingSpeeds = Object.create(null);
+        let lastTypingPresenceUpdateAt = 0;
         let isScoreSubmitting = false;
         let displayChars = [];
         let previousTypedChars = [];
@@ -1347,31 +1390,55 @@
                     name: userName,
                     online: true,
                     typing: isTypingNow,
+                    wpm: 0,
                     lastSeen: firebase.database.ServerValue.TIMESTAMP
                 })).catch(err => console.error('Presence update failed:', err));
             });
         }
 
-        function setTypingStatus(active) {
+        function setTypingStatus(active, wpm = 0) {
+            const wasTyping = isTypingNow;
             isTypingNow = active;
             clearTimeout(typingIdleTimer);
             if (active) {
                 typingIdleTimer = setTimeout(() => setTypingStatus(false), 5000);
             }
             if (typingPresenceRef && loggedInUser) {
-                typingPresenceRef.update({ typing: active }).catch(err => console.error('Typing presence update failed:', err));
+                const now = Date.now();
+                if (!active || !wasTyping || now - lastTypingPresenceUpdateAt >= 1000) {
+                    const currentWpm = active ? Math.max(0, Math.round(Number(wpm) || 0)) : 0;
+                    lastTypingPresenceUpdateAt = now;
+                    typingPresenceRef.update({
+                        typing: active,
+                        wpm: currentWpm,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    }).catch(err => console.error('Typing presence update failed:', err));
+                }
             }
         }
 
         function listenTypingCount() {
             db.ref('online_users').on('value', snap => {
                 const onlineUsers = snap.val() || {};
-                const typingUserIds = Object.keys(onlineUsers).filter(userId => {
-                    const connections = onlineUsers[userId] && onlineUsers[userId].connections;
-                    return connections && Object.keys(connections).some(sessionId => connections[sessionId].typing === true);
+                const typingSpeeds = Object.create(null);
+                Object.entries(onlineUsers).forEach(([userId, user]) => {
+                    const connections = user && user.connections;
+                    if (!connections) return;
+                    Object.values(connections).forEach(connection => {
+                        if (connection && connection.typing === true) {
+                            typingSpeeds[userId] = Math.max(typingSpeeds[userId] || 0, Number(connection.wpm) || 0);
+                        }
+                    });
                 });
-                document.getElementById('live-typing-count').textContent = typingUserIds.length;
-            }, err => console.error('Typing count listener failed:', err));
+                liveTypingSpeeds = typingSpeeds;
+                document.getElementById('live-typing-count').textContent = Object.keys(typingSpeeds).length;
+                refreshTypingSprints();
+            }, err => {
+                console.error('Typing count listener failed:', err);
+                liveTypingSpeeds = Object.create(null);
+                document.getElementById('live-typing-count').textContent = '—';
+                refreshTypingSprints();
+            });
         }
 
         function trackViewerPresence() {
@@ -1397,6 +1464,35 @@
         // ============================================
         // LEADERBOARD
         // ============================================
+        function renderTypingSprint(userId) {
+            const isTyping = Object.prototype.hasOwnProperty.call(liveTypingSpeeds, userId);
+            const wpm = Math.max(0, Math.round(liveTypingSpeeds[userId] || 0));
+            const duration = Math.min(8, Math.max(0.55, 120 / Math.max(1, wpm)));
+            return `<div class="sprint-meter ${isTyping ? 'is-running' : ''}" title="${isTyping ? `Typing now at ${wpm} WPM` : 'Not typing right now'}">
+                <span class="sprint-track">${isTyping ? `<span class="sprint-runner" style="--sprint-duration:${duration}s" aria-hidden="true">🏃</span>` : ''}</span>
+                <span class="sprint-wpm">${isTyping ? `${wpm} WPM` : '—'}</span>
+            </div>`;
+        }
+
+        function renderTypingSignal(userId) {
+            const isTyping = Object.prototype.hasOwnProperty.call(liveTypingSpeeds, userId);
+            return `<span class="typing-signal ${isTyping ? '' : 'hidden'}" data-typing-indicator-user="${encodeURIComponent(userId)}" role="img" aria-label="${isTyping ? 'Typing now' : 'Not typing'}" title="${isTyping ? 'Typing now' : 'Not typing'}"></span>`;
+        }
+
+        function refreshTypingSprints() {
+            document.querySelectorAll('.typing-sprint-cell').forEach(cell => {
+                const userId = decodeURIComponent(cell.getAttribute('data-typing-sprint-user'));
+                cell.innerHTML = renderTypingSprint(userId);
+            });
+            document.querySelectorAll('.typing-signal').forEach(signal => {
+                const userId = decodeURIComponent(signal.getAttribute('data-typing-indicator-user'));
+                const isTyping = Object.prototype.hasOwnProperty.call(liveTypingSpeeds, userId);
+                signal.classList.toggle('hidden', !isTyping);
+                signal.setAttribute('aria-label', isTyping ? 'Typing now' : 'Not typing');
+                signal.title = isTyping ? 'Typing now' : 'Not typing';
+            });
+        }
+
         function renderLeaderboard(users) {
             const sorted = [...users].sort((a, b) => {
                 const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
@@ -1406,7 +1502,7 @@
             const top = sorted.slice(0, 10);
             const tbody = document.getElementById('leaderboard-body');
             if (top.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No players yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No players yet</td></tr>';
                 return;
             }
             tbody.innerHTML = top.map((u, i) => {
@@ -1414,15 +1510,18 @@
                 const isMe = loggedInUser && u.id === loggedInUser.id;
                 const medal = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
                 return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}')">
-                    <td class="p-2 flex items-center gap-2">
-                        <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
-                        <div class="flex min-w-0 flex-col items-start gap-1"><p class="font-black text-slate-800 text-[11px] truncate max-w-[120px]">${u.name || u.id}</p>
-                        <span class="user-id-chip" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
+                    <td class="leaderboard-player-cell">
+                        <div class="leaderboard-player">
+                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
+                            <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderTypingSignal(u.id)}</p>
+                            <span class="user-id-chip leaderboard-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
+                        </div>
                     </td>
-                    <td class="p-2 text-center"><span class="lvl-badge">${calcLevel(u.points || 0)}</span></td>
-                    <td class="p-2 text-center font-black">${u.points || 0}</td>
-                    <td class="p-2 text-center text-blue-600 font-black">${u.monthlyPoints || 0}</td>
-                    <td class="p-2 text-center font-bold text-orange-600">${u.bestWpm || 0}</td>
+                    <td class="typing-sprint-cell p-2 text-center" data-label="Typing speed" data-typing-sprint-user="${encodeURIComponent(u.id)}">${renderTypingSprint(u.id)}</td>
+                    <td class="p-2 text-center" data-label="Level"><span class="lvl-badge">${calcLevel(u.points || 0)}</span></td>
+                    <td class="p-2 text-center font-black" data-label="Total">${u.points || 0}</td>
+                    <td class="p-2 text-center text-blue-600 font-black" data-label="Monthly">${u.monthlyPoints || 0}</td>
+                    <td class="p-2 text-center font-bold text-orange-600" data-label="Best WPM">${u.bestWpm || 0}</td>
                 </tr>`;
             }).join('');
         }
@@ -1439,6 +1538,10 @@
         function openAllUsers() {
             const modal = document.getElementById('all-users-modal');
             modal.classList.add('active');
+            renderAllUsers();
+        }
+
+        function renderAllUsers() {
             const sorted = [...allUsers].sort((a, b) => {
                 const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
                 if (mb !== ma) return mb - ma;
@@ -1448,11 +1551,14 @@
                 const isMe = loggedInUser && u.id === loggedInUser.id;
                 const rank = i + 1;
                 return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}'); closeAllUsers();">
-                    <td class="p-2 flex items-center gap-2">
-                        <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
-                        <div class="flex min-w-0 flex-col items-start gap-1"><span class="font-black text-[11px]">${u.name || u.id}</span>
-                        <span class="user-id-chip" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
+                    <td class="all-users-player-cell">
+                        <div class="all-users-player">
+                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
+                            <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderTypingSignal(u.id)}</span>
+                            <span class="user-id-chip all-users-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
+                        </div>
                     </td>
+                    <td class="typing-sprint-cell p-2 text-center" data-typing-sprint-user="${encodeURIComponent(u.id)}">${renderTypingSprint(u.id)}</td>
                     <td class="p-2 text-center"><span class="lvl-badge">${calcLevel(u.points || 0)}</span></td>
                     <td class="p-2 text-center font-black">${u.points || 0}</td>
                     <td class="p-2 text-center font-bold text-orange-600">${u.bestWpm || 0}</td>
@@ -1907,7 +2013,6 @@
                     isStarted = true;
                     startTimer();
                 }
-                setTypingStatus(true);
                 const typed = splitGraphemes(this.value);
                 let commonPrefix = 0;
                 while (commonPrefix < previousTypedChars.length && commonPrefix < typed.length &&
@@ -1939,6 +2044,7 @@
                 previousTypedChars = typed;
                 const time = (Date.now() - startTime) / 60000;
                 const wpm = time > 0 ? Math.round((correctChars / 5) / time) : 0;
+                setTypingStatus(true, wpm);
                 const accuracy = typed.length > 0 ? Math.max(0, Math.round((correctChars / typed.length) * 100)) : 0;
                 document.getElementById('live-chars').textContent = typed.length;
                 document.getElementById('live-mistakes').textContent = sessionMistakes;
