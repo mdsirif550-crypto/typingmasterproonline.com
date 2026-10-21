@@ -144,8 +144,21 @@
     .brand-mark { width: 110px; height: 110px; object-fit: contain; border-radius: 24px; background: rgba(255,255,255,0.06); box-shadow: 0 18px 40px rgba(0,0,0,0.25); padding: 10px; }
     .brand-domain { font-size: 34px; font-weight: 900; letter-spacing: 1px; color: #f5f7ff; text-shadow: 0 0 24px rgba(255,255,255,0.2); line-height: 1.2; }
     .brand-domain span { color: #7ae6ff; }
-    .live-activity-bar { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; width: fit-content; max-width: 100%; margin: 0 auto 16px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; background: rgba(17,30,22,0.88); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+    .live-activity-bar { position: static; z-index: auto; transform: none; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; width: fit-content; max-width: 100%; margin: 0 auto 8px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; background: rgba(17,30,22,0.88); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+    .activity-visibility-toggle { position: fixed; top: 4px; left: 4px; z-index: 600000; width: 22px; height: 22px; padding: 0; border: 1px solid #333; border-radius: 4px; background: #080808; color: #fff; font: 700 12px/1 sans-serif; cursor: pointer; opacity: 0.85; }
+    .activity-visibility-toggle:hover, .activity-visibility-toggle:focus-visible { opacity: 1; outline: 1px solid #888; }
+    .activity-visibility-toggle[hidden] { display: none; }
+    .live-activity-bar.activity-hidden, .activity-real-row.activity-hidden { display: none; }
+    .activity-restore-button { position: fixed; top: 4px; left: 4px; z-index: 600000; width: 22px; height: 22px; padding: 0; border: 1px solid #333; border-radius: 4px; background: #080808; color: #fff; font: 700 12px/1 sans-serif; cursor: pointer; }
+    .activity-restore-button[hidden] { display: none; }
     .live-activity-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(52,211,153,0.35); border-radius: 999px; background: rgba(16,185,129,0.12); color: #d1fae5; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .activity-demo-row, .activity-real-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; width: fit-content; max-width: 100%; margin: 0 auto 8px; padding: 7px 10px; border-radius: 12px; }
+    .activity-demo-row { border: 1px solid rgba(250,204,21,0.22); background: rgba(250,204,21,0.06); color: #fde68a; }
+    .activity-real-row { margin-bottom: 16px; border: 2px solid #34d399; background: rgba(16,185,129,0.18); color: #d1fae5; box-shadow: 0 0 16px rgba(52,211,153,0.2); }
+    .activity-demo-label, .activity-real-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+    .activity-real-label { color: #6ee7b7; }
+    .activity-count-item { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .activity-count-value { font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; }
     .live-activity-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.7); animation: activityPulse 1.4s ease-in-out infinite; }
     @keyframes activityPulse { 50% { opacity: 0.45; transform: scale(0.82); } }
     .facebook-page-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 14px; border-radius: 999px; background: #1877f2; color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 12px rgba(24,119,242,0.3); transition: background-color 0.2s, transform 0.2s; }
@@ -349,9 +362,15 @@
           <span>Facebook</span>
         </a>
       </div>
-      <div class="live-activity-bar" aria-label="Live site activity">
-        <span class="live-activity-pill" title="Below 100 is a simulated demo count. At 101 and above, the count is 100 plus the actual live viewer count."><span class="live-activity-dot" aria-hidden="true"></span>Views (demo + live): <span id="live-viewer-count">—</span></span>
-        <span class="live-activity-pill"><span class="live-activity-dot" aria-hidden="true"></span>Typing now: <span id="live-typing-count">0</span></span>
+      <div class="live-activity-bar" aria-label="Activity counts">
+        <span class="activity-count-item">Views: <span class="activity-count-value" id="demo-viewer-count">150</span></span>
+        <span class="activity-count-item">Typing: <span class="activity-count-value" id="demo-typing-count">100</span></span>
+      </div>
+      <button type="button" class="activity-visibility-toggle" id="activityVisibilityToggle" aria-label="Hide activity counts" title="Hide activity counts">M</button>
+      <button type="button" class="activity-restore-button" id="activityRestoreButton" aria-label="Show activity counts" title="Show activity counts" hidden>M</button>
+      <div class="activity-real-row" aria-label="Actual live user counts">
+        <span class="activity-count-item" aria-label="Viewers"><span aria-hidden="true">S</span><span class="activity-count-value" id="live-viewer-count" aria-live="polite">0</span></span>
+        <span class="activity-count-item" aria-label="Typing"><span aria-hidden="true">G</span><span class="activity-count-value" id="live-typing-count" aria-live="polite">0</span></span>
       </div>
       <div class="academy-tag">You are bound to become an expert in typing</div>
     </header>
@@ -424,37 +443,64 @@
     let activitySessionId = null;
     let activityAnonymousUserId = null;
     let liveViewerCount = 0;
-    let demoViewerCount = Math.floor(Math.random() * 99) + 1;
+    let liveTypingCount = 0;
+    let demoViewerCount = Math.floor(Math.random() * 1301) + 150;
+    let demoTypingCount = Math.floor(Math.random() * 51) + 110;
     let demoViewerDirection = Math.random() < 0.5 ? -1 : 1;
+    let demoTypingDirection = Math.random() < 0.5 ? -1 : 1;
 
     function renderLiveViewerCount() {
-      const displayedCount = liveViewerCount > 0 ? 100 + liveViewerCount : demoViewerCount;
-      setLiveActivityCount("live-viewer-count", displayedCount);
+      setLiveActivityCount("live-viewer-count", liveViewerCount);
     }
 
-    setInterval(() => {
-      if (liveViewerCount > 0) return;
-      demoViewerCount += demoViewerDirection * (Math.floor(Math.random() * 3) + 1);
-      if (demoViewerCount >= 99) {
-        demoViewerCount = 99;
-        demoViewerDirection = -1;
-      } else if (demoViewerCount <= 1) {
-        demoViewerCount = 1;
-        demoViewerDirection = 1;
-      }
-      renderLiveViewerCount();
-    }, 1800);
+    function renderLiveTypingCount() {
+      setLiveActivityCount("live-typing-count", liveTypingCount);
+    }
+
+    function fluctuateDemoCount(current, direction, minimum, maximum, step) {
+      const next = current + direction * (Math.floor(Math.random() * step) + 1);
+      if (next >= maximum) return { value: maximum, direction: -1 };
+      if (next <= minimum) return { value: minimum, direction: 1 };
+      return { value: next, direction };
+    }
 
     function setLiveActivityCount(elementId, value) {
       const element = document.getElementById(elementId);
       if (element) element.textContent = value;
     }
 
+    function setupActivityVisibilityToggle() {
+      const actualUserCounts = document.querySelector(".activity-real-row");
+      const hideButton = document.getElementById("activityVisibilityToggle");
+      const showButton = document.getElementById("activityRestoreButton");
+      hideButton.addEventListener("click", () => {
+        actualUserCounts.classList.add("activity-hidden");
+        hideButton.hidden = true;
+        showButton.hidden = false;
+      });
+      showButton.addEventListener("click", () => {
+        actualUserCounts.classList.remove("activity-hidden");
+        showButton.hidden = true;
+        hideButton.hidden = false;
+      });
+    }
+
+    setInterval(() => {
+      const viewerDemo = fluctuateDemoCount(demoViewerCount, demoViewerDirection, 150, 1500, 100);
+      demoViewerCount = viewerDemo.value;
+      demoViewerDirection = viewerDemo.direction;
+      const typingDemo = fluctuateDemoCount(demoTypingCount, demoTypingDirection, 100, 200, 8);
+      demoTypingCount = typingDemo.value;
+      demoTypingDirection = typingDemo.direction;
+      setLiveActivityCount("demo-viewer-count", demoViewerCount);
+      setLiveActivityCount("demo-typing-count", demoTypingCount);
+    }, 1800);
+    setLiveActivityCount("demo-viewer-count", demoViewerCount);
+    setLiveActivityCount("demo-typing-count", demoTypingCount);
+
     function initializeLiveActivity() {
       if (typeof firebase === "undefined" || !firebase.database) {
         console.error("Live activity unavailable: Firebase SDK did not load.");
-        setLiveActivityCount("live-viewer-count", "—");
-        setLiveActivityCount("live-typing-count", "—");
         return;
       }
 
@@ -469,7 +515,8 @@
 
         activityDatabase.ref(".info/connected").on("value", snapshot => {
           if (snapshot.val() !== true) {
-            setLiveActivityCount("live-viewer-count", "0");
+            liveViewerCount = 0;
+            renderLiveViewerCount();
             return;
           }
 
@@ -497,15 +544,15 @@
             const connections = user && user.connections;
             return connections && Object.values(connections).some(connection => connection && connection.typing === true);
           });
-          setLiveActivityCount("live-typing-count", typingUsers.length);
+          liveTypingCount = typingUsers.length;
+          renderLiveTypingCount();
         }, error => {
           console.error("Live typing count listener failed:", error);
-          setLiveActivityCount("live-typing-count", "—");
+          liveTypingCount = 0;
+          renderLiveTypingCount();
         });
       } catch (error) {
         console.error("Live activity initialization failed:", error);
-        setLiveActivityCount("live-viewer-count", "—");
-        setLiveActivityCount("live-typing-count", "—");
       }
     }
 
@@ -736,6 +783,7 @@
     window.onload = () => {
       initializeLiveActivity();
       makeHelpButtonDraggable();
+      setupActivityVisibilityToggle();
       document.getElementById("aduOfficeAppDismiss").addEventListener("click", () => {
         document.getElementById("aduOfficeAppWidget").hidden = true;
       });
