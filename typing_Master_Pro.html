@@ -166,6 +166,19 @@
         .all-users-player-name { max-width: 190px; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
         .all-users-player-id { max-width: 190px; overflow: hidden; overflow-wrap: normal; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
         .all-users-table th, .all-users-table td { padding: 5px 6px; }
+        .direct-messages-modal { max-width: min(560px, calc(100vw - 32px)); }
+        .conversation-list { display: flex; max-height: 60vh; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .conversation-item { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #0f172a; text-align: left; cursor: pointer; }
+        .conversation-item:hover { border-color: #93c5fd; background: #eff6ff; }
+        .conversation-item-name { overflow: hidden; font-size: 12px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+        .conversation-item-preview { overflow: hidden; color: #64748b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .direct-chat-messages { display: flex; height: min(42vh, 360px); min-height: 180px; flex-direction: column; gap: 8px; overflow-y: auto; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+        .direct-message { max-width: 85%; overflow-wrap: anywhere; padding: 9px 12px; border-radius: 12px; background: #e2e8f0; color: #0f172a; font-size: 12px; white-space: pre-wrap; }
+        .direct-message.mine { align-self: flex-end; background: #2563eb; color: white; }
+        .direct-message-sender { display: block; margin-bottom: 3px; font-size: 9px; font-weight: 900; opacity: 0.8; }
+        .direct-message-time { display: block; margin-top: 4px; font-size: 8px; opacity: 0.72; text-align: right; }
+        .typing-signal { width: auto; height: auto; border-radius: 999px; padding: 2px 6px; color: #fff; font-size: 8px; font-weight: 900; line-height: 1.3; white-space: nowrap; }
+        .typing-signal.hidden { display: none; }
         @media (prefers-reduced-motion: reduce) { .sprint-runner { animation: none; left: calc(100% - 20px); } }
         .user-id-chip { display: inline-flex; align-items: center; width: fit-content; max-width: 100%; padding: 2px 6px; border: 1px solid hsl(var(--id-hue) 65% 72%); border-radius: 999px; background: hsl(var(--id-hue) 85% 90%); color: hsl(var(--id-hue) 65% 28%); font-size: 7px; font-weight: 800; line-height: 1.3; overflow-wrap: anywhere; }
         .clickable-row { cursor: pointer; transition: filter 0.15s; }
@@ -175,6 +188,7 @@
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
         #all-users-modal .all-users-modal-box { max-width: min(760px, calc(100vw - 32px)); }
+        #preview-modal .modal-box { --profile-modal-offset: 0px; max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain; transform: translateY(var(--profile-modal-offset)); }
         .modal-box h2 { font-size: 18px; font-weight: 900; margin-bottom: 16px; text-transform: uppercase; color: #0f172a; }
         
         .slim-input { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc; }
@@ -329,6 +343,7 @@
                     <option value="bn">BN</option>
                 </select>
                 <div id="nav-user" class="hidden flex items-center gap-2">
+                    <button id="nav-messages-button" type="button" onclick="openMessages()" class="rounded-lg bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-700">💬 Messages</button>
                     <span id="nav-name" class="text-xs font-bold uppercase text-slate-700 truncate max-w-[80px]"></span>
                     <span class="rank-avatar-wrap"><img id="nav-avatar" class="w-8 h-8 rounded-full border-2 border-blue-500 object-cover" src=""><span id="nav-rank-decoration" class="rank-avatar-decoration hidden"></span></span>
                     <button onclick="openEditProfile()" class="text-slate-700 font-bold text-[8px] uppercase">Edit</button>
@@ -497,7 +512,8 @@
     <div id="help-modal" class="modal-overlay">
         <div class="modal-box">
             <h2>💬 Digital Help Line</h2>
-            <p class="text-[11px] text-slate-500 mb-3">Your name and user ID are automatically included with every message. Choose a ready message or type your own.</p>
+            <p id="help-intro" class="text-[11px] text-slate-500 mb-3">Your name and user ID are automatically included with every message. Choose a ready message or type your own.</p>
+            <input id="help-guest-name" class="slim-input mb-2 hidden" maxlength="60" autocomplete="name" placeholder="Your name (optional)">
             <div class="grid grid-cols-2 gap-2 mb-3 text-[10px]">
                 <button onclick="setHelpTemplate('password')" class="btn btn-outline py-2 text-left">Forgot Password</button>
                 <button onclick="setHelpTemplate('lesson')" class="btn btn-outline py-2 text-left">Request Lesson Change</button>
@@ -512,6 +528,27 @@
             </div>
             <div id="help-status" class="text-[10px] text-slate-500 mt-2"></div>
             <button onclick="closeHelp()" class="w-full mt-3 text-slate-400 text-[10px] font-bold uppercase">Close</button>
+        </div>
+    </div>
+
+    <div id="messages-modal" class="modal-overlay">
+        <div class="modal-box direct-messages-modal">
+            <div class="flex items-center justify-between gap-3">
+                <h2 id="messages-modal-title" class="mb-0">💬 Messages</h2>
+                <button type="button" onclick="closeMessages()" class="text-2xl font-bold text-red-500" aria-label="Close messages">×</button>
+            </div>
+            <div id="conversation-list" class="conversation-list mt-4" aria-label="Conversations"></div>
+            <section id="direct-chat-thread" class="hidden mt-4">
+                <button type="button" onclick="showConversationList()" class="mb-3 text-xs font-bold text-blue-700">← All conversations</button>
+                <h3 id="direct-chat-recipient" class="mb-2 text-sm font-black text-slate-800"></h3>
+                <div id="direct-chat-messages" class="direct-chat-messages" aria-live="polite"></div>
+                <label class="sr-only" for="direct-chat-input">Write a message</label>
+                <textarea id="direct-chat-input" class="slim-input mt-3 h-20 resize-none" maxlength="1000" placeholder="Write a message..."></textarea>
+                <div class="mt-2 flex items-center justify-between gap-2">
+                    <p id="direct-chat-status" class="text-[10px] text-slate-500" role="status"></p>
+                    <button id="direct-chat-send" type="button" onclick="sendDirectMessage()" class="btn btn-primary">Send</button>
+                </div>
+            </section>
         </div>
     </div>
 
@@ -537,16 +574,25 @@
         <div class="modal-box relative overflow-hidden">
             <button onclick="closePreview()" class="absolute right-4 top-4 text-2xl font-bold text-slate-400 hover:text-red-500">×</button>
             <div class="bg-gradient-to-br from-slate-900 to-blue-700 text-white rounded-3xl p-6">
+            <div class="mx-auto mb-3 flex items-center justify-center gap-2">
+                <span class="rounded-full bg-white/10 px-4 py-1.5 text-[9px] font-bold text-white/75">Profile position</span>
+                <button type="button" onclick="moveProfileModal(-60)" class="rounded-full bg-white/10 px-2.5 py-1.5 text-xs font-black text-white" aria-label="Move profile up">↑</button>
+                <button type="button" onclick="moveProfileModal(60)" class="rounded-full bg-white/10 px-2.5 py-1.5 text-xs font-black text-white" aria-label="Move profile down">↓</button>
+            </div>
                 <div class="flex flex-col md:flex-row items-center gap-4">
-                    <div class="flex flex-col items-center gap-2">
+                    <div class="flex items-center gap-2">
                         <span class="rank-avatar-wrap"><img id="preview-avatar" class="w-24 h-24 rounded-full border-4 border-white object-cover" src=""><span id="preview-rank-decoration" class="rank-avatar-decoration hidden"></span></span>
-                        <button type="button" onclick="openImageViewer(document.getElementById('preview-avatar').src, document.getElementById('preview-name').textContent)" class="rounded-lg border border-white/40 bg-white/15 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-white/25">View full-size photo</button>
+                        <div class="flex min-w-0 flex-col gap-2">
+                            <button id="preview-message-button" type="button" onclick="messageProfileUser()" class="max-w-28 rounded-xl bg-emerald-500 px-3 py-2 text-[10px] font-black leading-tight text-white hover:bg-emerald-600">💬 Send a message</button>
+                            <button type="button" onclick="openImageViewer(document.getElementById('preview-avatar').src, document.getElementById('preview-name').textContent)" class="rounded-lg border border-white/40 bg-white/15 px-2 py-1.5 text-[9px] font-bold text-white hover:bg-white/25">View full photo</button>
+                        </div>
                     </div>
                     <div class="flex-1">
                         <p class="text-[10px] uppercase tracking-[0.3em] opacity-70">POOL PROFILE</p>
                         <h3 id="preview-name" class="text-xl md:text-2xl font-black uppercase mt-2 leading-tight break-words">Player</h3>
                         <p id="preview-id" class="user-id-chip mt-1">ID: --</p>
                         <p id="preview-rank" class="mt-3 text-sm font-black text-amber-300">#--</p>
+                        <p id="preview-typing-status" class="hidden mt-2 items-center gap-2 text-xs font-bold text-emerald-300"><span class="live-typing-dot"></span>Typing right now</p>
                         <p id="preview-location" class="hidden mt-2 text-xs font-bold text-blue-100"></p>
                     </div>
                     <div class="text-right">
@@ -625,6 +671,7 @@
         let isStarted = false, startTime = null, sessionMistakes = 0, correctChars = 0;
         let timeLeft = 300, timerInterval = null, isTimeOver = false;
         let helpListener = null;
+        let helpListenerCallback = null;
         let isCustomMode = false;
         let customTextContent = '';
         let rotateIdx = 0;
@@ -637,6 +684,11 @@
         let isTypingNow = false;
         let liveTypingSpeeds = Object.create(null);
         let lastTypingPresenceUpdateAt = 0;
+        let conversationListRef = null;
+        let directMessagesRef = null;
+        let selectedDirectRecipient = null;
+        let pendingDirectRecipientId = null;
+        let currentProfileUserId = null;
         let isScoreSubmitting = false;
         let displayChars = [];
         let previousTypedChars = [];
@@ -1321,9 +1373,12 @@
             trackOnline();
             resetTyping();
             listenHelp();
+            listenConversations();
+            if (pendingDirectRecipientId) openDirectChat(pendingDirectRecipientId);
         }
 
         function logout() {
+            stopMessagingListeners();
             if (loggedInUser) {
                 const presenceRef = db.ref('online_users/' + loggedInUser.id + '/connections/' + presenceSessionId);
                 localStorage.removeItem('currentUser');
@@ -1340,6 +1395,7 @@
             if (loggedInUser) {
                 document.getElementById('nav-user').classList.remove('hidden');
                 document.getElementById('nav-login').classList.add('hidden');
+                document.getElementById('nav-messages-button').classList.remove('hidden');
                 document.getElementById('nav-name').textContent = loggedInUser.name || loggedInUser.id;
                 document.getElementById('nav-avatar').src = loggedInUser.pic || DEFAULT_AVATAR;
                 applyLevelFrame(document.getElementById('nav-avatar'), loggedInUser);
@@ -1347,6 +1403,7 @@
             } else {
                 document.getElementById('nav-user').classList.add('hidden');
                 document.getElementById('nav-login').classList.remove('hidden');
+                document.getElementById('nav-messages-button').classList.add('hidden');
                 document.getElementById('nav-rank-decoration').classList.add('hidden');
             }
         }
@@ -1476,7 +1533,7 @@
 
         function renderTypingSignal(userId) {
             const isTyping = Object.prototype.hasOwnProperty.call(liveTypingSpeeds, userId);
-            return `<span class="typing-signal ${isTyping ? '' : 'hidden'}" data-typing-indicator-user="${encodeURIComponent(userId)}" role="img" aria-label="${isTyping ? 'Typing now' : 'Not typing'}" title="${isTyping ? 'Typing now' : 'Not typing'}"></span>`;
+            return `<span class="typing-signal ${isTyping ? '' : 'hidden'}" data-typing-indicator-user="${encodeURIComponent(userId)}" role="status" aria-label="${isTyping ? 'Typing now' : 'Not typing'}" title="${isTyping ? 'Typing now' : 'Not typing'}">${isTyping ? 'Typing' : ''}</span>`;
         }
 
         function refreshTypingSprints() {
@@ -1490,7 +1547,13 @@
                 signal.classList.toggle('hidden', !isTyping);
                 signal.setAttribute('aria-label', isTyping ? 'Typing now' : 'Not typing');
                 signal.title = isTyping ? 'Typing now' : 'Not typing';
+                signal.textContent = isTyping ? 'Typing' : '';
             });
+            const profileTypingStatus = document.getElementById('preview-typing-status');
+            const isProfileTyping = currentProfileUserId !== null &&
+                Object.prototype.hasOwnProperty.call(liveTypingSpeeds, currentProfileUserId);
+            profileTypingStatus.classList.toggle('hidden', !isProfileTyping);
+            profileTypingStatus.classList.toggle('flex', isProfileTyping);
         }
 
         function renderLeaderboard(users) {
@@ -1570,6 +1633,7 @@
         function viewProfile(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
+            currentProfileUserId = user.id;
             const points = user.points || 0;
             const level = calcLevel(points);
             const progress = calcLevelProgress(points);
@@ -1577,6 +1641,18 @@
             document.getElementById('preview-avatar').src = user.pic || DEFAULT_AVATAR;
             applyLevelFrame(document.getElementById('preview-avatar'), user);
             document.getElementById('preview-name').textContent = user.name || user.id;
+            document.getElementById('preview-typing-status').classList.toggle(
+                'hidden',
+                !Object.prototype.hasOwnProperty.call(liveTypingSpeeds, user.id)
+            );
+            document.getElementById('preview-typing-status').classList.toggle(
+                'flex',
+                Object.prototype.hasOwnProperty.call(liveTypingSpeeds, user.id)
+            );
+            document.getElementById('preview-message-button').classList.toggle(
+                'hidden',
+                Boolean(loggedInUser && loggedInUser.id === user.id)
+            );
             const previewId = document.getElementById('preview-id');
             previewId.textContent = 'ID: ' + user.id.toUpperCase();
             setUserIdChip(previewId, user.id);
@@ -1607,7 +1683,260 @@
             document.getElementById('preview-contacts').classList.toggle('hidden', !showWhatsApp && !showEmail);
             document.getElementById('preview-modal').classList.add('active');
         }
-        function closePreview() { document.getElementById('preview-modal').classList.remove('active'); }
+        function closePreview() {
+            const modal = document.getElementById('preview-modal');
+            modal.classList.remove('active');
+            modal.querySelector('.modal-box').style.setProperty('--profile-modal-offset', '0px');
+            currentProfileUserId = null;
+        }
+
+        function moveProfileModal(distance) {
+            const profileModal = document.querySelector('#preview-modal .modal-box');
+            const rect = profileModal.getBoundingClientRect();
+            const currentOffset = parseFloat(profileModal.style.getPropertyValue('--profile-modal-offset')) || 0;
+            const minTop = 8;
+            const maxTop = Math.max(minTop, window.innerHeight - rect.height - 8);
+            const nextTop = Math.min(maxTop, Math.max(minTop, rect.top + distance));
+            profileModal.style.setProperty('--profile-modal-offset', `${currentOffset + nextTop - rect.top}px`);
+        }
+
+        function safeDatabaseKey(value) {
+            return encodeURIComponent(String(value))
+                .replace(/\./g, '%2E')
+                .replace(/[!'()*]/g, character => `%${character.charCodeAt(0).toString(16).toUpperCase()}`);
+        }
+
+        function getDirectConversationKey(userIdA, userIdB) {
+            return [String(userIdA), String(userIdB)]
+                .sort((a, b) => a < b ? -1 : a > b ? 1 : 0)
+                .map(safeDatabaseKey)
+                .join('__');
+        }
+
+        function stopMessagingListeners() {
+            if (conversationListRef) {
+                conversationListRef.off();
+                conversationListRef = null;
+            }
+            if (directMessagesRef) {
+                directMessagesRef.off();
+                directMessagesRef = null;
+            }
+            selectedDirectRecipient = null;
+        }
+
+        function listenConversations() {
+            if (!loggedInUser) return;
+            if (conversationListRef) conversationListRef.off();
+            const userKey = safeDatabaseKey(loggedInUser.id);
+            conversationListRef = db.ref(`user_conversations/${userKey}`);
+            conversationListRef.on('value', snapshot => {
+                renderConversationList(snapshot.val() || {});
+            }, error => {
+                console.error('Conversation list listener failed:', error);
+                document.getElementById('conversation-list').textContent = 'Could not load conversations.';
+            });
+        }
+
+        function renderConversationList(conversations) {
+            const container = document.getElementById('conversation-list');
+            container.replaceChildren();
+            const entries = Object.entries(conversations)
+                .filter(([, conversation]) => conversation && conversation.otherId)
+                .sort(([, a], [, b]) => (b.lastMessageAt || 0) - (a.lastMessageAt || 0));
+            if (entries.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'text-sm text-slate-500';
+                empty.textContent = 'No messages yet. Open any player profile and send a message.';
+                container.appendChild(empty);
+                return;
+            }
+
+            entries.forEach(([, conversation]) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'conversation-item';
+                button.addEventListener('click', () => openDirectChat(conversation.otherId));
+                const name = document.createElement('span');
+                name.className = 'conversation-item-name';
+                name.textContent = conversation.otherName || conversation.otherId;
+                const preview = document.createElement('span');
+                preview.className = 'conversation-item-preview';
+                preview.textContent = conversation.lastMessage || conversation.otherId;
+                button.append(name, preview);
+                container.appendChild(button);
+            });
+        }
+
+        function openMessages() {
+            if (!loggedInUser) return openAuth();
+            document.getElementById('messages-modal').classList.add('active');
+            document.getElementById('messages-modal-title').textContent = '💬 Messages';
+            showConversationList();
+            listenConversations();
+        }
+
+        function closeMessages() {
+            if (directMessagesRef) {
+                directMessagesRef.off();
+                directMessagesRef = null;
+            }
+            selectedDirectRecipient = null;
+            document.getElementById('messages-modal').classList.remove('active');
+        }
+
+        function showConversationList() {
+            if (directMessagesRef) {
+                directMessagesRef.off();
+                directMessagesRef = null;
+            }
+            selectedDirectRecipient = null;
+            document.getElementById('direct-chat-thread').classList.add('hidden');
+            document.getElementById('conversation-list').classList.remove('hidden');
+            document.getElementById('messages-modal-title').textContent = '💬 Messages';
+        }
+
+        async function openDirectChat(userId) {
+            if (!loggedInUser) {
+                pendingDirectRecipientId = userId;
+                openAuth();
+                return;
+            }
+            if (String(userId) === String(loggedInUser.id)) return;
+
+            let recipient = allUsers.find(user => String(user.id) === String(userId));
+            if (!recipient) {
+                try {
+                    recipient = await findUser(userId);
+                } catch (error) {
+                    console.error('Could not find message recipient:', error);
+                    alert('Could not open this player. Please try again.');
+                    return;
+                }
+            }
+            if (!recipient) {
+                alert('This player profile is no longer available.');
+                return;
+            }
+
+            pendingDirectRecipientId = null;
+            closePreview();
+            closeAllUsers();
+            document.getElementById('messages-modal').classList.add('active');
+            document.getElementById('conversation-list').classList.add('hidden');
+            document.getElementById('direct-chat-thread').classList.remove('hidden');
+            document.getElementById('messages-modal-title').textContent = '💬 Direct message';
+            document.getElementById('direct-chat-recipient').textContent = `${recipient.name || recipient.id} · ${recipient.id}`;
+            document.getElementById('direct-chat-status').textContent = '';
+            selectedDirectRecipient = recipient;
+
+            if (directMessagesRef) directMessagesRef.off();
+            const conversationKey = getDirectConversationKey(loggedInUser.id, recipient.id);
+            directMessagesRef = db.ref(`direct_messages/${conversationKey}`).limitToLast(100);
+            directMessagesRef.on('value', snapshot => {
+                renderDirectMessages(snapshot.val() || {});
+            }, error => {
+                console.error('Direct messages listener failed:', error);
+                document.getElementById('direct-chat-status').textContent = 'Could not load messages. Check your connection and try again.';
+            });
+        }
+
+        function renderDirectMessages(messages) {
+            const container = document.getElementById('direct-chat-messages');
+            container.replaceChildren();
+            const entries = Object.values(messages)
+                .filter(message => message && typeof message === 'object')
+                .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            entries.forEach(message => {
+                const bubble = document.createElement('div');
+                const isMine = Boolean(loggedInUser && message.from === loggedInUser.id);
+                bubble.className = `direct-message ${isMine ? 'mine' : ''}`;
+                const sender = document.createElement('span');
+                sender.className = 'direct-message-sender';
+                sender.textContent = isMine ? 'You' : (message.fromName || (selectedDirectRecipient && (selectedDirectRecipient.name || selectedDirectRecipient.id)) || 'Player');
+                const text = document.createElement('span');
+                text.textContent = String(message.message || '');
+                const time = document.createElement('span');
+                time.className = 'direct-message-time';
+                time.textContent = message.timestamp ? new Date(message.timestamp).toLocaleString() : 'Sending…';
+                bubble.append(sender, text, time);
+                container.appendChild(bubble);
+            });
+            if (entries.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'text-xs text-slate-500';
+                empty.textContent = 'No messages here yet. Say hello!';
+                container.appendChild(empty);
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendDirectMessage() {
+            if (!loggedInUser || !selectedDirectRecipient) return;
+            const input = document.getElementById('direct-chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            if (message.length > 1000) {
+                document.getElementById('direct-chat-status').textContent = 'Messages must be 1,000 characters or less.';
+                return;
+            }
+
+            const button = document.getElementById('direct-chat-send');
+            const status = document.getElementById('direct-chat-status');
+            button.disabled = true;
+            status.textContent = 'Sending…';
+            const recipient = selectedDirectRecipient;
+            const senderKey = safeDatabaseKey(loggedInUser.id);
+            const recipientKey = safeDatabaseKey(recipient.id);
+            const conversationKey = getDirectConversationKey(loggedInUser.id, recipient.id);
+            const messageRef = db.ref(`direct_messages/${conversationKey}`).push();
+            const timestamp = firebase.database.ServerValue.TIMESTAMP;
+            const senderName = loggedInUser.name || loggedInUser.id;
+            const recipientName = recipient.name || recipient.id;
+            const preview = message.slice(0, 160);
+            const updates = {
+                [`direct_messages/${conversationKey}/${messageRef.key}`]: {
+                    from: loggedInUser.id,
+                    fromName: senderName,
+                    to: recipient.id,
+                    message,
+                    timestamp
+                },
+                [`user_conversations/${senderKey}/${conversationKey}`]: {
+                    otherId: recipient.id,
+                    otherName: recipientName,
+                    lastMessage: preview,
+                    lastMessageAt: timestamp
+                },
+                [`user_conversations/${recipientKey}/${conversationKey}`]: {
+                    otherId: loggedInUser.id,
+                    otherName: senderName,
+                    lastMessage: preview,
+                    lastMessageAt: timestamp
+                }
+            };
+            try {
+                await db.ref().update(updates);
+                input.value = '';
+                status.textContent = '';
+            } catch (error) {
+                console.error('Direct message send failed:', error);
+                status.textContent = 'Message not sent. Check your connection or database permissions.';
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function messageProfileUser() {
+            if (currentProfileUserId === null) return;
+            const userId = currentProfileUserId;
+            if (!loggedInUser) {
+                pendingDirectRecipientId = userId;
+                openAuth();
+                return;
+            }
+            openDirectChat(userId);
+        }
 
         function openImageViewer(src, alt = '') {
             if (!src) return;
@@ -1758,23 +2087,52 @@
         // ============================================
         // HELP / CHAT
         // ============================================
+        function getHelpSender() {
+            if (loggedInUser) {
+                return {
+                    id: String(loggedInUser.id),
+                    name: String(loggedInUser.name || loggedInUser.id),
+                    isGuest: false
+                };
+            }
+
+            let visitorId = localStorage.getItem('helpVisitorId');
+            if (!visitorId) {
+                visitorId = `guest_${db.ref('chat_messages').push().key}`;
+                localStorage.setItem('helpVisitorId', visitorId);
+            }
+            const guestName = document.getElementById('help-guest-name').value.trim() ||
+                localStorage.getItem('helpVisitorName') || 'Guest';
+            return { id: visitorId, name: guestName, isGuest: true };
+        }
+
+        function stopHelpListener() {
+            if (helpListener && helpListenerCallback) {
+                helpListener.off('value', helpListenerCallback);
+            }
+            helpListener = null;
+            helpListenerCallback = null;
+        }
+
         function openHelp() {
-            if (!loggedInUser) return openAuth();
+            const guestNameInput = document.getElementById('help-guest-name');
+            const intro = document.getElementById('help-intro');
+            guestNameInput.classList.toggle('hidden', Boolean(loggedInUser));
+            intro.textContent = loggedInUser
+                ? 'Your name and user ID are automatically included with every message. Choose a ready message or type your own.'
+                : 'You can contact support without logging in. Add your name if you like; this browser will remember your support conversation.';
+            if (!loggedInUser) {
+                guestNameInput.value = localStorage.getItem('helpVisitorName') || '';
+            }
             document.getElementById('help-modal').classList.add('active');
             document.getElementById('help-status').textContent = '';
-            if (helpListener) {
-                try { helpListener.off(); } catch(e) {}
-                helpListener = null;
-            }
+            stopHelpListener();
             listenHelp();
         }
 
         function closeHelp() { 
             document.getElementById('help-modal').classList.remove('active');
-            if (helpListener) {
-                try { helpListener.off(); } catch(e) {}
-                helpListener = null;
-            }
+            stopHelpListener();
         }
 
         function setHelpTemplate(type) {
@@ -1788,65 +2146,83 @@
         }
 
         function listenHelp() {
-            if (!loggedInUser) return;
-            if (helpListener) {
-                try { helpListener.off(); } catch(e) {}
-                helpListener = null;
-            }
-            
-            const ref = db.ref('chat_messages');
-            helpListener = ref.on('value', snap => {
+            stopHelpListener();
+            const sender = getHelpSender();
+            helpListener = db.ref('chat_messages');
+            helpListenerCallback = snap => {
                 const data = snap.val() || {};
                 const msgs = Object.values(data)
-                    .filter(m => (m.from === loggedInUser.id && m.to === 'admin') || 
-                                 (m.from === 'admin' && m.to === loggedInUser.id))
+                    .filter(m => (m.from === sender.id && m.to === 'admin') ||
+                                 (m.from === 'admin' && m.to === sender.id))
                     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
                 
                 const container = document.getElementById('help-chat');
+                container.replaceChildren();
                 if (msgs.length === 0) {
-                    container.innerHTML = '<div class="text-slate-400 text-sm">No messages yet. Send a message to admin.</div>';
+                    const empty = document.createElement('div');
+                    empty.className = 'text-slate-400 text-sm';
+                    empty.textContent = 'No messages yet. Send a message to admin.';
+                    container.appendChild(empty);
                 } else {
-                    container.innerHTML = msgs.map(m => {
+                    msgs.forEach(m => {
                         const isAdmin = m.from === 'admin';
-                        return `<div class="chat-bubble ${isAdmin ? 'admin' : 'user'}">
-                            ${!isAdmin ? `<span class="sender">👤 You</span>` : `<span class="sender">👤 Admin</span>`}
-                            ${m.message}
-                            <span class="time">${new Date(m.timestamp).toLocaleTimeString()}</span>
-                        </div>`;
-                    }).join('');
+                        const bubble = document.createElement('div');
+                        bubble.className = `chat-bubble ${isAdmin ? 'admin' : 'user'}`;
+                        const label = document.createElement('span');
+                        label.className = 'sender';
+                        label.textContent = isAdmin ? '👤 Admin' : '👤 You';
+                        const text = document.createElement('span');
+                        text.textContent = String(m.message || '');
+                        const time = document.createElement('span');
+                        time.className = 'time';
+                        time.textContent = m.timestamp ? new Date(m.timestamp).toLocaleTimeString() : '';
+                        bubble.append(label, text, time);
+                        container.appendChild(bubble);
+                    });
                 }
                 container.scrollTop = container.scrollHeight;
+            };
+            helpListener.on('value', helpListenerCallback, error => {
+                console.error('Help conversation listener failed:', error);
+                document.getElementById('help-status').textContent = 'Could not load your conversation. Please try again.';
             });
         }
 
         function sendHelp() {
-            if (!loggedInUser) return openAuth();
             const msg = document.getElementById('help-msg').value.trim();
             if (!msg) return alert('Write a message');
+            if (msg.length > 1000) {
+                document.getElementById('help-status').textContent = 'Messages must be 1,000 characters or less.';
+                return;
+            }
             const status = document.getElementById('help-status');
             status.textContent = 'Sending...';
-            const fullMessage = `Name: ${loggedInUser.name || loggedInUser.id}\nID: ${loggedInUser.id}\nMessage: ${msg}`;
+            const sender = getHelpSender();
+            if (sender.isGuest) {
+                localStorage.setItem('helpVisitorName', sender.name === 'Guest' ? '' : sender.name);
+            }
+            const fullMessage = `Name: ${sender.name}\nID: ${sender.id}\nMessage: ${msg}`;
             
             db.ref('chat_messages').push({
-                from: loggedInUser.id,
+                from: sender.id,
                 to: 'admin',
                 message: fullMessage,
                 timestamp: Date.now(),
                 type: 'help',
-                senderName: loggedInUser.name || loggedInUser.id,
-                senderId: loggedInUser.id
+                senderName: sender.name,
+                senderId: sender.id
             }).then(() => {
                 status.textContent = '✅ Sent!';
                 document.getElementById('help-msg').value = '';
                 setTimeout(() => status.textContent = '', 3000);
-                const safeId = String(loggedInUser.id).replace(/\./g, '_');
+                const safeId = String(sender.id).replace(/\./g, '_');
                 db.ref('help_tickets/' + safeId).push({
-                    senderId: loggedInUser.id,
-                    senderName: loggedInUser.name || loggedInUser.id,
+                    senderId: sender.id,
+                    senderName: sender.name,
                     text: msg,
                     timestamp: Date.now(),
                     status: 'open'
-                });
+                }).catch(error => console.error('Could not save help ticket index:', error));
                 listenHelp();
             }).catch(err => {
                 console.error('Send error:', err);
@@ -1856,7 +2232,8 @@
 
         function sendWhatsApp() {
             const msg = document.getElementById('help-msg').value.trim() || 'Help needed';
-            const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('From: ' + loggedInUser.id + '\n' + msg)}`;
+            const sender = getHelpSender();
+            const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('From: ' + sender.name + ' (' + sender.id + ')\n' + msg)}`;
             window.open(url, '_blank');
         }
 
@@ -2062,6 +2439,12 @@
 
             document.getElementById('auth-pass').addEventListener('keypress', e => {
                 if (e.key === 'Enter') handleAuth();
+            });
+            document.getElementById('direct-chat-input').addEventListener('keydown', event => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendDirectMessage();
+                }
             });
             
             console.log('✅ App initialized');
