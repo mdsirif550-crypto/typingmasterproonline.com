@@ -535,8 +535,12 @@
         <div class="modal-box direct-messages-modal">
             <div class="flex items-center justify-between gap-3">
                 <h2 id="messages-modal-title" class="mb-0">💬 Messages</h2>
-                <button type="button" onclick="closeMessages()" class="text-2xl font-bold text-red-500" aria-label="Close messages">×</button>
+                <div class="flex items-center gap-2">
+                    <button id="enable-message-notifications" type="button" onclick="enableMessageNotifications()" class="rounded-lg bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-700">Enable notifications</button>
+                    <button type="button" onclick="closeMessages()" class="text-2xl font-bold text-red-500" aria-label="Close messages">×</button>
+                </div>
             </div>
+            <p id="message-notification-status" class="mt-2 text-[10px] text-slate-500" role="status" aria-live="polite"></p>
             <div id="conversation-list" class="conversation-list mt-4" aria-label="Conversations"></div>
             <section id="direct-chat-thread" class="hidden mt-4">
                 <button type="button" onclick="showConversationList()" class="mb-3 text-xs font-bold text-blue-700">← All conversations</button>
@@ -685,6 +689,12 @@
         let liveTypingSpeeds = Object.create(null);
         let lastTypingPresenceUpdateAt = 0;
         let conversationListRef = null;
+        let conversationListCallback = null;
+        let conversationListenerUserId = null;
+        let conversationMessageMarkers = Object.create(null);
+        let conversationSnapshotInitialized = false;
+        let unreadDirectMessageCount = 0;
+        let messageNotificationRegistration = null;
         let directMessagesRef = null;
         let selectedDirectRecipient = null;
         let pendingDirectRecipientId = null;
@@ -1374,6 +1384,12 @@
             resetTyping();
             listenHelp();
             listenConversations();
+            if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('openMessages');
+                history.replaceState(null, '', url);
+                openMessages();
+            }
             if (pendingDirectRecipientId) openDirectChat(pendingDirectRecipientId);
         }
 
@@ -1406,6 +1422,7 @@
                 document.getElementById('nav-messages-button').classList.add('hidden');
                 document.getElementById('nav-rank-decoration').classList.add('hidden');
             }
+            updateMessageButton();
         }
 
         function setRankDecoration(element, rank) {
@@ -1714,10 +1731,16 @@
         }
 
         function stopMessagingListeners() {
-            if (conversationListRef) {
-                conversationListRef.off();
-                conversationListRef = null;
+            if (conversationListRef && conversationListCallback) {
+                conversationListRef.off('value', conversationListCallback);
             }
+            conversationListRef = null;
+            conversationListCallback = null;
+            conversationListenerUserId = null;
+            conversationMessageMarkers = Object.create(null);
+            conversationSnapshotInitialized = false;
+            unreadDirectMessageCount = 0;
+            updateMessageButton();
             if (directMessagesRef) {
                 directMessagesRef.off();
                 directMessagesRef = null;
@@ -1727,15 +1750,143 @@
 
         function listenConversations() {
             if (!loggedInUser) return;
-            if (conversationListRef) conversationListRef.off();
+            const currentUserId = String(loggedInUser.id);
+            if (conversationListenerUserId !== currentUserId) {
+                conversationListenerUserId = currentUserId;
+                conversationMessageMarkers = Object.create(null);
+                conversationSnapshotInitialized = false;
+                unreadDirectMessageCount = 0;
+                updateMessageButton();
+            }
+            if (conversationListRef && conversationListCallback) {
+                conversationListRef.off('value', conversationListCallback);
+            }
             const userKey = safeDatabaseKey(loggedInUser.id);
             conversationListRef = db.ref(`user_conversations/${userKey}`);
-            conversationListRef.on('value', snapshot => {
-                renderConversationList(snapshot.val() || {});
-            }, error => {
+            conversationListCallback = snapshot => {
+                const conversations = snapshot.val() || {};
+                Object.entries(conversations).forEach(([conversationKey, conversation]) => {
+                    if (!conversation || !conversation.otherId) return;
+                    const marker = String(conversation.lastMessageId || conversation.lastMessageAt || '');
+                    if (conversationSnapshotInitialized &&
+                        marker &&
+                        marker !== conversationMessageMarkers[conversationKey] &&
+                        String(conversation.lastMessageFrom || '') === String(conversation.otherId)) {
+                        unreadDirectMessageCount += 1;
+                        updateMessageButton();
+                        showDirectMessageNotification(conversation, conversationKey);
+                    }
+                    if (marker) conversationMessageMarkers[conversationKey] = marker;
+                });
+                conversationSnapshotInitialized = true;
+                renderConversationList(conversations);
+            };
+            conversationListRef.on('value', conversationListCallback, error => {
                 console.error('Conversation list listener failed:', error);
                 document.getElementById('conversation-list').textContent = 'Could not load conversations.';
+                document.getElementById('message-notification-status').textContent =
+                    'Could not monitor new messages. Check your connection and try again.';
             });
+        }
+
+        function updateMessageButton() {
+            const button = document.getElementById('nav-messages-button');
+            if (!button) return;
+            button.textContent = unreadDirectMessageCount > 0
+                ? `💬 Messages (${unreadDirectMessageCount})`
+                : '💬 Messages';
+        }
+
+        function showDirectMessageNotification(conversation, conversationKey) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            const title = `New message from ${conversation.otherName || conversation.otherId}`;
+            const options = {
+                body: String(conversation.lastMessage || 'You received a new message.'),
+                icon: new URL('app-icon-192.png', window.location.href).href,
+                tag: `direct-message-${conversationKey}`,
+                data: { conversationKey }
+            };
+
+            if (messageNotificationRegistration) {
+                messageNotificationRegistration.showNotification(title, options).catch(error => {
+                    console.error('Could not show message notification:', error);
+                    showForegroundMessageNotification(title, options);
+                });
+                return;
+            }
+
+            showForegroundMessageNotification(title, options);
+        }
+
+        function showForegroundMessageNotification(title, options) {
+            try {
+                const notification = new Notification(title, options);
+                notification.onclick = () => {
+                    window.focus();
+                    openMessages();
+                };
+            } catch (error) {
+                console.error('Could not show message notification:', error);
+                document.getElementById('message-notification-status').textContent =
+                    'A new message arrived, but the browser could not show its notification.';
+            }
+        }
+
+        function getMessageNotificationStatus() {
+            if (!('Notification' in window)) return 'This browser does not support notifications.';
+            if (!window.isSecureContext || window.location.protocol === 'file:') {
+                return 'Open this site over HTTPS to enable browser notifications.';
+            }
+            if (Notification.permission === 'granted') {
+                return 'Notifications are enabled while this site is open and connected.';
+            }
+            if (Notification.permission === 'denied') {
+                return 'Notifications are blocked. Allow them in your browser site settings.';
+            }
+            return 'Notifications work while this site is open. Enable them here to see browser alerts.';
+        }
+
+        async function enableMessageNotifications() {
+            const status = document.getElementById('message-notification-status');
+            if (!('Notification' in window)) {
+                status.textContent = 'This browser does not support notifications.';
+                return;
+            }
+            if (!window.isSecureContext || window.location.protocol === 'file:') {
+                status.textContent = 'Open this site over HTTPS to enable browser notifications.';
+                return;
+            }
+
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    status.textContent = permission === 'denied'
+                        ? 'Notifications are blocked. Allow them in your browser site settings.'
+                        : 'Notification permission was not granted.';
+                    return;
+                }
+                status.textContent = getMessageNotificationStatus();
+            } catch (error) {
+                console.error('Notification permission request failed:', error);
+                status.textContent = 'Could not enable notifications. Check your browser settings.';
+            }
+        }
+
+        function setupMessageNotifications() {
+            if (!('serviceWorker' in navigator) || !window.isSecureContext || window.location.protocol === 'file:') return;
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data && event.data.type === 'OPEN_MESSAGES' && loggedInUser) {
+                    openMessages();
+                }
+            });
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(() => navigator.serviceWorker.ready)
+                .then(registration => {
+                    messageNotificationRegistration = registration;
+                })
+                .catch(error => {
+                    console.error('Message notification service worker registration failed:', error);
+                });
         }
 
         function renderConversationList(conversations) {
@@ -1770,8 +1921,11 @@
 
         function openMessages() {
             if (!loggedInUser) return openAuth();
+            unreadDirectMessageCount = 0;
+            updateMessageButton();
             document.getElementById('messages-modal').classList.add('active');
             document.getElementById('messages-modal-title').textContent = '💬 Messages';
+            document.getElementById('message-notification-status').textContent = getMessageNotificationStatus();
             showConversationList();
             listenConversations();
         }
@@ -1906,13 +2060,17 @@
                     otherId: recipient.id,
                     otherName: recipientName,
                     lastMessage: preview,
-                    lastMessageAt: timestamp
+                    lastMessageAt: timestamp,
+                    lastMessageId: messageRef.key,
+                    lastMessageFrom: loggedInUser.id
                 },
                 [`user_conversations/${recipientKey}/${conversationKey}`]: {
                     otherId: loggedInUser.id,
                     otherName: senderName,
                     lastMessage: preview,
-                    lastMessageAt: timestamp
+                    lastMessageAt: timestamp,
+                    lastMessageId: messageRef.key,
+                    lastMessageFrom: loggedInUser.id
                 }
             };
             try {
@@ -2320,6 +2478,7 @@
         // ============================================
         function init() {
             console.log('🚀 App starting...');
+            setupMessageNotifications();
             document.addEventListener('fullscreenchange', updatePracticeFullscreenButton);
             setLanguage(localStorage.getItem('preferredLanguage') || 'en');
             typingLang = localStorage.getItem('typingLanguage') || 'en';
