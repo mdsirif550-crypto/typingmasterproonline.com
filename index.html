@@ -2,48 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<!-- Google tag (gtag.js) -->
-<script async src="https://googletagmanager.com"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0LGMNWJX19');
-</script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>TypingMaster Pro Online - Free Typing Practice free download </title>
-  <meta name="google-site-verification" content="q1fo44ipDTHffmhZwriPwwfS4_ClOT5QcvfESIzFPtM" />
-  <meta name="description" content="TypingMaster Pro Online is world best free typing master. Test your speed on our global typing leaderboard, practice English typing, and improve your WPM.">
-  <meta name="keywords" content="typing leaderboard, global typing leaderboard, typing leaderboard competition, online typing leaderboard, TypingMaster Pro Online, typingmasterproonline.com, typing master pro online, typing practice, free typing<meta name="author" content="TypingMaster Pro Online">
-  <link rel="canonical" href="https://typingmasterproonline.com">
-  
-  <!-- Open Graph / Facebook এসইও মেটা ট্যাগ -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="free download typing apps,<meta property="og:title" content="TypingMaster Pro Online ⌨️ - Type Fast & Join Leaderboard">
-  <meta property="og:description" content="Join the global typing leaderboard and compete with typists worldwide!">
-  <meta property="og:url" content="https://typingmasterproonline.com">
-  <meta property="og:image" content="https://typingmasterproonline.comlogo.png">
-  <meta property="og:image:alt" content="TypingMaster Pro Online Logo">
-  <meta property="og:locale" content="en_BD">
-  
-  <!-- PWA মেনিফেস্ট লিংক -->
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" type="image/png" href="/logo.png">
-    
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
   <!-- Google tag (gtag.js) -->
-  <script async src="https://googletagmanager.com"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LGMNWJX19"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-OLGMNWJX19');
+    gtag('config', 'G-0LGMNWJX19');
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -66,7 +32,8 @@
   
   <!-- PWA মেনিফেস্ট লিংক -->
   <link rel="manifest" href="/manifest.json">
-  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/png" href="/app-icon-192.png">
+  <link rel="apple-touch-icon" href="/app-icon-192.png">
 
   <!-- স্ট্রাকচারড ডাটা স্কিমা (Schema.org JSON-LD) -->
   <script type="application/ld+json">
@@ -111,10 +78,7 @@
     ]
   }
   </script>
-</head>
-  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#041e12">
- <link rel="icon" type="image/png" href="/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -337,9 +301,9 @@
      <!-- মোবাইল এবং কম্পিউটার ডাউনলোড বাটন সেকশন -->
 <div style="text-align: center; margin: 20px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
     <!-- মোবাইল অ্যাপ বাটন -->
-    <a href="typingmaster.apk" download="TypingMaster_Pro" class="download-btn" style="display: inline-block; padding: 12px 26px; background-color: #0078d4; color: white; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s;">
-        📥 Download Mobile App
-    </a>
+    <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()" style="padding: 12px 26px; color: white; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.3s;">
+        📲 Install Mobile App
+    </button>
     
     <!-- কম্পিউটার অ্যাপ বাটন -->
     <a href="#" onclick="alert('To install the app on a computer or laptop:
@@ -510,7 +474,14 @@
         activityDatabase = app.database();
         activitySessionId = activityDatabase.ref("online_viewers").push().key;
         activityViewerRef = activityDatabase.ref(`online_viewers/${activitySessionId}`);
-        activityAnonymousUserId = activityDatabase.ref("online_users").push().key;
+        let typingUserId = "";
+        try {
+          const savedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+          typingUserId = String(savedUser && savedUser.id || "").trim();
+        } catch (error) {
+          console.error("Could not read the signed-in typing profile:", error);
+        }
+        activityAnonymousUserId = typingUserId || activityDatabase.ref("online_users").push().key;
         activityTypingRef = activityDatabase.ref(`online_users/${activityAnonymousUserId}/connections/${activitySessionId}`);
 
         activityDatabase.ref(".info/connected").on("value", snapshot => {
@@ -525,7 +496,14 @@
             activityTypingRef.onDisconnect().remove()
           ]).then(() => Promise.all([
             activityViewerRef.set({ connectedAt: firebase.database.ServerValue.TIMESTAMP }),
-            activityTypingRef.set({ online: true, typing: false, lastSeen: firebase.database.ServerValue.TIMESTAMP })
+            activityTypingRef.set({
+              uid: typingUserId || null,
+              name: typingUserId || null,
+              online: true,
+              typing: false,
+              wpm: 0,
+              lastSeen: firebase.database.ServerValue.TIMESTAMP
+            })
           ])).catch(error => console.error("Live activity presence setup failed:", error));
         }, error => console.error("Live activity connection listener failed:", error));
 
@@ -558,7 +536,7 @@
 
     function setLiveTypingPresence(active) {
       clearTimeout(activityTypingTimeout);
-      if (activityTypingRef) {
+      if (activityTypingRef && activityAnonymousUserId) {
         activityTypingRef.update({
           online: true,
           typing: active,
@@ -780,7 +758,36 @@
     function setCustomText() { const txt = document.getElementById("customTextArea").value.trim(); if (txt) { targetText = txt; resetExercise(); closeCustomModal(); } }
     function loadNextLesson() { const levelSelect = document.getElementById("levelSelect"); const lessonSelect = document.getElementById("lessonSelect"); const levelKey = levelSelect.value || "basic"; const lessons = currentLanguage === 'en' ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel[levelKey]; const nextLessonIndex = Number(lessonSelect.value) + 1; if (nextLessonIndex < lessons.length) { lessonSelect.value = nextLessonIndex; loadLesson(); document.getElementById("summaryModal").style.display = "none"; } else { const levelOrder = ["basic", "level1", "level2", "level3", "advanced"]; const currentLevelIndex = levelOrder.indexOf(levelKey); const nextLevelKey = levelOrder[(currentLevelIndex + 1) % levelOrder.length]; levelSelect.value = nextLevelKey; populateLessonsDropdown(); lessonSelect.value = 0; loadLesson(); document.getElementById("summaryModal").style.display = "none"; } }
     function closeSummary() { document.getElementById("summaryModal").style.display = "none"; resetExercise(); }
+    let deferredInstallPrompt = null;
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      document.getElementById("installAppButton").classList.remove("hidden");
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      document.getElementById("installAppButton").classList.add("hidden");
+    });
+    async function installPwaApp() {
+      const installButton = document.getElementById("installAppButton");
+      if (!deferredInstallPrompt) {
+        alert("Android Chrome: tap ⋮ and choose Install app or Add to Home screen. On iPhone Safari: tap Share, then Add to Home Screen. After installation, tap the TypingMaster icon on your home screen to open the app.");
+        return;
+      }
+      const installPrompt = deferredInstallPrompt;
+      deferredInstallPrompt = null;
+      installButton.classList.add("hidden");
+      try {
+        await installPrompt.prompt();
+        await installPrompt.userChoice;
+      } catch (error) {
+        console.error("App installation prompt failed:", error);
+      }
+    }
     window.onload = () => {
+      if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true) {
+        document.getElementById("installAppButton").classList.add("hidden");
+      }
       initializeLiveActivity();
       makeHelpButtonDraggable();
       setupActivityVisibilityToggle();
@@ -794,7 +801,9 @@
         let progress = 0; const iv = setInterval(() => { progress += 10; document.getElementById("loaderProgress").style.width = progress + "%"; if (progress >= 100) { clearInterval(iv); setTimeout(() => { document.getElementById("loadingScreen").style.display = "none"; document.getElementById("trainerWelcomeScreen").style.display = "flex"; setTimeout(() => setLanguage('en'), 50); }, 180); } }, 80);
       } catch (e) {}
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(error => {
+          console.error("Service worker registration failed:", error);
+        });
       }
     };
   </script>
