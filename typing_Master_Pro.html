@@ -278,7 +278,8 @@
                 <h1 class="text-sm font-black italic uppercase text-slate-800">typing<span class="text-blue-600">Leaderboard🏆</span></h1>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-                <span class="live-typing-pill" title="Users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
+                <span class="live-typing-pill" title="Visitors currently connected to the site"><span class="live-typing-dot"></span>Viewing now: <span id="live-viewer-count">0</span></span>
+                <span class="live-typing-pill" title="Logged-in users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
                 <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
                 <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
                 <button type="button" onclick="openHelp()" class="help-button" aria-label="Help" title="Help"><span class="help-chat-icon" aria-hidden="true"><span></span><span></span><span></span></span></button>
@@ -570,6 +571,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const presenceSessionId = db.ref('online_users').push().key;
+        const viewerSessionId = db.ref('online_viewers').push().key;
 
         const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         const ADMIN_WHATSAPP = '8801877902991';
@@ -1373,6 +1375,26 @@
             }, err => console.error('Typing count listener failed:', err));
         }
 
+        function trackViewerPresence() {
+            const viewerRef = db.ref(`online_viewers/${viewerSessionId}`);
+            db.ref('.info/connected').on('value', snap => {
+                if (snap.val() !== true) return;
+                viewerRef.onDisconnect().remove().then(() => viewerRef.set({
+                    connectedAt: firebase.database.ServerValue.TIMESTAMP
+                })).catch(err => console.error('Viewer presence update failed:', err));
+            }, err => console.error('Viewer connection listener failed:', err));
+        }
+
+        function listenViewerCount() {
+            db.ref('online_viewers').on('value', snap => {
+                const viewers = snap.val() || {};
+                document.getElementById('live-viewer-count').textContent = Object.keys(viewers).length;
+            }, err => {
+                console.error('Viewer count listener failed:', err);
+                document.getElementById('live-viewer-count').textContent = '—';
+            });
+        }
+
         // ============================================
         // LEADERBOARD
         // ============================================
@@ -1825,6 +1847,8 @@
             listenMonthlyEventResults();
             loadLessons();
             listenTypingCount();
+            trackViewerPresence();
+            listenViewerCount();
             resetTyping();
             updateMonthlyCountdown();
             setInterval(updateMonthlyCountdown, 1000);
