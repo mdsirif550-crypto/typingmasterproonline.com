@@ -42,8 +42,56 @@
         .marquee { background: #0f172a; color: #facc15; padding: 4px 0; overflow: hidden; white-space: nowrap; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; }
         .marquee span { display: inline-block; animation: scrollMarquee 25s linear infinite; }
         @keyframes scrollMarquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        #page-loader { position: fixed; inset: 0; z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: #f1f5f9; color: #0f172a; transition: opacity 0.25s ease, visibility 0.25s ease; }
+        #page-loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .page-loader-image { width: min(220px, 58vw); height: auto; object-fit: contain; animation: loaderImagePulse 1.4s ease-in-out infinite alternate; }
+        .page-loader-keyboard { font-size: 26px; line-height: 1; animation: keyboardTap 0.3s steps(2, end) infinite alternate; }
+        .page-loader-progress { width: min(280px, 72vw); height: 10px; overflow: hidden; border-radius: 999px; background: #cbd5e1; }
+        #page-loader-progress-bar { width: 1%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2563eb, #22c55e); transition: width 0.08s linear; }
+        @keyframes loaderImagePulse { to { transform: translateY(-4px) scale(1.025); } }
+        @keyframes keyboardTap { to { transform: translateY(2px) scale(0.96); } }
         
-        .golden-banner { background: linear-gradient(110deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); background-size: 200% auto; animation: shine 4s linear infinite; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 20px; padding: 16px; position: relative; overflow: hidden; }
+        .golden-banner { background: linear-gradient(110deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); background-size: 200% auto; animation: shine 4s linear infinite; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 10px; position: relative; overflow: hidden; }
+        .banner-announcement { width: 100%; min-width: 0; padding: 0 4px; color: #422006; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 12px; align-items: center; }
+        .banner-announcement h2 { grid-column: 1 / -1; margin: 0 0 2px; font-size: 13px; font-weight: 900; text-align: center; }
+        .banner-announcement p { margin: 1px 0; font-size: 9px; line-height: 1.25; font-weight: 700; text-align: center; }
+        .banner-announcement .announcement-highlight { color: #7c2d12; font-weight: 900; }
+        .banner-website-glow {
+            background: linear-gradient(90deg, #7c3aed, #db2777, #ea580c, #16a34a, #2563eb, #7c3aed);
+            background-size: 250% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: websiteGlow 3s linear infinite, websitePulse 1.4s ease-in-out infinite alternate;
+            font-size: 12px !important;
+            font-weight: 900 !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        @keyframes websiteGlow { to { background-position: 250% center; } }
+        @keyframes websitePulse { from { filter: brightness(0.9); } to { filter: brightness(1.35); } }
+        .banner-toggle-row { display: flex; justify-content: flex-end; }
+        .banner-toggle-button { border: 1px solid rgba(120, 53, 15, 0.35); border-radius: 999px; padding: 3px 9px; background: rgba(255, 255, 255, 0.65); color: #422006; font-size: 9px; font-weight: 900; cursor: pointer; }
+        .banner-toggle-button:hover { background: white; }
+        #banner.is-collapsed { padding: 0; background: transparent; border-color: transparent; box-shadow: none; animation: none; overflow: visible; }
+        #banner.is-collapsed .banner-toggle-row { justify-content: center; }
+        #banner.is-collapsed .banner-toggle-button { padding: 8px 14px; background: #fff; border-color: #facc15; color: #713f12; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12); }
+        #banner.is-collapsed #banner-content { display: none; }
+        .banner-featured-user { min-height: 38px; }
+        .banner-monthly-winners { display: flex; width: 100%; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 8px; padding: 6px 0 2px; }
+        .banner-winner-card { display: flex; align-items: center; gap: 7px; min-width: 150px; max-width: 260px; padding: 6px 10px; border: 1px solid rgba(180, 83, 9, 0.25); border-radius: 14px; background: rgba(255, 255, 255, 0.82); color: #0f172a; box-shadow: 0 2px 6px rgba(120, 53, 15, 0.12); cursor: pointer; text-align: left; }
+        .banner-winner-card img { width: 38px; height: 38px; border: 2px solid #facc15; border-radius: 50%; object-fit: cover; }
+        .banner-winner-details { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
+        .banner-winner-rank { color: #92400e; font-size: 8px; font-weight: 900; text-transform: uppercase; }
+        .banner-winner-name { max-width: 180px; overflow: hidden; color: #0f172a; font-size: 10px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+        .banner-winner-score { color: #1d4ed8; font-size: 8px; font-weight: 800; }
+        @media (max-width: 640px) {
+            .banner-announcement { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 6px; }
+            .banner-announcement h2 { font-size: 11px; }
+            .banner-announcement p { font-size: 8px; }
+        }
+        @media (max-width: 380px) {
+            .banner-announcement { grid-template-columns: 1fr; }
+        }
         @keyframes shine { to { background-position: 200% center; } }
         
         .crown { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 22px; filter: drop-shadow(0 0 5px gold); animation: bounce 2s infinite; display: none; }
@@ -54,17 +102,54 @@
         .incorrect { background: #ef4444; color: white; border-radius: 3px; padding: 0 2px; }
         .current { border-bottom: 3px solid #2563eb; background: #dbeafe; }
         
-        #display-box { height: 160px; overflow-y: auto; padding: 16px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.1rem; line-height: 1.8; }
-        #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 130px; font-size: 1.1rem; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
+        #practice-stage { display: flex; flex-direction: column; position: relative; }
+        #display-box { height: 220px; overflow-y: auto; padding: 20px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.3rem; line-height: 1.8; }
+        #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 160px; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
         #typing-input:disabled { background: #f1f5f9; cursor: not-allowed; }
+        #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; background: #f1f5f9; }
+        #practice-fullscreen-shell:fullscreen > .marquee, #practice-fullscreen-shell:-webkit-full-screen > .marquee { display: none; }
+        #practice-fullscreen-shell:fullscreen > nav, #practice-fullscreen-shell:-webkit-full-screen > nav { position: static; flex-shrink: 0; }
+        #practice-fullscreen-shell:fullscreen > .practice-page-content, #practice-fullscreen-shell:-webkit-full-screen > .practice-page-content { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; flex: 1; width: 100%; max-width: none; min-height: 0; margin: 0; padding: 12px 20px 16px; gap: 8px; }
+        #practice-fullscreen-shell:fullscreen .practice-page-content > :not(#typing-controls):not(#practice-stage):not(#practice-stats),
+        #practice-fullscreen-shell:-webkit-full-screen .practice-page-content > :not(#typing-controls):not(#practice-stage):not(#practice-stats) { display: none; }
+        #practice-fullscreen-shell:fullscreen #typing-controls, #practice-fullscreen-shell:-webkit-full-screen #typing-controls { flex-shrink: 0; }
+        #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { flex: 1; min-height: 0; gap: 12px; overflow: hidden; }
+        #practice-fullscreen-shell:fullscreen #display-box, #practice-fullscreen-shell:-webkit-full-screen #display-box { height: auto; min-height: 0; flex: 1.2 1 0; padding: 56px 3vw 24px; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.9; }
+        #practice-fullscreen-shell:fullscreen #typing-input, #practice-fullscreen-shell:-webkit-full-screen #typing-input { height: auto; min-height: 25vh; flex: 0.8 1 0; margin-top: 0; border-radius: 18px; font-size: clamp(1.2rem, 2vw, 1.7rem); }
+        #practice-fullscreen-shell:fullscreen #practice-stats, #practice-fullscreen-shell:-webkit-full-screen #practice-stats { margin: 0; border-radius: 16px; }
+        #practice-fullscreen-shell:fullscreen #fullscreen-timer, #practice-fullscreen-shell:-webkit-full-screen #fullscreen-timer { display: inline-flex; }
+        .practice-fullscreen-exit { display: none; }
+        #practice-fullscreen-shell:fullscreen .practice-fullscreen-exit, #practice-fullscreen-shell:-webkit-full-screen .practice-fullscreen-exit { display: block; position: absolute; top: 8px; right: 28px; z-index: 2; }
         
         .stat-pill { background: white; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: inline-flex; align-items: center; gap: 4px; }
         .stat-pill .num { font-size: 16px; }
         
         .leader-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; }
+        .zoomable-avatar { cursor: default; }
+        #image-viewer { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(2, 6, 23, 0.94); cursor: zoom-out; }
+        #image-viewer.active { display: flex; }
+        #image-viewer img { max-width: 96vw; max-height: 92vh; object-fit: contain; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        #image-viewer-close { position: absolute; top: 16px; right: 20px; color: white; border: 0; background: transparent; font-size: 36px; line-height: 1; cursor: pointer; }
+        .rank-avatar-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+        .level-color-ring { isolation: isolate; }
+        .level-color-ring::before { content: ""; position: absolute; z-index: 0; inset: calc(0px - var(--level-ring-width, 3px)); border-radius: 50%; background: linear-gradient(90deg, hsl(var(--level-ring-start, 210) 82% 58%) 0%, hsl(var(--level-ring-start, 210) 82% 58%) var(--level-ring-transition, 40%), hsl(var(--level-ring-end, 300) 82% 58%) 100%); opacity: var(--level-ring-opacity, 0.45); filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.14)); transition: opacity 0.25s ease, filter 0.25s ease; }
+        .level-color-ring > img { position: relative; z-index: 1; border-color: transparent !important; border-width: 0 !important; box-shadow: none !important; }
+        .level-color-ring > .rank-avatar-decoration, .level-color-ring > .crown { z-index: 2; }
+        .banner-winner-avatar { position: relative; display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; }
+        .rank-avatar-decoration { position: absolute; top: -7px; left: -7px; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 0 3px; border: 1px solid white; border-radius: 999px; background: #334155; color: white; font-size: 10px; line-height: 1; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35); }
+        .rank-avatar-decoration.rank-1 { background: #facc15; color: #713f12; font-size: 12px; }
+        .rank-avatar-decoration.rank-2 { background: #cbd5e1; color: #334155; }
+        .rank-avatar-decoration.rank-3 { background: #c2410c; color: white; }
+        .level-frame-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+        .level-frame-wrap .crown { top: -12px; left: 50%; z-index: 2; }
+        .live-typing-pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid #bbf7d0; border-radius: 999px; padding: 6px 9px; background: #f0fdf4; color: #166534; font-size: 9px; font-weight: 800; white-space: nowrap; }
+        .live-typing-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 1.5s infinite; }
+        .live-logo { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; background: #dc2626; color: white; font-size: 8px; font-weight: 900; letter-spacing: 0.06em; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3); }
+        .live-logo-dot { width: 6px; height: 6px; border-radius: 50%; background: white; animation: pulse 1s infinite; }
         .lvl-badge { background: #1e293b; color: #facc15; padding: 1px 8px; border-radius: 999px; font-size: 9px; font-weight: 800; border: 1px solid #facc15; }
-        .clickable-row { cursor: pointer; transition: 0.15s; }
-        .clickable-row:hover { background: #eff6ff !important; }
+        .user-id-chip { display: inline-flex; align-items: center; width: fit-content; max-width: 100%; padding: 2px 6px; border: 1px solid hsl(var(--id-hue) 65% 72%); border-radius: 999px; background: hsl(var(--id-hue) 85% 90%); color: hsl(var(--id-hue) 65% 28%); font-size: 7px; font-weight: 800; line-height: 1.3; overflow-wrap: anywhere; }
+        .clickable-row { cursor: pointer; transition: filter 0.15s; }
+        .clickable-row:hover { filter: brightness(0.96); }
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
@@ -110,25 +195,79 @@
         .control-select option { font-weight: 600; }
         
         /* Banner avatar glow */
-        .banner-avatar { width: 56px; height: 56px; border-radius: 50%; border: 3px solid white; object-fit: cover; background: white; transition: all 0.3s ease; }
+        .banner-avatar { width: 38px; height: 38px; border-radius: 50%; border: 3px solid white; object-fit: cover; background: white; transition: all 0.3s ease; }
         
         @media (max-width: 640px) {
             .golden-banner { padding: 12px; }
             .char { font-size: 1rem; }
-            #display-box { height: 130px; font-size: 0.95rem; padding: 12px; }
-            #typing-input { height: 100px; font-size: 0.95rem; padding: 14px; }
+            #display-box { height: 170px; font-size: 1.05rem; padding: 14px; }
+            #typing-input { height: 125px; font-size: 1.05rem; padding: 14px; }
             .stat-pill { font-size: 9px; padding: 4px 10px; }
             .stat-pill .num { font-size: 13px; }
             .modal-box { padding: 16px; }
             .leader-img { width: 32px; height: 32px; }
             .control-select { font-size: 10px; padding: 4px 8px; }
-            .banner-avatar { width: 44px; height: 44px; }
+            .banner-avatar { width: 34px; height: 34px; }
         }
     </style>
 </head>
 <body>
 
+    <div id="page-loader" role="status" aria-live="polite">
+        <div class="flex flex-col items-center gap-1" aria-hidden="true">
+            <img class="page-loader-image" src="typing-loader.png" alt="">
+            <div class="page-loader-keyboard">⌨️</div>
+        </div>
+        <p id="page-loader-message" class="text-sm font-bold">Loading page, please wait...</p>
+        <div class="page-loader-progress" role="progressbar" aria-label="Page loading progress" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1">
+            <div id="page-loader-progress-bar"></div>
+        </div>
+        <p id="page-loader-percent" class="text-sm font-black text-blue-700">1%</p>
+    </div>
+    <script>
+        (() => {
+            const loader = document.getElementById('page-loader');
+            const progressbar = loader.querySelector('[role="progressbar"]');
+            const progressBar = document.getElementById('page-loader-progress-bar');
+            const percentLabel = document.getElementById('page-loader-percent');
+            let progress = 1;
+            let loaderFinished = false;
+            let loaderCompleted = false;
+            const completeLoader = () => {
+                if (loaderCompleted) return;
+                loaderCompleted = true;
+                clearInterval(progressTimer);
+                progress = 100;
+                progressbar.setAttribute('aria-valuenow', progress);
+                progressBar.style.width = `${progress}%`;
+                percentLabel.textContent = `${progress}%`;
+                setTimeout(() => loader.classList.add('is-hidden'), 700);
+            };
+            const progressTimer = setInterval(() => {
+                if (progress < 99) {
+                    progress++;
+                    progressbar.setAttribute('aria-valuenow', progress);
+                    progressBar.style.width = `${progress}%`;
+                    percentLabel.textContent = `${progress}%`;
+                }
+                if (loaderFinished && progress >= 99) completeLoader();
+            }, 50);
+            window.finishPageLoader = () => {
+                if (loaderFinished) return;
+                loaderFinished = true;
+                if (progress >= 99) completeLoader();
+            };
+            setTimeout(() => {
+                if (!loaderFinished) {
+                    console.warn('Page startup took longer than expected; showing the app.');
+                    window.finishPageLoader();
+                }
+            }, 8000);
+        })();
+    </script>
+
     <!-- Marquee -->
+    <div id="practice-fullscreen-shell">
     <div class="marquee"><span>🏆 JOIN THE CHALLENGE • PRACTICE DAILY • WIN GREAT PRIZES • 5 CHARS = 1 PT • $1,000 POOL LIVE! 🏆</span></div>
 
     <!-- Navbar -->
@@ -139,6 +278,9 @@
                 <h1 class="text-sm font-black italic uppercase text-slate-800">typing<span class="text-blue-600">Leaderboard🏆</span></h1>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
+                <span class="live-typing-pill" title="Users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
+                <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
+                <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
                 <button type="button" onclick="openHelp()" class="help-button" aria-label="Help" title="Help"><span class="help-chat-icon" aria-hidden="true"><span></span><span></span><span></span></span></button>
                 <select id="lang-switcher" onchange="setLanguage(this.value)" class="border border-slate-300 rounded-lg px-2 py-1 text-[9px] font-bold uppercase bg-white outline-none">
                     <option value="en">EN</option>
@@ -146,7 +288,7 @@
                 </select>
                 <div id="nav-user" class="hidden flex items-center gap-2">
                     <span id="nav-name" class="text-xs font-bold uppercase text-slate-700 truncate max-w-[80px]"></span>
-                    <img id="nav-avatar" onclick="viewProfile(loggedInUser.id)" class="w-8 h-8 rounded-full border-2 border-blue-500 cursor-pointer object-cover" src="">
+                    <span class="rank-avatar-wrap"><img id="nav-avatar" class="w-8 h-8 rounded-full border-2 border-blue-500 object-cover" src=""><span id="nav-rank-decoration" class="rank-avatar-decoration hidden"></span></span>
                     <button onclick="openEditProfile()" class="text-slate-700 font-bold text-[8px] uppercase">Edit</button>
                     <button onclick="logout()" class="text-red-500 font-bold text-[8px] uppercase">Exit</button>
                 </div>
@@ -155,35 +297,42 @@
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto px-3 py-4">
+    <div class="max-w-5xl mx-auto px-3 py-4 practice-page-content">
         
         <!-- Banner with Crown -->
         <div id="banner" class="golden-banner mb-4">
-            <span class="crown" id="banner-crown">👑</span>
-            <div class="flex flex-col md:flex-row items-center gap-3">
-                <div class="flex-1 text-center md:text-left">
-                    <h2 class="text-sm md:text-base font-black uppercase text-slate-900"> typing pracdice 🏆 Top Typists</h2>
-                    <p class="text-xs font-bold text-red-700">$1,000 Prize Pool</p>
+            <div class="banner-toggle-row">
+                <button id="banner-toggle" class="banner-toggle-button" type="button" aria-expanded="true" onclick="toggleBanner()">Hide banner</button>
+            </div>
+            <div id="banner-content" class="flex flex-col items-center gap-1">
+                <div class="banner-announcement">
+                    <h2>⌨️ Keep Practicing Typing and Stay Tuned! 🎯</h2>
+                    <p class="announcement-highlight">🏆 Exciting Typing Events Are Coming Soon!</p>
+                    <p>🎁 Attractive Prizes Await the Winners!</p>
+                    <p class="announcement-highlight">📅 Monthly Typing Events — Stay Connected and Join Us to Participate!</p>
+                    <p>💻 Keep Practicing, Improve Your Speed, and Get Ready to Become a Champion!</p>
+                    <p class="announcement-highlight">🔥 Stay With Us for More Updates!</p>
+                    <p class="banner-website-glow">🌐 TypingMasterProOnline.com</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="relative">
+                <div id="banner-monthly-winners" class="banner-monthly-winners hidden" aria-label="Previous month's top three winners"></div>
+                <div id="banner-featured-user" class="banner-featured-user flex items-center justify-center gap-2 hidden">
+                    <div id="banner-avatar-wrap" class="level-frame-wrap">
+                        <span class="crown" id="banner-crown">👑</span>
                         <img id="banner-avatar" class="banner-avatar" src="">
                     </div>
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <span id="banner-rank" class="bg-black text-white text-[8px] px-1.5 py-0.5 rounded font-bold">#--</span>
-                            <span id="banner-level" class="lvl-badge">LVL 1</span>
+                    <div id="banner-user-details" class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 hidden">
+                        <span id="banner-rank" class="bg-black text-white text-[8px] px-1.5 py-0.5 rounded font-bold">#--</span>
+                        <span id="banner-level" class="lvl-badge">LVL 1</span>
+                        <p id="banner-name" class="text-xs font-black uppercase text-slate-900"></p>
+                        <p id="banner-id" class="user-id-chip"></p>
+                        <p id="banner-points" class="text-[10px] font-black text-blue-600"></p>
                         </div>
-                        <p id="banner-name" class="text-sm font-black uppercase text-slate-900">Loading...</p>
-                        <p id="banner-id" class="text-[8px] font-bold text-slate-600">ID: --</p>
-                        <p id="banner-points" class="text-xs font-black text-blue-600">0 pts</p>
-                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Typing Controls -->
-        <div class="flex flex-wrap items-center gap-3 mb-3">
+        <div id="typing-controls" class="flex flex-wrap items-center gap-3 mb-3">
             <div class="flex items-center gap-2">
                 <span class="text-[10px] font-bold uppercase text-slate-500">📝 Mode:</span>
                 <select id="typing-lang" onchange="switchTypingLang(this.value)" class="control-select">
@@ -197,15 +346,19 @@
                     <option value="">Loading, please wait a moment</option>
                 </select>
             </div>
-            <button onclick="openCustomModal()" class="btn btn-outline text-[10px] whitespace-nowrap"</button>
+            <button onclick="openCustomModal()" class="btn btn-outline text-[10px] whitespace-nowrap">Custom text</button>
+            <button id="practice-fullscreen-button" type="button" onclick="togglePracticeFullscreen()" class="btn btn-outline text-[10px] whitespace-nowrap" aria-pressed="false">⛶ Full screen</button>
         </div>
 
         <!-- Display Box -->
-        <div id="display-box"></div>
-        <textarea id="typing-input" placeholder="Start typing to improve your skills..."></textarea>
+        <div id="practice-stage">
+            <button type="button" onclick="togglePracticeFullscreen()" class="practice-fullscreen-exit btn btn-outline text-xs">⛶ Exit full screen</button>
+            <div id="display-box"></div>
+            <textarea id="typing-input" placeholder="Start typing to improve your skills..."></textarea>
+        </div>
 
         <!-- Stats -->
-        <div class="bg-gradient-to-r from-red-50 to-red-100 mt-[-10px] p-3 rounded-b-2xl border border-red-200 flex flex-wrap items-center justify-between gap-2">
+        <div id="practice-stats" class="bg-gradient-to-r from-red-50 to-red-100 mt-[-10px] p-3 rounded-b-2xl border border-red-200 flex flex-wrap items-center justify-between gap-2">
             <button onclick="resetTyping()" class="bg-black text-white px-4 py-1.5 rounded-lg font-bold text-[10px] hover:bg-red-600 transition">🔄 Reset</button>
             <div class="flex flex-wrap gap-2 font-bold text-[10px] uppercase text-slate-700">
                 <span class="stat-pill">⏱ <span id="timer-display" class="num text-red-600">05:00</span></span>
@@ -218,25 +371,37 @@
         </div>
 
         <!-- Leaderboard -->
-        <div class="mt-6 bg-white rounded-2xl shadow-lg p-4 border border-slate-100">
+        <div id="leaderboard-section" class="mt-6 bg-white rounded-2xl shadow-lg p-4 border border-slate-100">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-3">
                 <h2 class="text-sm font-black uppercase border-l-4 border-blue-600 pl-3 text-slate-800">🏆 Leaderboard</h2>
                 <div class="flex gap-2 w-full md:w-auto">
                     <input id="search-box" oninput="searchPlayers()" placeholder="🔍 Search..." class="flex-1 md:w-48 p-2 rounded-xl border border-slate-300 bg-slate-50 outline-none font-bold text-[11px] text-slate-800 placeholder:text-slate-400 focus:border-blue-500">
                     <button onclick="openAllUsers()" class="bg-blue-600 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] hover:bg-blue-700">All</button>
                 </div>
+                </div>
+            </div>
+            <div id="monthly-event-panel" class="mb-3 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 text-[10px] text-slate-700">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="font-black uppercase text-amber-800">🏆 <span id="monthly-event-title">Monthly Typing Event</span> <span class="ml-1 rounded-full bg-green-100 px-2 py-0.5 text-green-700">LIVE</span></p>
+                        <p class="mt-1 font-bold">Type and save your score to join automatically. Top monthly score wins; the admin verifies and contacts the winner.</p>
+                        <p id="monthly-event-dates" class="mt-1 text-slate-500"></p>
+                    </div>
+                    <p id="monthly-event-participants" class="font-black text-blue-700">0 participants</p>
+                </div>
+                <p id="monthly-event-previous-winner" class="mt-2 hidden rounded-lg bg-white/70 p-2 font-bold text-amber-900"></p>
             </div>
             <div id="monthly-reset-banner" class="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-[10px] font-bold text-slate-700">
                 <span id="monthly-reset-text">Monthly leaderboard resets on 1st of every month.</span>
                 <span id="monthly-reset-countdown" class="ml-3 text-blue-600">Next reset in -- days --:--:--</span>
             </div>
             <div id="monthly-reset-alert" class="mb-3 rounded-2xl bg-red-600 text-white p-3 text-[10px] font-bold">
-                <span>সতর্কতা: মাসিক রিসেট শুধুমাত্র মাসিক পয়েন্ট রিসেট করে। টোটাল পয়েন্ট আজীবন থাকবে এবং কখনও 00 হবে না।</span>
+                <span>মাসিক পয়েন্ট স্কোর সেভের সময়ই টোটালে যোগ হয়। মাস শেষে শুধু মাসিক পয়েন্ট ০ হবে; টোটাল পয়েন্ট আগের মতোই থাকবে।</span>
             </div>
         <div class="overflow-x-auto">
                 <table class="w-full text-[10px]">
                     <thead class="bg-slate-900 text-white uppercase tracking-wider">
-                        <tr><th class="p-2 text-center">#</th><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th></tr>
+                        <tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th></tr>
                     </thead>
                     <tbody id="leaderboard-body" class="divide-y divide-slate-100 font-bold"></tbody>
                 </table>
@@ -261,12 +426,28 @@
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-box">
             <h2>✏️ Edit Profile</h2>
-            <img id="edit-preview" class="w-20 h-20 rounded-full border-2 border-blue-500 mx-auto object-cover mb-3" src="">
+            <span class="level-frame-wrap level-color-ring mx-auto mb-3"><img id="edit-preview" class="w-20 h-20 rounded-full border-2 border-blue-500 object-cover" src=""></span>
             <input type="file" id="edit-avatar-file" accept="image/*" onchange="handleAvatarUpload(event)" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white file:font-bold">
             <input id="edit-id" class="slim-input mb-2 uppercase" placeholder="User ID">
             <input id="edit-name" class="slim-input mb-2" placeholder="Display Name">
             <input id="edit-pic" class="slim-input mb-2" placeholder="Avatar URL" oninput="document.getElementById('edit-preview').src=this.value||DEFAULT_AVATAR">
+            <input id="edit-whatsapp" type="tel" inputmode="tel" class="slim-input mb-2" placeholder="WhatsApp number with country code">
+            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-whatsapp" type="checkbox" class="accent-green-600"> Show WhatsApp on my public profile</label>
+            <input id="edit-email" type="email" autocomplete="email" class="slim-input mb-2" placeholder="Email address">
+            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-email" type="checkbox" class="accent-blue-600"> Show email on my public profile</label>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 mb-2">
+                <p class="text-[10px] font-bold text-slate-700 mb-2">City / country location</p>
+                <p class="text-[9px] text-slate-500 mb-2">Tap Detect to request your device location. Coordinates are sent to OpenStreetMap Nominatim to find your city/country; only the result is saved.</p>
+                <input id="edit-location" class="slim-input mb-2" placeholder="Location not set" readonly>
+                <div class="flex gap-2">
+                    <button type="button" onclick="detectAndShareLocation()" class="btn btn-outline flex-1">Detect my location</button>
+                    <button type="button" onclick="clearProfileLocation()" class="btn btn-outline">Clear</button>
+                </div>
+                <p id="edit-location-status" class="text-[9px] text-slate-500 mt-2" role="status"></p>
+            </div>
+            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-location" type="checkbox" class="accent-blue-600"> Show city/country publicly on my profile</label>
             <textarea id="edit-bio" class="slim-input mb-3 h-16 resize-none" placeholder="Bio..."></textarea>
+            <p class="text-[9px] text-slate-500 mb-3">Unchecked contacts are hidden from your profile view. Contact details are still stored in the app database and may be accessible to database readers.</p>
             <button onclick="saveProfile()" class="btn btn-primary w-full">Update Profile</button>
             <button onclick="closeEdit()" class="w-full mt-2 text-slate-400 text-[10px] font-bold uppercase">Close</button>
         </div>
@@ -303,7 +484,7 @@
             </div>
             <div class="overflow-x-auto max-h-96 overflow-y-auto">
                 <table class="w-full text-[10px]">
-                    <thead class="bg-slate-900 text-white uppercase sticky top-0"><tr><th class="p-2 text-center">#</th><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">WPM</th></tr></thead>
+                    <thead class="bg-slate-900 text-white uppercase sticky top-0"><tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">WPM</th></tr></thead>
                     <tbody id="all-users-body" class="divide-y divide-slate-100 font-bold"></tbody>
                 </table>
             </div>
@@ -316,15 +497,19 @@
             <button onclick="closePreview()" class="absolute right-4 top-4 text-2xl font-bold text-slate-400 hover:text-red-500">×</button>
             <div class="bg-gradient-to-br from-slate-900 to-blue-700 text-white rounded-3xl p-6">
                 <div class="flex flex-col md:flex-row items-center gap-4">
-                    <img id="preview-avatar" class="w-24 h-24 rounded-full border-4 border-white object-cover" src="">
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="rank-avatar-wrap"><img id="preview-avatar" class="w-24 h-24 rounded-full border-4 border-white object-cover" src=""><span id="preview-rank-decoration" class="rank-avatar-decoration hidden"></span></span>
+                        <button type="button" onclick="openImageViewer(document.getElementById('preview-avatar').src, document.getElementById('preview-name').textContent)" class="rounded-lg border border-white/40 bg-white/15 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-white/25">View full-size photo</button>
+                    </div>
                     <div class="flex-1">
                         <p class="text-[10px] uppercase tracking-[0.3em] opacity-70">POOL PROFILE</p>
-                        <h3 id="preview-name" class="text-2xl font-black uppercase mt-2">Player</h3>
-                        <p id="preview-id" class="text-xs opacity-80 mt-1">ID: --</p>
+                        <h3 id="preview-name" class="text-xl md:text-2xl font-black uppercase mt-2 leading-tight break-words">Player</h3>
+                        <p id="preview-id" class="user-id-chip mt-1">ID: --</p>
                         <p id="preview-rank" class="mt-3 text-sm font-black text-amber-300">#--</p>
+                        <p id="preview-location" class="hidden mt-2 text-xs font-bold text-blue-100"></p>
                     </div>
                     <div class="text-right">
-                        <span id="preview-badge" class="lvl-badge text-[11px] py-2 px-4 bg-yellow-400 text-slate-900 border-yellow-500">LVL 1</span>
+                        <span id="preview-badge" class="lvl-badge shrink-0 whitespace-nowrap text-[11px] py-2 px-4 bg-yellow-400 text-slate-900 border-yellow-500">LVL 1</span>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 text-slate-900">
@@ -356,8 +541,17 @@
                     <p class="text-[10px] uppercase tracking-[0.3em] text-white/70 mb-2">Bio</p>
                     <p id="preview-bio" class="text-[13px] italic opacity-90">"No bio"</p>
                 </div>
+                <div id="preview-contacts" class="hidden mt-4 flex flex-wrap gap-2">
+                    <a id="preview-whatsapp" target="_blank" rel="noopener noreferrer" class="hidden rounded-xl bg-green-500 px-4 py-2 text-xs font-bold text-white hover:bg-green-600">WhatsApp</a>
+                    <a id="preview-email" class="hidden rounded-xl bg-blue-500 px-4 py-2 text-xs font-bold text-white hover:bg-blue-600">Email</a>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div id="image-viewer" role="dialog" aria-modal="true" aria-label="Full screen profile picture" onclick="if(event.target===this) closeImageViewer()">
+        <button id="image-viewer-close" type="button" aria-label="Close full screen picture" onclick="closeImageViewer()">×</button>
+        <img id="image-viewer-image" src="" alt="">
     </div>
 
     <script>
@@ -393,6 +587,15 @@
         let customTextContent = '';
         let rotateIdx = 0;
         let rotationTimer = null;
+        let monthlyEventWinners = [];
+        let observedMonthKey = null;
+        let isBannerCollapsed = false;
+        let typingPresenceRef = null;
+        let typingIdleTimer = null;
+        let isTypingNow = false;
+        let isScoreSubmitting = false;
+        let displayChars = [];
+        let previousTypedChars = [];
 
         // ============================================
         // LEVEL SYSTEM
@@ -429,19 +632,68 @@
         // ============================================
         // BANNER ROTATION - FIXED
         // ============================================
-        function getLevelGlow(level) {
-            const intensity = Math.min(level * 0.12, 1);
-            const color = level >= 8 ? '255, 183, 0' : level >= 5 ? '34, 197, 94' : '59, 130, 246';
-            const blur = 14 + level * 4;
-            const opacity = 0.18 + intensity * 0.44;
-            return `0 0 ${blur}px rgba(${color}, ${opacity})`;
+        function getLevelFrameWidth(level) {
+            return `${Math.min(6, 2 + Math.floor(Math.max(0, level - 1) / 3))}px`;
         }
 
-        function getLevelFrameColor(level) {
-            return level >= 8 ? 'rgba(252, 211, 77, 0.85)' : level >= 5 ? 'rgba(34, 197, 94, 0.85)' : 'rgba(96, 165, 250, 0.95)';
+        function getLevelFrameStyle(level) {
+            const safeLevel = Math.max(1, level);
+            const startHue = ((safeLevel - 1) * 29 + 205) % 360;
+            const endHue = (startHue + 115) % 360;
+            const colorStrength = Math.min(0.88, 0.28 + safeLevel * 0.045);
+            const transitionPoint = Math.min(82, 32 + safeLevel * 5);
+            return `--level-ring-width:${getLevelFrameWidth(safeLevel)};--level-ring-start:${startHue};--level-ring-end:${endHue};--level-ring-opacity:${colorStrength};--level-ring-transition:${transitionPoint}%`;
+        }
+
+        function applyLevelFrame(element, user) {
+            const level = calcLevel(user.points || 0);
+            const frame = element.parentElement;
+            frame.classList.add('level-color-ring');
+            frame.style.cssText += `;${getLevelFrameStyle(level)}`;
+            element.style.borderColor = 'transparent';
+            element.style.borderWidth = '0';
+            element.style.boxShadow = 'none';
+        }
+
+        function clearLevelFrame(element) {
+            const frame = element.parentElement;
+            frame.classList.remove('level-color-ring');
+            ['--level-ring-width', '--level-ring-start', '--level-ring-end', '--level-ring-opacity', '--level-ring-transition']
+                .forEach(property => frame.style.removeProperty(property));
+            element.style.borderColor = '';
+            element.style.borderWidth = '';
+            element.style.boxShadow = '';
+        }
+
+        function getUserIdHue(userId) {
+            let hash = 0;
+            for (const char of String(userId || '').toLowerCase()) {
+                hash = (hash * 31 + char.charCodeAt(0)) % 360;
+            }
+            return hash;
+        }
+
+        function setUserIdChip(element, userId) {
+            element.style.setProperty('--id-hue', getUserIdHue(userId));
+        }
+
+        function toggleBanner() {
+            isBannerCollapsed = !isBannerCollapsed;
+            const banner = document.getElementById('banner');
+            const toggle = document.getElementById('banner-toggle');
+            banner.classList.toggle('is-collapsed', isBannerCollapsed);
+            toggle.textContent = isBannerCollapsed ? '🏆 Leaderboard' : 'Hide banner';
+            toggle.setAttribute('aria-expanded', String(!isBannerCollapsed));
+            toggle.setAttribute('aria-label', isBannerCollapsed ? 'Show banner' : 'Hide banner');
         }
 
         function updateBannerRotation() {
+            if (monthlyEventWinners.length > 0) {
+                document.getElementById('banner-monthly-winners').classList.remove('hidden');
+                document.getElementById('banner-featured-user').classList.add('hidden');
+                return;
+            }
+            document.getElementById('banner-monthly-winners').classList.add('hidden');
             const sorted = [...allUsers].sort((a, b) => {
                 const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
                 if (mb !== ma) return mb - ma;
@@ -454,10 +706,12 @@
                 document.getElementById('banner-id').textContent = 'ID: --';
                 document.getElementById('banner-points').textContent = '0 pts';
                 document.getElementById('banner-avatar').src = DEFAULT_AVATAR;
-                document.getElementById('banner-avatar').style.boxShadow = 'none';
-                document.getElementById('banner-avatar').style.borderColor = '#e2e8f0';
+                clearLevelFrame(document.getElementById('banner-avatar'));
                 document.getElementById('banner-level').textContent = 'LVL 1';
                 document.getElementById('banner-crown').style.display = 'none';
+                document.getElementById('banner-avatar-wrap').classList.remove('relative');
+                document.getElementById('banner-user-details').classList.add('hidden');
+                document.getElementById('banner-featured-user').classList.add('hidden');
                 return;
             }
             
@@ -468,13 +722,17 @@
             
             document.getElementById('banner-rank').textContent = '#' + rank;
             document.getElementById('banner-name').textContent = user.name || user.id;
-            document.getElementById('banner-id').textContent = 'ID: ' + (user.id || '').toUpperCase();
+            const bannerId = document.getElementById('banner-id');
+            bannerId.textContent = 'ID: ' + (user.id || '').toUpperCase();
+            setUserIdChip(bannerId, user.id);
             document.getElementById('banner-points').textContent = (user.points || 0) + ' pts';
             document.getElementById('banner-avatar').src = user.pic || DEFAULT_AVATAR;
-            document.getElementById('banner-avatar').style.boxShadow = getLevelGlow(level);
-            document.getElementById('banner-avatar').style.borderColor = getLevelFrameColor(level);
+            applyLevelFrame(document.getElementById('banner-avatar'), user);
             document.getElementById('banner-level').textContent = 'LVL ' + level;
             document.getElementById('banner-crown').style.display = (rank === 1) ? 'block' : 'none';
+            document.getElementById('banner-avatar-wrap').classList.toggle('relative', rank === 1);
+            document.getElementById('banner-user-details').classList.remove('hidden');
+            document.getElementById('banner-featured-user').classList.remove('hidden');
         }
 
         function startBannerRotation() {
@@ -506,14 +764,131 @@
             return nextMonth;
         }
 
+        function updateMonthlyEventStatus() {
+            const now = new Date();
+            const monthKey = getCurrentMonthKey();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const formatDate = date => date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('monthly-event-title').textContent = `${monthKey} Typing Event`;
+            document.getElementById('monthly-event-dates').textContent = `Event dates: ${formatDate(monthStart)} – ${formatDate(monthEnd)}. Monthly points are the event score.`;
+            const participants = allUsers.filter(user => user.monthlyPointsMonth === monthKey && (user.monthlyPoints || 0) > 0).length;
+            document.getElementById('monthly-event-participants').textContent = `${participants} participant${participants === 1 ? '' : 's'}`;
+        }
+
+        function archiveMonthlyEvent(monthKey, userData) {
+            const participants = Object.entries(userData)
+                .map(([id, data]) => ({ ...data, id }))
+                .filter(user => user.monthlyPointsMonth === monthKey && (user.monthlyPoints || 0) > 0)
+                .sort((a, b) => (b.monthlyPoints || 0) - (a.monthlyPoints || 0) || (b.points || 0) - (a.points || 0));
+            if (participants.length === 0) return;
+
+            const winner = participants[0];
+            const result = {
+                month: monthKey,
+                participantCount: participants.length,
+                winner: { id: winner.id, name: winner.name || winner.id, pic: winner.pic || DEFAULT_AVATAR, monthlyPoints: winner.monthlyPoints || 0, points: winner.points || 0 },
+                topPlayers: participants.slice(0, 10).map(user => ({
+                    id: user.id,
+                    name: user.name || user.id,
+                    pic: user.pic || DEFAULT_AVATAR,
+                    monthlyPoints: user.monthlyPoints || 0,
+                    points: user.points || 0
+                })),
+                archivedAt: Date.now()
+            };
+            db.ref(`monthly_events/results/${monthKey}`).transaction(existing => existing || result, error => {
+                if (error) console.error(`Monthly event ${monthKey} archive failed:`, error);
+            });
+        }
+
+        function archiveStaleMonthlyEvents(userData, currentMonth = getCurrentMonthKey()) {
+            const staleMonths = new Set(Object.values(userData)
+                .map(user => user && user.monthlyPointsMonth)
+                .filter(month => /^\d{4}-\d{2}$/.test(month || '') && month < currentMonth));
+            staleMonths.forEach(month => archiveMonthlyEvent(month, userData));
+        }
+
+        function listenMonthlyEventResults() {
+            db.ref('monthly_events/results').orderByKey().limitToLast(1).on('value', snap => {
+                const results = snap.val();
+                const latestKey = results && Object.keys(results).sort().pop();
+                const result = latestKey && results[latestKey];
+                const element = document.getElementById('monthly-event-previous-winner');
+                const previousMonth = getPreviousMonthKey();
+                if (!result || result.month !== previousMonth) {
+                    monthlyEventWinners = [];
+                    updateBannerRotation();
+                    element.classList.add('hidden');
+                    return;
+                }
+                monthlyEventWinners = Array.isArray(result.topPlayers) && result.topPlayers.length
+                    ? result.topPlayers.slice(0, 3)
+                    : (result.winner ? [result.winner] : []);
+                renderMonthlyWinners();
+                updateBannerRotation();
+                const winner = monthlyEventWinners[0];
+                element.textContent = `🥇 Last month's winner (${result.month}): ${winner.name || winner.id} — ${winner.monthlyPoints || 0} points · ${result.participantCount || 0} participants`;
+                element.classList.remove('hidden');
+            }, error => console.error('Monthly event results listener failed:', error));
+        }
+
+        function getPreviousMonthKey() {
+            const previousMonth = new Date();
+            previousMonth.setDate(1);
+            previousMonth.setMonth(previousMonth.getMonth() - 1);
+            return `${previousMonth.getFullYear()}-${String(previousMonth.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function renderMonthlyWinners() {
+            const container = document.getElementById('banner-monthly-winners');
+            container.replaceChildren();
+            monthlyEventWinners.slice(0, 3).forEach((winner, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'banner-winner-card';
+                button.addEventListener('click', () => viewProfile(winner.id));
+
+                const avatar = document.createElement('img');
+                avatar.src = winner.pic || allUsers.find(user => user.id === winner.id)?.pic || DEFAULT_AVATAR;
+                avatar.alt = '';
+                const avatarFrame = document.createElement('span');
+                avatarFrame.className = 'banner-winner-avatar level-frame-wrap level-color-ring';
+                avatarFrame.appendChild(avatar);
+                applyLevelFrame(avatar, winner);
+                const details = document.createElement('span');
+                details.className = 'banner-winner-details';
+                const rank = document.createElement('span');
+                rank.className = 'banner-winner-rank';
+                rank.textContent = ['🥇 1st Place', '🥈 2nd Place', '🥉 3rd Place'][index];
+                const name = document.createElement('span');
+                name.className = 'banner-winner-name';
+                name.textContent = winner.name || winner.id;
+                const score = document.createElement('span');
+                score.className = 'banner-winner-score';
+                score.textContent = `${winner.monthlyPoints || 0} monthly points`;
+                details.append(rank, name, score);
+                button.append(avatarFrame, details);
+                container.appendChild(button);
+            });
+            container.classList.toggle('hidden', monthlyEventWinners.length === 0);
+        }
+
         function updateMonthlyCountdown() {
+            const currentMonth = getCurrentMonthKey();
+            if (observedMonthKey !== null && observedMonthKey !== currentMonth) {
+                archiveStaleMonthlyEvents(Object.fromEntries(allUsers.map(user => [user.id, user])), currentMonth);
+                performMonthlyReset(currentMonth);
+                renderLeaderboard(allUsers);
+                updateBannerRotation();
+                if (loggedInUser) updateNav();
+            }
+            observedMonthKey = currentMonth;
+            updateMonthlyEventStatus();
+
             const nextReset = getNextMonthlyResetDate();
             const now = new Date();
             let diff = Math.floor((nextReset - now) / 1000);
-            if (diff <= 0) {
-                performMonthlyReset();
-                diff = Math.floor((getNextMonthlyResetDate() - new Date()) / 1000);
-            }
             diff = Math.max(0, diff);
             const days = Math.floor(diff / 86400);
             diff %= 86400;
@@ -524,13 +899,43 @@
             document.getElementById('monthly-reset-countdown').textContent = `Next reset in ${days}d ${hours}:${minutes}:${seconds}`;
         }
 
-        function performMonthlyReset() {
-            const currentMonth = getCurrentMonthKey();
+        async function togglePracticeFullscreen() {
+            const shell = document.getElementById('practice-fullscreen-shell');
+            try {
+                if (document.fullscreenElement === shell) {
+                    await document.exitFullscreen();
+                } else if (!document.fullscreenElement && shell.requestFullscreen) {
+                    await shell.requestFullscreen();
+                    document.getElementById('typing-input').focus({ preventScroll: true });
+                } else {
+                    alert('Full screen is not available in this browser.');
+                }
+            } catch (err) {
+                console.error('Practice full screen failed:', err);
+                alert('Could not enter full screen. Please try again.');
+            }
+        }
+
+        function updatePracticeFullscreenButton() {
+            const isFullscreen = document.fullscreenElement === document.getElementById('practice-fullscreen-shell');
+            const button = document.getElementById('practice-fullscreen-button');
+            button.textContent = '⛶ Full screen';
+            button.setAttribute('aria-pressed', String(isFullscreen));
+        }
+
+        function performMonthlyReset(currentMonth = getCurrentMonthKey()) {
             const updates = {};
             allUsers.forEach(user => {
                 if (user.monthlyPointsMonth !== currentMonth) {
                     updates[`users/${user.id}/monthlyPoints`] = 0;
                     updates[`users/${user.id}/monthlyPointsMonth`] = currentMonth;
+                    user.monthlyPoints = 0;
+                    user.monthlyPointsMonth = currentMonth;
+                    if (loggedInUser && loggedInUser.id === user.id) {
+                        loggedInUser.monthlyPoints = 0;
+                        loggedInUser.monthlyPointsMonth = currentMonth;
+                        localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
+                    }
                 }
             });
             if (Object.keys(updates).length > 0) {
@@ -545,6 +950,7 @@
             db.ref('users').on('value', snap => {
                 const data = snap.val() || {};
                 const currentMonth = getCurrentMonthKey();
+                archiveStaleMonthlyEvents(data, currentMonth);
                 const updates = {};
                 allUsers = Object.keys(data).map(k => {
                     const user = { ...data[k], id: k };
@@ -568,6 +974,8 @@
                 updateBannerRotation();
                 updateMonthlyCountdown();
                 if (loggedInUser) updateNav();
+            }, err => {
+                console.error('Users listener failed:', err);
             });
         }
 
@@ -584,6 +992,10 @@
                         document.getElementById('lesson-selector').value = currentLessonId;
                     }
                 }
+                generateDisplay();
+            }, err => {
+                console.error('Lessons listener failed:', err);
+                populateLessonDropdown();
                 generateDisplay();
             });
         }
@@ -715,15 +1127,13 @@
             const full = (text + ' ').repeat(repeat).trim();
             
             const chars = splitGraphemes(full);
-            const lineLen = typingLang === 'bn' ? 40 : 50;
             let html = `<div class="text-right text-xs text-slate-400 font-bold uppercase mb-1">
                 ${isCustomMode ? '✏️ Custom Text' : (typingLang === 'bn' ? '📖 বাংলা' : '📖 English')}
             </div>`;
-            for (let i = 0; i < chars.length; i += lineLen) {
-                const chunk = chars.slice(i, i + lineLen);
-                html += `<div>${chunk.map(c => `<span class="char">${c}</span>`).join('')}</div>`;
-            }
+            html += `<div class="practice-text-flow">${chars.map(c => `<span class="char">${c}</span>`).join('')}</div>`;
             document.getElementById('display-box').innerHTML = html;
+            displayChars = document.querySelectorAll('#display-box .char');
+            previousTypedChars = [];
         }
 
         // ============================================
@@ -753,6 +1163,7 @@
         }
 
         function resetTyping() {
+            setTypingStatus(false);
             const input = document.getElementById('typing-input');
             if (!isCustomMode) {
                 const nextLessonId = getNextLessonId();
@@ -763,6 +1174,7 @@
                 }
             }
             input.value = '';
+            previousTypedChars = [];
             input.disabled = false;
             isStarted = false;
             isTimeOver = false;
@@ -772,6 +1184,7 @@
             correctChars = 0;
             clearInterval(timerInterval);
             document.getElementById('timer-display').textContent = '05:00';
+            document.getElementById('fullscreen-timer-display').textContent = '05:00';
             document.getElementById('live-chars').textContent = '0';
             document.getElementById('live-mistakes').textContent = '0';
             document.getElementById('live-accuracy').textContent = '0';
@@ -790,10 +1203,13 @@
                 timeLeft--;
                 const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
                 const s = String(timeLeft % 60).padStart(2, '0');
-                document.getElementById('timer-display').textContent = `${m}:${s}`;
+                const timerText = `${m}:${s}`;
+                document.getElementById('timer-display').textContent = timerText;
+                document.getElementById('fullscreen-timer-display').textContent = timerText;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     isTimeOver = true;
+                    setTypingStatus(false);
                     document.getElementById('typing-input').disabled = true;
                     document.getElementById('submit-btn').classList.remove('hidden');
                     alert('⏰ Time is up! Save your result.');
@@ -882,10 +1298,23 @@
                 document.getElementById('nav-login').classList.add('hidden');
                 document.getElementById('nav-name').textContent = loggedInUser.name || loggedInUser.id;
                 document.getElementById('nav-avatar').src = loggedInUser.pic || DEFAULT_AVATAR;
+                applyLevelFrame(document.getElementById('nav-avatar'), loggedInUser);
+                setRankDecoration(document.getElementById('nav-rank-decoration'), getRank(loggedInUser.id));
             } else {
                 document.getElementById('nav-user').classList.add('hidden');
                 document.getElementById('nav-login').classList.remove('hidden');
+                document.getElementById('nav-rank-decoration').classList.add('hidden');
             }
+        }
+
+        function setRankDecoration(element, rank) {
+            if (!rank) {
+                element.classList.add('hidden');
+                return;
+            }
+            const icon = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+            element.textContent = icon;
+            element.className = `rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}`;
         }
 
         function getRank(userId) {
@@ -898,20 +1327,50 @@
             return idx === -1 ? null : idx + 1;
         }
 
+        function getRankRowBackground(rank) {
+            const hue = rank === 1 ? 45 : rank === 2 ? 215 : rank === 3 ? 25 : ((rank - 4) * 47 + 145) % 360;
+            const saturation = rank === 2 ? 35 : 75;
+            return `linear-gradient(to left, hsl(${hue} ${saturation}% 88%), hsl(${hue} ${saturation}% 96%))`;
+        }
+
         function trackOnline() {
             if (!loggedInUser) return;
             const userId = loggedInUser.id;
             const userName = loggedInUser.name || userId;
             const ref = db.ref('online_users/' + userId + '/connections/' + presenceSessionId);
+            typingPresenceRef = ref;
             db.ref('.info/connected').on('value', snap => {
                 if (snap.val() !== true || !loggedInUser || loggedInUser.id !== userId) return;
                 ref.onDisconnect().remove().then(() => ref.set({
                     uid: userId,
                     name: userName,
                     online: true,
+                    typing: isTypingNow,
                     lastSeen: firebase.database.ServerValue.TIMESTAMP
                 })).catch(err => console.error('Presence update failed:', err));
             });
+        }
+
+        function setTypingStatus(active) {
+            isTypingNow = active;
+            clearTimeout(typingIdleTimer);
+            if (active) {
+                typingIdleTimer = setTimeout(() => setTypingStatus(false), 5000);
+            }
+            if (typingPresenceRef && loggedInUser) {
+                typingPresenceRef.update({ typing: active }).catch(err => console.error('Typing presence update failed:', err));
+            }
+        }
+
+        function listenTypingCount() {
+            db.ref('online_users').on('value', snap => {
+                const onlineUsers = snap.val() || {};
+                const typingUserIds = Object.keys(onlineUsers).filter(userId => {
+                    const connections = onlineUsers[userId] && onlineUsers[userId].connections;
+                    return connections && Object.keys(connections).some(sessionId => connections[sessionId].typing === true);
+                });
+                document.getElementById('live-typing-count').textContent = typingUserIds.length;
+            }, err => console.error('Typing count listener failed:', err));
         }
 
         // ============================================
@@ -926,19 +1385,18 @@
             const top = sorted.slice(0, 10);
             const tbody = document.getElementById('leaderboard-body');
             if (top.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No players yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No players yet</td></tr>';
                 return;
             }
             tbody.innerHTML = top.map((u, i) => {
-                const rank = i + 1;
+                const rank = getRank(u.id) || i + 1;
                 const isMe = loggedInUser && u.id === loggedInUser.id;
                 const medal = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-                return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" onclick="viewProfile('${u.id}')">
-                    <td class="p-2 text-center font-bold text-slate-600">${medal}</td>
+                return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}')">
                     <td class="p-2 flex items-center gap-2">
-                        <img src="${u.pic || DEFAULT_AVATAR}" class="leader-img">
-                        <div><p class="font-black text-slate-800 text-[11px] truncate max-w-[120px]">${u.name || u.id}</p>
-                        <p class="text-[7px] text-slate-400">${u.id}</p></div>
+                        <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
+                        <div class="flex min-w-0 flex-col items-start gap-1"><p class="font-black text-slate-800 text-[11px] truncate max-w-[120px]">${u.name || u.id}</p>
+                        <span class="user-id-chip" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                     </td>
                     <td class="p-2 text-center"><span class="lvl-badge">${calcLevel(u.points || 0)}</span></td>
                     <td class="p-2 text-center font-black">${u.points || 0}</td>
@@ -967,11 +1425,12 @@
             });
             document.getElementById('all-users-body').innerHTML = sorted.map((u, i) => {
                 const isMe = loggedInUser && u.id === loggedInUser.id;
-                return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" onclick="viewProfile('${u.id}'); closeAllUsers();">
-                    <td class="p-2 text-center font-bold">${i + 1}</td>
+                const rank = i + 1;
+                return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}'); closeAllUsers();">
                     <td class="p-2 flex items-center gap-2">
-                        <img src="${u.pic || DEFAULT_AVATAR}" class="leader-img">
-                        <span class="font-black text-[11px]">${u.name || u.id}</span>
+                        <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
+                        <div class="flex min-w-0 flex-col items-start gap-1"><span class="font-black text-[11px]">${u.name || u.id}</span>
+                        <span class="user-id-chip" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                     </td>
                     <td class="p-2 text-center"><span class="lvl-badge">${calcLevel(u.points || 0)}</span></td>
                     <td class="p-2 text-center font-black">${u.points || 0}</td>
@@ -989,10 +1448,18 @@
             const progress = calcLevelProgress(points);
             const progressText = getNextLevelTargetText(points);
             document.getElementById('preview-avatar').src = user.pic || DEFAULT_AVATAR;
+            applyLevelFrame(document.getElementById('preview-avatar'), user);
             document.getElementById('preview-name').textContent = user.name || user.id;
-            document.getElementById('preview-id').textContent = 'ID: ' + user.id.toUpperCase();
+            const previewId = document.getElementById('preview-id');
+            previewId.textContent = 'ID: ' + user.id.toUpperCase();
+            setUserIdChip(previewId, user.id);
             const rank = getRank(user.id);
+            setRankDecoration(document.getElementById('preview-rank-decoration'), rank);
             document.getElementById('preview-rank').textContent = rank ? '#' + rank : '#--';
+            const location = String(user.location || '').trim();
+            const locationElement = document.getElementById('preview-location');
+            locationElement.textContent = `📍 ${location}`;
+            locationElement.classList.toggle('hidden', user.showLocation !== true || !location);
             document.getElementById('preview-points').textContent = points;
             document.getElementById('preview-wpm').textContent = user.bestWpm || 0;
             document.getElementById('preview-mistakes').textContent = user.mistakes || 0;
@@ -1001,9 +1468,33 @@
             document.getElementById('preview-progress-bar').style.width = progress + '%';
             document.getElementById('preview-progress-text').textContent = progressText;
             document.getElementById('preview-bio').textContent = user.bio ? '"' + user.bio + '"' : '"No bio"';
+            const whatsappLink = document.getElementById('preview-whatsapp');
+            const emailLink = document.getElementById('preview-email');
+            const whatsappNumber = String(user.whatsapp || '').replace(/\D/g, '');
+            const showWhatsApp = user.showWhatsApp === true && whatsappNumber.length >= 8 && whatsappNumber.length <= 15;
+            const showEmail = user.showEmail === true && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(user.email || ''));
+            whatsappLink.classList.toggle('hidden', !showWhatsApp);
+            emailLink.classList.toggle('hidden', !showEmail);
+            if (showWhatsApp) whatsappLink.href = `https://wa.me/${whatsappNumber}`;
+            if (showEmail) emailLink.href = `mailto:${user.email}`;
+            document.getElementById('preview-contacts').classList.toggle('hidden', !showWhatsApp && !showEmail);
             document.getElementById('preview-modal').classList.add('active');
         }
         function closePreview() { document.getElementById('preview-modal').classList.remove('active'); }
+
+        function openImageViewer(src, alt = '') {
+            if (!src) return;
+            const viewer = document.getElementById('image-viewer');
+            const image = document.getElementById('image-viewer-image');
+            image.src = src;
+            image.alt = alt || 'Profile picture';
+            viewer.classList.add('active');
+        }
+
+        function closeImageViewer() {
+            document.getElementById('image-viewer').classList.remove('active');
+            document.getElementById('image-viewer-image').src = '';
+        }
 
         // ============================================
         // PROFILE
@@ -1014,7 +1505,15 @@
             document.getElementById('edit-name').value = loggedInUser.name || '';
             document.getElementById('edit-pic').value = loggedInUser.pic || '';
             document.getElementById('edit-bio').value = loggedInUser.bio || '';
+            document.getElementById('edit-whatsapp').value = loggedInUser.whatsapp || '';
+            document.getElementById('edit-show-whatsapp').checked = loggedInUser.showWhatsApp === true;
+            document.getElementById('edit-email').value = loggedInUser.email || '';
+            document.getElementById('edit-show-email').checked = loggedInUser.showEmail === true;
+            document.getElementById('edit-location').value = loggedInUser.location || '';
+            document.getElementById('edit-show-location').checked = loggedInUser.showLocation === true;
+            document.getElementById('edit-location-status').textContent = '';
             document.getElementById('edit-preview').src = loggedInUser.pic || DEFAULT_AVATAR;
+            applyLevelFrame(document.getElementById('edit-preview'), loggedInUser);
             document.getElementById('edit-modal').classList.add('active');
         }
         function closeEdit() { document.getElementById('edit-modal').classList.remove('active'); }
@@ -1030,6 +1529,52 @@
             reader.readAsDataURL(file);
         }
 
+        function clearProfileLocation() {
+            document.getElementById('edit-location').value = '';
+            document.getElementById('edit-show-location').checked = false;
+            document.getElementById('edit-location-status').textContent = 'Location cleared. Save your profile to remove it.';
+        }
+
+        function detectAndShareLocation() {
+            const status = document.getElementById('edit-location-status');
+            if (!navigator.geolocation) {
+                status.textContent = 'This browser does not support location detection.';
+                return;
+            }
+            status.textContent = 'Requesting permission and finding city/country...';
+            navigator.geolocation.getCurrentPosition(async position => {
+                try {
+                    const { latitude, longitude } = position.coords;
+                    const url = new URL('https://nominatim.openstreetmap.org/reverse');
+                    url.search = new URLSearchParams({
+                        format: 'jsonv2',
+                        lat: String(latitude),
+                        lon: String(longitude),
+                        zoom: '10',
+                        addressdetails: '1'
+                    }).toString();
+                    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                    if (!response.ok) throw new Error(`Location lookup failed (${response.status}).`);
+                    const data = await response.json();
+                    const address = data.address || {};
+                    const city = address.city || address.town || address.village || address.municipality || address.county || address.state;
+                    const location = [city, address.country].filter(Boolean).join(', ');
+                    if (!location) throw new Error('Could not identify a city or country for this location.');
+                    document.getElementById('edit-location').value = location;
+                    document.getElementById('edit-show-location').checked = true;
+                    status.textContent = `Found ${location}. Save your profile to publish it.`;
+                } catch (err) {
+                    console.error('Location lookup failed:', err);
+                    status.textContent = err.message || 'Could not find your city/country. Please try again.';
+                }
+            }, error => {
+                console.error('Location permission failed:', error);
+                status.textContent = error.code === error.PERMISSION_DENIED
+                    ? 'Location permission was denied. Allow it in browser settings and try again.'
+                    : 'Could not get your location. Check device location settings and try again.';
+            }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 3600000 });
+        }
+
         function saveProfile() {
             if (!loggedInUser) return;
             const oldId = loggedInUser.id;
@@ -1039,10 +1584,22 @@
             const name = document.getElementById('edit-name').value.trim();
             const pic = document.getElementById('edit-pic').value.trim();
             const bio = document.getElementById('edit-bio').value.trim();
+            const whatsapp = document.getElementById('edit-whatsapp').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const showWhatsApp = document.getElementById('edit-show-whatsapp').checked;
+            const showEmail = document.getElementById('edit-show-email').checked;
+            const location = document.getElementById('edit-location').value.trim();
+            const showLocation = document.getElementById('edit-show-location').checked;
             if (!newId || !name) return alert('Required fields missing');
             if (newId !== oldIdNorm && allUsers.some(u => String(u.id).toLowerCase() === newId)) return alert('ID already taken');
+            const whatsappDigits = whatsapp.replace(/\D/g, '');
+            if (whatsapp && (whatsappDigits.length < 8 || whatsappDigits.length > 15)) return alert('Enter a valid WhatsApp number with country code.');
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Enter a valid email address.');
+            if (showWhatsApp && !whatsapp) return alert('Add a WhatsApp number or turn off its profile visibility.');
+            if (showEmail && !email) return alert('Add an email address or turn off its profile visibility.');
+            if (showLocation && !location) return alert('Detect a city/country or turn off its profile visibility.');
 
-            const updated = { ...loggedInUser, id: newId, name, pic, bio };
+            const updated = { ...loggedInUser, id: newId, name, pic, bio, whatsapp, email, showWhatsApp, showEmail, location, showLocation };
 
             const finish = () => {
                 loggedInUser = updated;
@@ -1064,7 +1621,7 @@
                     alert('❌ প্রোফাইল আপডেট করতে পারিনি, আবার চেষ্টা করুন।');
                 });
             } else {
-                db.ref('users/' + oldId).update({ name, pic, bio }).then(finish).catch(err => {
+                db.ref('users/' + oldId).update({ name, pic, bio, whatsapp, email, showWhatsApp, showEmail, location, showLocation }).then(finish).catch(err => {
                     console.error('Profile save failed:', err);
                     alert('❌ প্রোফাইল আপডেট করতে পারিনি, আবার চেষ্টা করুন।');
                 });
@@ -1180,39 +1737,45 @@
         // SCORE SUBMIT
         // ============================================
         function submitScore() {
+            if (isScoreSubmitting) return;
             if (!loggedInUser) {
                 openAuth();
                 return;
             }
+            const submitButton = document.getElementById('submit-btn');
             const wpm = parseInt(document.getElementById('live-wpm').textContent) || 0;
             const typedLength = parseInt(document.getElementById('live-chars').textContent) || 0;
             const earned = Math.floor(correctChars / 5);
             if (earned === 0 && wpm === 0 && typedLength === 0) return alert('প্রথমে টাইপ করুন, তারপর সেভ করুন।');
 
             const currentMonth = getCurrentMonthKey();
-            if (loggedInUser.monthlyPointsMonth !== currentMonth) {
-                loggedInUser.monthlyPoints = 0;
-                loggedInUser.monthlyPointsMonth = currentMonth;
-            }
+            const monthlyPoints = loggedInUser.monthlyPointsMonth === currentMonth ? (loggedInUser.monthlyPoints || 0) : 0;
+            const scoreUpdate = {
+                points: (loggedInUser.points || 0) + earned,
+                monthlyPoints: monthlyPoints + earned,
+                monthlyPointsMonth: currentMonth,
+                mistakes: (loggedInUser.mistakes || 0) + sessionMistakes,
+                bestWpm: Math.max(loggedInUser.bestWpm || 0, wpm)
+            };
 
-            loggedInUser.points = (loggedInUser.points || 0) + earned;
-            loggedInUser.monthlyPoints = (loggedInUser.monthlyPoints || 0) + earned;
-            loggedInUser.mistakes = (loggedInUser.mistakes || 0) + sessionMistakes;
-            loggedInUser.bestWpm = Math.max(loggedInUser.bestWpm || 0, wpm);
-
-            db.ref('users/' + loggedInUser.id).update({
-                points: loggedInUser.points,
-                monthlyPoints: loggedInUser.monthlyPoints,
-                monthlyPointsMonth: loggedInUser.monthlyPointsMonth,
-                mistakes: loggedInUser.mistakes,
-                bestWpm: loggedInUser.bestWpm
-            }).then(() => {
+            isScoreSubmitting = true;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Saving...';
+            db.ref('users/' + loggedInUser.id).update(scoreUpdate
+            ).then(() => {
+                Object.assign(loggedInUser, scoreUpdate);
+                isScoreSubmitting = false;
+                submitButton.disabled = false;
+                submitButton.textContent = '💾 Save';
                 localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
-                document.getElementById('submit-btn').classList.add('hidden');
+                submitButton.classList.add('hidden');
                 resetTyping();
                 alert('🎉 অভিনন্দন! সেভ সম্পন্ন হয়েছে। +' + earned + ' পয়েন্ট, WPM: ' + wpm);
             }).catch(err => {
                 console.error('Save failed:', err);
+                isScoreSubmitting = false;
+                submitButton.disabled = false;
+                submitButton.textContent = '💾 Save';
                 alert('❌ সেভ করতে পারিনি, আবার চেষ্টা করুন।');
             });
         }
@@ -1253,12 +1816,15 @@
         // ============================================
         function init() {
             console.log('🚀 App starting...');
+            document.addEventListener('fullscreenchange', updatePracticeFullscreenButton);
             setLanguage(localStorage.getItem('preferredLanguage') || 'en');
             typingLang = localStorage.getItem('typingLanguage') || 'en';
             document.getElementById('typing-lang').value = typingLang;
             
             syncUsers();
+            listenMonthlyEventResults();
             loadLessons();
+            listenTypingCount();
             resetTyping();
             updateMonthlyCountdown();
             setInterval(updateMonthlyCountdown, 1000);
@@ -1300,6 +1866,10 @@
             }
 
             // Typing input
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') closeImageViewer();
+            });
+
             document.getElementById('typing-input').addEventListener('input', function() {
                 if (!loggedInUser) {
                     this.value = '';
@@ -1314,24 +1884,36 @@
                     isStarted = true;
                     startTimer();
                 }
-                const chars = document.querySelectorAll('#display-box .char');
+                setTypingStatus(true);
                 const typed = splitGraphemes(this.value);
+                let commonPrefix = 0;
+                while (commonPrefix < previousTypedChars.length && commonPrefix < typed.length &&
+                    previousTypedChars[commonPrefix] === typed[commonPrefix]) {
+                    commonPrefix++;
+                }
                 sessionMistakes = 0;
                 correctChars = 0;
-                chars.forEach((s, i) => {
-                    const expected = s.textContent;
+                for (let i = commonPrefix; i < Math.min(displayChars.length, Math.max(previousTypedChars.length, typed.length) + 1); i++) {
+                    const span = displayChars[i];
                     const actual = typed[i];
-                    if (actual == null) {
-                        s.className = 'char';
-                    } else if (actual === expected) {
-                        s.className = 'char correct';
+                    if (i === typed.length) {
+                        span.className = 'char current';
+                    } else if (actual == null) {
+                        span.className = 'char';
+                    } else if (actual === span.textContent) {
+                        span.className = 'char correct';
+                    } else {
+                        span.className = 'char incorrect';
+                    }
+                }
+                for (let i = 0; i < typed.length; i++) {
+                    if (typed[i] === displayChars[i]?.textContent) {
                         correctChars++;
                     } else {
-                        s.className = 'char incorrect';
                         sessionMistakes++;
                     }
-                    if (i === typed.length) s.classList.add('current');
-                });
+                }
+                previousTypedChars = typed;
                 const time = (Date.now() - startTime) / 60000;
                 const wpm = time > 0 ? Math.round((correctChars / 5) / time) : 0;
                 const accuracy = typed.length > 0 ? Math.max(0, Math.round((correctChars / typed.length) * 100)) : 0;
@@ -1339,10 +1921,14 @@
                 document.getElementById('live-mistakes').textContent = sessionMistakes;
                 document.getElementById('live-accuracy').textContent = accuracy;
                 document.getElementById('live-wpm').textContent = wpm;
-                if (typed.length > 0 && typed.length === chars.length) {
+                if (typed.length > 0 && typed.length === displayChars.length) {
                     document.getElementById('submit-btn').classList.remove('hidden');
                 }
-                chars[typed.length]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                displayChars[typed.length]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) setTypingStatus(false);
             });
 
             document.getElementById('auth-pass').addEventListener('keypress', e => {
@@ -1350,6 +1936,7 @@
             });
             
             console.log('✅ App initialized');
+            window.finishPageLoader();
         }
 
         window.onload = init;
