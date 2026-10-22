@@ -215,6 +215,7 @@
         .online-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .online-dot.online { background: #22c55e; animation: pulse 1.5s infinite; }
         .online-dot.offline { background: #94a3b8; }
+        .user-online-indicator { flex: 0 0 auto; margin: 0 0 0 5px; vertical-align: middle; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         
         .chat-bubble { padding: 10px 14px; border-radius: 12px; margin-bottom: 6px; max-width: 85%; word-wrap: break-word; }
@@ -334,6 +335,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
                 <span class="live-typing-pill" title="Visitors currently connected to the site"><span class="live-typing-dot"></span>Viewing now: <span id="live-viewer-count">0</span></span>
+                <span class="live-typing-pill" title="Logged-in users currently connected"><span class="live-typing-dot"></span>Logged in: <span id="live-online-count">0</span></span>
                 <span class="live-typing-pill" title="Logged-in users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
                 <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
                 <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
@@ -594,6 +596,7 @@
                     <div class="flex-1">
                         <p class="text-[10px] uppercase tracking-[0.3em] opacity-70">POOL PROFILE</p>
                         <h3 id="preview-name" class="text-xl md:text-2xl font-black uppercase mt-2 leading-tight break-words">Player</h3>
+                        <p id="preview-online-status" class="mt-2 flex items-center gap-1 text-xs font-bold text-emerald-300"><span class="online-dot online user-online-indicator"></span><span>Online</span></p>
                         <p id="preview-id" class="user-id-chip mt-1">ID: --</p>
                         <p id="preview-rank" class="mt-3 text-sm font-black text-amber-300">#--</p>
                         <p id="preview-typing-status" class="hidden mt-2 items-center gap-2 text-xs font-bold text-emerald-300"><span class="live-typing-dot"></span>Typing right now</p>
@@ -662,6 +665,15 @@
         const db = firebase.database();
         const presenceSessionId = db.ref('online_users').push().key;
         const viewerSessionId = db.ref('online_viewers').push().key;
+        let serverTimeOffset = 0;
+        let serverTimeOffsetReady = false;
+        db.ref('.info/serverTimeOffset').on('value', snap => {
+            const offset = snap.val();
+            if (typeof offset !== 'number') return;
+            serverTimeOffset = offset;
+            serverTimeOffsetReady = true;
+            updateMonthlyCountdown();
+        }, err => console.error('Server time offset listener failed:', err));
 
         const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         const ADMIN_WHATSAPP = '8801877902991';
@@ -682,6 +694,7 @@
         let rotationTimer = null;
         let monthlyEventWinners = [];
         let observedMonthKey = null;
+        let onlineUserIds = new Set();
         let isBannerCollapsed = false;
         let typingPresenceRef = null;
         let typingIdleTimer = null;
@@ -858,24 +871,33 @@
         }
 
         function getCurrentMonthKey() {
-            const now = new Date();
-            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const now = new Date(Date.now() + serverTimeOffset);
+            const parts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric',
+                month: '2-digit'
+            }).formatToParts(now);
+            const year = parts.find(part => part.type === 'year').value;
+            const month = parts.find(part => part.type === 'month').value;
+            return `${year}-${month}`;
         }
 
         function getNextMonthlyResetDate() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-            const nextMonth = new Date(year, month + 1, 1, 0, 0, 0, 0);
-            return nextMonth;
+            const [year, month] = getCurrentMonthKey().split('-').map(Number);
+            return new Date(Date.UTC(year, month, 1) - 6 * 60 * 60 * 1000);
         }
 
         function updateMonthlyEventStatus() {
-            const now = new Date();
             const monthKey = getCurrentMonthKey();
-            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const formatDate = date => date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            const [year, month] = monthKey.split('-').map(Number);
+            const monthStart = new Date(Date.UTC(year, month - 1, 1, -6));
+            const monthEnd = new Date(Date.UTC(year, month, 0, -6));
+            const formatDate = date => date.toLocaleDateString(undefined, {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
             document.getElementById('monthly-event-title').textContent = `${monthKey} Typing Event`;
             document.getElementById('monthly-event-dates').textContent = `Event dates: ${formatDate(monthStart)} – ${formatDate(monthEnd)}. Monthly points are the event score.`;
             const participants = allUsers.filter(user => user.monthlyPointsMonth === monthKey && (user.monthlyPoints || 0) > 0).length;
@@ -940,10 +962,9 @@
         }
 
         function getPreviousMonthKey() {
-            const previousMonth = new Date();
-            previousMonth.setDate(1);
-            previousMonth.setMonth(previousMonth.getMonth() - 1);
-            return `${previousMonth.getFullYear()}-${String(previousMonth.getMonth() + 1).padStart(2, '0')}`;
+            const [year, month] = getCurrentMonthKey().split('-').map(Number);
+            const previousMonth = new Date(Date.UTC(year, month - 2, 1));
+            return `${previousMonth.getUTCFullYear()}-${String(previousMonth.getUTCMonth() + 1).padStart(2, '0')}`;
         }
 
         function renderMonthlyWinners() {
@@ -982,18 +1003,18 @@
 
         function updateMonthlyCountdown() {
             const currentMonth = getCurrentMonthKey();
-            if (observedMonthKey !== null && observedMonthKey !== currentMonth) {
+            if (serverTimeOffsetReady && observedMonthKey !== currentMonth) {
                 archiveStaleMonthlyEvents(Object.fromEntries(allUsers.map(user => [user.id, user])), currentMonth);
                 performMonthlyReset(currentMonth);
                 renderLeaderboard(allUsers);
                 updateBannerRotation();
                 if (loggedInUser) updateNav();
+                observedMonthKey = currentMonth;
             }
-            observedMonthKey = currentMonth;
             updateMonthlyEventStatus();
 
             const nextReset = getNextMonthlyResetDate();
-            const now = new Date();
+            const now = new Date(Date.now() + serverTimeOffset);
             let diff = Math.floor((nextReset - now) / 1000);
             diff = Math.max(0, diff);
             const days = Math.floor(diff / 86400);
@@ -1030,9 +1051,10 @@
         }
 
         function performMonthlyReset(currentMonth = getCurrentMonthKey()) {
+            if (!serverTimeOffsetReady || !/^\d{4}-\d{2}$/.test(currentMonth)) return;
             const updates = {};
             allUsers.forEach(user => {
-                if (user.monthlyPointsMonth !== currentMonth) {
+                if (/^\d{4}-\d{2}$/.test(user.monthlyPointsMonth || '') && user.monthlyPointsMonth < currentMonth) {
                     updates[`users/${user.id}/monthlyPoints`] = 0;
                     updates[`users/${user.id}/monthlyPointsMonth`] = currentMonth;
                     user.monthlyPoints = 0;
@@ -1056,18 +1078,23 @@
             db.ref('users').on('value', snap => {
                 const data = snap.val() || {};
                 const currentMonth = getCurrentMonthKey();
-                archiveStaleMonthlyEvents(data, currentMonth);
+                if (serverTimeOffsetReady) archiveStaleMonthlyEvents(data, currentMonth);
                 const updates = {};
                 allUsers = Object.keys(data).map(k => {
                     const user = { ...data[k], id: k };
-                    if (user.monthlyPointsMonth !== currentMonth) {
-                        updates[`users/${k}/monthlyPoints`] = 0;
-                        updates[`users/${k}/monthlyPointsMonth`] = currentMonth;
-                        user.monthlyPoints = 0;
-                        user.monthlyPointsMonth = currentMonth;
+                    if (serverTimeOffsetReady) {
+                        const hasValidMonth = /^\d{4}-\d{2}$/.test(user.monthlyPointsMonth || '');
+                        if (hasValidMonth && user.monthlyPointsMonth < currentMonth) {
+                            updates[`users/${k}/monthlyPoints`] = 0;
+                            user.monthlyPoints = 0;
+                        }
+                        if (!hasValidMonth || user.monthlyPointsMonth !== currentMonth) {
+                            updates[`users/${k}/monthlyPointsMonth`] = currentMonth;
+                            user.monthlyPointsMonth = currentMonth;
+                        }
                         if (loggedInUser && loggedInUser.id === k) {
-                            loggedInUser.monthlyPoints = 0;
-                            loggedInUser.monthlyPointsMonth = currentMonth;
+                            loggedInUser.monthlyPoints = user.monthlyPoints || 0;
+                            loggedInUser.monthlyPointsMonth = user.monthlyPointsMonth;
                             localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
                         }
                     }
@@ -1353,6 +1380,7 @@
             const pass = document.getElementById('auth-pass').value.trim();
             const id = rawId.toLowerCase();
             if (!rawId || !pass) return alert('Fill all fields');
+            if (!serverTimeOffsetReady) return alert('সার্ভারের সময় নিশ্চিত হওয়া পর্যন্ত অপেক্ষা করে আবার চেষ্টা করুন।');
 
             findUser(rawId).then(user => {
                 if (!user) {
@@ -1495,21 +1523,27 @@
             db.ref('online_users').on('value', snap => {
                 const onlineUsers = snap.val() || {};
                 const typingSpeeds = Object.create(null);
+                const activeUserIds = new Set();
                 Object.entries(onlineUsers).forEach(([userId, user]) => {
                     const connections = user && user.connections;
                     if (!connections) return;
                     Object.values(connections).forEach(connection => {
+                        if (connection && connection.online === true) activeUserIds.add(userId);
                         if (connection && connection.typing === true) {
                             typingSpeeds[userId] = Math.max(typingSpeeds[userId] || 0, Number(connection.wpm) || 0);
                         }
                     });
                 });
+                onlineUserIds = activeUserIds;
                 liveTypingSpeeds = typingSpeeds;
+                document.getElementById('live-online-count').textContent = onlineUserIds.size;
                 document.getElementById('live-typing-count').textContent = Object.keys(typingSpeeds).length;
                 refreshTypingSprints();
             }, err => {
                 console.error('Typing count listener failed:', err);
+                onlineUserIds = new Set();
                 liveTypingSpeeds = Object.create(null);
+                document.getElementById('live-online-count').textContent = '—';
                 document.getElementById('live-typing-count').textContent = '—';
                 refreshTypingSprints();
             });
@@ -1553,6 +1587,11 @@
             return `<span class="typing-signal ${isTyping ? '' : 'hidden'}" data-typing-indicator-user="${encodeURIComponent(userId)}" role="status" aria-label="${isTyping ? 'Typing now' : 'Not typing'}" title="${isTyping ? 'Typing now' : 'Not typing'}">${isTyping ? 'Typing' : ''}</span>`;
         }
 
+        function renderOnlineIndicator(userId) {
+            const isOnline = onlineUserIds.has(userId);
+            return `<span class="online-dot user-online-indicator ${isOnline ? 'online' : 'offline'}" data-online-indicator-user="${encodeURIComponent(userId)}" role="status" aria-label="${isOnline ? 'Online' : 'Offline'}" title="${isOnline ? 'Online' : 'Offline'}"></span>`;
+        }
+
         function refreshTypingSprints() {
             document.querySelectorAll('.typing-sprint-cell').forEach(cell => {
                 const userId = decodeURIComponent(cell.getAttribute('data-typing-sprint-user'));
@@ -1566,6 +1605,21 @@
                 signal.title = isTyping ? 'Typing now' : 'Not typing';
                 signal.textContent = isTyping ? 'Typing' : '';
             });
+            document.querySelectorAll('[data-online-indicator-user]').forEach(indicator => {
+                const userId = decodeURIComponent(indicator.getAttribute('data-online-indicator-user'));
+                const isOnline = onlineUserIds.has(userId);
+                indicator.classList.toggle('online', isOnline);
+                indicator.classList.toggle('offline', !isOnline);
+                indicator.setAttribute('aria-label', isOnline ? 'Online' : 'Offline');
+                indicator.title = isOnline ? 'Online' : 'Offline';
+            });
+            const profileOnlineStatus = document.getElementById('preview-online-status');
+            const isProfileOnline = currentProfileUserId !== null && onlineUserIds.has(currentProfileUserId);
+            profileOnlineStatus.classList.toggle('text-emerald-300', isProfileOnline);
+            profileOnlineStatus.classList.toggle('text-slate-300', !isProfileOnline);
+            profileOnlineStatus.querySelector('.online-dot').classList.toggle('online', isProfileOnline);
+            profileOnlineStatus.querySelector('.online-dot').classList.toggle('offline', !isProfileOnline);
+            profileOnlineStatus.lastElementChild.textContent = isProfileOnline ? 'Online' : 'Offline';
             const profileTypingStatus = document.getElementById('preview-typing-status');
             const isProfileTyping = currentProfileUserId !== null &&
                 Object.prototype.hasOwnProperty.call(liveTypingSpeeds, currentProfileUserId);
@@ -1593,7 +1647,7 @@
                     <td class="leaderboard-player-cell">
                         <div class="leaderboard-player">
                             <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
-                            <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderTypingSignal(u.id)}</p>
+                            <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</p>
                             <span class="user-id-chip leaderboard-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
                     </td>
@@ -1634,7 +1688,7 @@
                     <td class="all-users-player-cell">
                         <div class="all-users-player">
                             <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
-                            <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderTypingSignal(u.id)}</span>
+                            <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</span>
                             <span class="user-id-chip all-users-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
                     </td>
@@ -1699,6 +1753,7 @@
             if (showEmail) emailLink.href = `mailto:${user.email}`;
             document.getElementById('preview-contacts').classList.toggle('hidden', !showWhatsApp && !showEmail);
             document.getElementById('preview-modal').classList.add('active');
+            refreshTypingSprints();
         }
         function closePreview() {
             const modal = document.getElementById('preview-modal');
@@ -2404,6 +2459,7 @@
                 openAuth();
                 return;
             }
+            if (!serverTimeOffsetReady) return alert('সার্ভারের সময় নিশ্চিত না হওয়া পর্যন্ত স্কোর সেভ করা যাবে না।');
             const submitButton = document.getElementById('submit-btn');
             const wpm = parseInt(document.getElementById('live-wpm').textContent) || 0;
             const typedLength = parseInt(document.getElementById('live-chars').textContent) || 0;
@@ -2411,7 +2467,11 @@
             if (earned === 0 && wpm === 0 && typedLength === 0) return alert('প্রথমে টাইপ করুন, তারপর সেভ করুন।');
 
             const currentMonth = getCurrentMonthKey();
-            const monthlyPoints = loggedInUser.monthlyPointsMonth === currentMonth ? (loggedInUser.monthlyPoints || 0) : 0;
+            const hasKnownPreviousMonth = /^\d{4}-\d{2}$/.test(loggedInUser.monthlyPointsMonth || '') &&
+                loggedInUser.monthlyPointsMonth < currentMonth;
+            const monthlyPoints = hasKnownPreviousMonth
+                ? 0
+                : (loggedInUser.monthlyPoints || 0);
             const scoreUpdate = {
                 points: (loggedInUser.points || 0) + earned,
                 monthlyPoints: monthlyPoints + earned,
