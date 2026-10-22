@@ -52,6 +52,29 @@
         @keyframes keyboardTap { to { transform: translateY(2px) scale(0.96); } }
         
         .golden-banner { background: linear-gradient(110deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); background-size: 200% auto; animation: shine 4s linear infinite; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 20px; padding: 5px 10px; position: relative; overflow: hidden; }
+        #admin-announcement-banner { margin-bottom: 16px; padding: 11px 14px; border: 1px solid #334155; border-radius: 16px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12); }
+        .announcement-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .announcement-label { color: #cbd5e1; font-size: 11px; font-weight: 900; letter-spacing: 0.04em; }
+        .announcement-translate-row { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #cbd5e1; font-size: 10px; font-weight: 700; }
+        .announcement-language-select { max-width: 180px; padding: 4px 8px; border: 1px solid #64748b; border-radius: 8px; background: #fff; color: #0f172a; font: inherit; font-size: 11px; }
+        .announcement-language-status { color: #fecaca; font-size: 10px; }
+        .google-translate-backend { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+        .announcement-more-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .announcement-viewport { height: 104px; overflow: hidden; border-radius: 10px; background: rgba(2, 6, 23, 0.28); }
+        .announcement-track { display: flex; flex-direction: column; gap: 22px; padding: 12px 14px; animation: announcement-scroll-up 90s linear infinite; will-change: transform; }
+        .announcement-copy { flex: 0 0 auto; color: #f8fafc; font-size: 14px; font-weight: 600; line-height: 1.8; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; }
+        @keyframes announcement-scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        #admin-announcement-banner.is-expanded .announcement-viewport { height: auto; max-height: 60vh; overflow-y: auto; }
+        #admin-announcement-banner.is-expanded .announcement-track { animation: none; }
+        #admin-announcement-banner.is-expanded .announcement-copy + .announcement-copy { display: none; }
+        .announcement-more-button { flex: 0 0 auto; padding: 6px 11px; border: 1px solid #64748b; border-radius: 999px; background: #334155; color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+        .announcement-more-button:hover { background: #475569; }
+        .announcement-video-player { width: 100%; max-height: 420px; margin: 14px auto 0; border-radius: 12px; background: #000; }
+        .announcement-video-list { display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+        .announcement-video-item { width: min(160px, calc(50% - 8px)); text-align: center; }
+        .announcement-video-button { width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid #64748b; border-radius: 10px; background: #1e293b; color: #fff; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+        .announcement-video-button:hover { background: #334155; }
+        .announcement-video-caption { margin: 6px 2px 0; color: #fff; font-size: 12px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
         .banner-announcement { width: 100%; min-width: 0; padding: 0 4px; color: #422006; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 12px; align-items: center; }
         .banner-announcement h2 { grid-column: 1 / -1; margin: 0 0 2px; font-size: 13px; font-weight: 900; text-align: center; }
         .banner-announcement p { margin: 1px 0; font-size: 9px; line-height: 1.25; font-weight: 700; text-align: center; }
@@ -97,14 +120,14 @@
         .crown { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 22px; filter: drop-shadow(0 0 5px gold); animation: bounce 2s infinite; display: none; }
         @keyframes bounce { 0%, 100% { top: -8px; } 50% { top: -14px; } }
         
-        .char { color: #94a3b8; font-size: 1.3rem; font-family: 'Noto Sans Bengali', monospace; }
+        .char { color: #94a3b8; font-size: 1.45rem; font-family: 'Noto Sans Bengali', monospace; }
         .correct { color: #10b981; font-weight: 700; }
         .incorrect { background: #ef4444; color: white; border-radius: 3px; padding: 0 2px; }
         .current { border-bottom: 3px solid #2563eb; background: #dbeafe; }
         
         #practice-stage { display: flex; flex-direction: column; position: relative; }
-        #display-box { height: 220px; overflow-y: auto; padding: 20px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.3rem; line-height: 1.8; }
-        #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 160px; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
+        #display-box { height: 360px; overflow-y: auto; padding: 24px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.45rem; line-height: 1.9; }
+        #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 220px; resize: none; overflow-y: auto; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
         #typing-input:disabled { background: #f1f5f9; cursor: not-allowed; }
         #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; background: #f1f5f9; }
         #practice-fullscreen-shell:fullscreen > .marquee, #practice-fullscreen-shell:-webkit-full-screen > .marquee { display: none; }
@@ -235,15 +258,33 @@
         
         @media (max-width: 640px) {
             .golden-banner { padding: 12px; }
-            .char { font-size: 1rem; }
-            #display-box { height: 170px; font-size: 1.05rem; padding: 14px; }
-            #typing-input { height: 125px; font-size: 1.05rem; padding: 14px; }
+            #admin-announcement-banner { padding: 10px 11px; }
+            .announcement-header { align-items: center; }
+            .announcement-translate-row { font-size: 9px; }
+            .announcement-copy { font-size: 13px; line-height: 1.65; }
+            .announcement-viewport { height: 96px; }
+            .announcement-more-button { padding: 5px 9px; }
+            .char { font-size: 1.15rem; }
+            #display-box { height: 250px; font-size: 1.15rem; line-height: 1.8; padding: 16px; }
+            #typing-input { height: 180px; font-size: 1.05rem; padding: 14px; }
             .stat-pill { font-size: 9px; padding: 4px 10px; }
             .stat-pill .num { font-size: 13px; }
             .modal-box { padding: 16px; }
             .leader-img { width: 32px; height: 32px; }
             .control-select { font-size: 10px; padding: 4px 8px; }
             .banner-avatar { width: 34px; height: 34px; }
+            body.mobile-typing-mode { padding-top: 0; overflow: hidden; }
+            #practice-fullscreen-shell.mobile-typing-mode { display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+            #practice-fullscreen-shell.mobile-typing-mode > .marquee,
+            #practice-fullscreen-shell.mobile-typing-mode > nav { display: none; }
+            #practice-fullscreen-shell.mobile-typing-mode > .practice-page-content { display: flex; flex: 1; flex-direction: column; width: 100%; max-width: none; min-height: 0; margin: 0; padding: max(8px, env(safe-area-inset-top)) 10px max(8px, env(safe-area-inset-bottom)); gap: 6px; }
+            #practice-fullscreen-shell.mobile-typing-mode .practice-page-content > :not(#practice-stage):not(#practice-stats) { display: none; }
+            #practice-fullscreen-shell.mobile-typing-mode #practice-stage { flex: 1; min-height: 0; gap: 8px; overflow: hidden; }
+            #practice-fullscreen-shell.mobile-typing-mode #display-box { flex: 1 1 0; height: auto; min-height: 0; padding: 12px; font-size: 1.2rem; line-height: 1.7; }
+            #practice-fullscreen-shell.mobile-typing-mode #typing-input { flex: 0 0 32%; height: auto; min-height: 120px; max-height: 36%; margin-top: 0; padding: 14px; border-radius: 16px; font-size: 1.1rem; }
+            #practice-fullscreen-shell.mobile-typing-mode #practice-stats { flex: 0 0 auto; justify-content: center; gap: 6px; margin: 0; padding: 6px; border-radius: 12px; }
+            #practice-fullscreen-shell.mobile-typing-mode #practice-stats > div > .stat-pill:not(:first-child) { display: none; }
+            #practice-fullscreen-shell.mobile-typing-mode #practice-stats .stat-pill { padding: 3px 8px; }
             #leaderboard-section .leaderboard-table { display: block; width: 100%; max-width: none; table-layout: auto; }
             #leaderboard-section .leaderboard-table thead { display: none; }
             #leaderboard-section .leaderboard-table tbody { display: grid; gap: 8px; }
@@ -388,6 +429,29 @@
                 </div>
             </div>
         </div>
+
+        <section id="admin-announcement-banner" aria-label="Announcement">
+            <div class="announcement-header">
+                <span class="announcement-label">📢 ANNOUNCEMENT</span>
+                <div class="announcement-translate-row">
+                    <label for="announcement-language-picker">🌐 Language</label>
+                    <select id="announcement-language-picker" class="announcement-language-select" onchange="changeAnnouncementLanguage(this.value)" aria-label="Choose page language"></select>
+                    <span id="announcement-language-status" class="announcement-language-status" role="status" aria-live="polite"></span>
+                </div>
+            </div>
+            <div class="announcement-viewport">
+                <div class="announcement-track">
+                    <div id="admin-announcement-text" class="announcement-copy" aria-live="polite">Welcome to TypingMaster Pro Online!</div>
+                    <div class="announcement-copy" aria-hidden="true">Welcome to TypingMaster Pro Online!</div>
+                </div>
+            </div>
+            <video id="announcement-video-player" class="announcement-video-player hidden" controls playsinline></video>
+            <div id="announcement-video-list" class="announcement-video-list"></div>
+            <div class="announcement-more-row">
+                <button id="announcement-more-button" class="announcement-more-button" type="button" aria-expanded="false" aria-controls="admin-announcement-text" onclick="toggleAnnouncementText()">Show more</button>
+            </div>
+            <div id="google_translate_element" class="google-translate-backend" aria-hidden="true"></div>
+        </section>
 
         <!-- Typing Controls -->
         <div id="typing-controls" class="flex flex-wrap items-center gap-3 mb-3">
@@ -656,7 +720,6 @@
             authDomain: "eirnbooster.firebaseapp.com",
             databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
             projectId: "eirnbooster",
-            storageBucket: "eirnbooster.firebasestorage.app",
             messagingSenderId: "1062288115898",
             appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
         };
@@ -676,6 +739,8 @@
 
         const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         const ADMIN_WHATSAPP = '8801877902991';
+        const DEFAULT_SECONDARY_BANNER_TEXT = 'TypingMaster Pro Online-এ স্বাগতম!';
+        const EMPTY_ANNOUNCEMENT_VIDEOS = Array.from({ length: 5 }, () => null);
 
         let loggedInUser = null;
         let allUsers = [];
@@ -802,6 +867,97 @@
             toggle.textContent = isBannerCollapsed ? '🏆 Leaderboard' : 'Hide banner';
             toggle.setAttribute('aria-expanded', String(!isBannerCollapsed));
             toggle.setAttribute('aria-label', isBannerCollapsed ? 'Show banner' : 'Hide banner');
+        }
+
+        function listenSecondaryBanner() {
+            db.ref('site_banners/secondary').on('value', snapshot => {
+                const bannerConfig = snapshot.val();
+                const text = bannerConfig && typeof bannerConfig.text === 'string'
+                    ? bannerConfig.text
+                    : DEFAULT_SECONDARY_BANNER_TEXT;
+                document.querySelectorAll('.announcement-copy').forEach(copy => {
+                    copy.textContent = text;
+                });
+                document.getElementById('admin-announcement-banner').classList.remove('is-expanded');
+                document.getElementById('announcement-more-button').textContent = 'Show more';
+                document.getElementById('announcement-more-button').setAttribute('aria-expanded', 'false');
+                renderAnnouncementVideos(normalizeAnnouncementVideos(bannerConfig && bannerConfig.videos));
+            }, error => {
+                console.error('Announcement banner listener failed:', error);
+            });
+        }
+
+        function toggleAnnouncementText() {
+            const banner = document.getElementById('admin-announcement-banner');
+            const button = document.getElementById('announcement-more-button');
+            const expanded = banner.classList.toggle('is-expanded');
+            button.textContent = expanded ? 'Show less' : 'Show more';
+            button.setAttribute('aria-expanded', String(expanded));
+        }
+
+        function changeAnnouncementLanguage(language) {
+            if (!ANNOUNCEMENT_LANGUAGES[language]) return;
+            localStorage.setItem('announcementLanguage', language);
+            document.cookie = `googtrans=/bn/${language}; path=/; SameSite=Lax`;
+            document.getElementById('announcement-language-status').textContent = 'Translating...';
+            applyAnnouncementLanguage(language);
+        }
+
+        function applyAnnouncementLanguage(language, attempt = 0) {
+            const translateSelect = document.querySelector('#google_translate_element select.goog-te-combo');
+            if (!translateSelect) {
+                if (attempt < 20) {
+                    window.setTimeout(() => applyAnnouncementLanguage(language, attempt + 1), 250);
+                } else {
+                    document.getElementById('announcement-language-status').textContent =
+                        'Translator unavailable. Open the hosted site with an internet connection.';
+                    console.error('Google Translate did not load; language change was not applied.');
+                }
+                return;
+            }
+            translateSelect.value = language;
+            translateSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            document.getElementById('announcement-language-status').textContent = '';
+        }
+
+        function normalizeAnnouncementVideos(value) {
+            return Array.from({ length: 5 }, (_, index) =>
+                Array.isArray(value) ? value[index] || null : value && value[index] || null
+            );
+        }
+
+        function renderAnnouncementVideos(videos) {
+            const list = document.getElementById('announcement-video-list');
+            const player = document.getElementById('announcement-video-player');
+            list.replaceChildren();
+            videos.slice(0, 5).forEach((video, index) => {
+                if (!video || typeof video.url !== 'string' || !video.url) return;
+                const item = document.createElement('div');
+                item.className = 'announcement-video-item';
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'announcement-video-button';
+                button.textContent = `▶ ভিডিও ${index + 1}`;
+                button.setAttribute('aria-label', `ভিডিও ${index + 1} চালান`);
+                button.addEventListener('click', () => {
+                    if (player.src !== video.url) {
+                        player.src = video.url;
+                        player.classList.remove('hidden');
+                    }
+                    player.play().catch(error => console.error('Announcement video playback failed:', error));
+                });
+                const caption = document.createElement('p');
+                caption.className = 'announcement-video-caption';
+                caption.textContent = typeof video.caption === 'string' ? video.caption : '';
+                item.append(button, caption);
+                list.appendChild(item);
+            });
+            if (!videos.some(video => video && video.url === player.src)) {
+                player.pause();
+                player.removeAttribute('src');
+                player.load();
+                player.classList.add('hidden');
+            }
         }
 
         function updateBannerRotation() {
@@ -1257,7 +1413,9 @@
                 ${isCustomMode ? '✏️ Custom Text' : (typingLang === 'bn' ? '📖 বাংলা' : '📖 English')}
             </div>`;
             html += `<div class="practice-text-flow">${chars.map(c => `<span class="char">${c}</span>`).join('')}</div>`;
-            document.getElementById('display-box').innerHTML = html;
+            const displayBox = document.getElementById('display-box');
+            displayBox.scrollTop = 0;
+            displayBox.innerHTML = html;
             displayChars = document.querySelectorAll('#display-box .char');
             previousTypedChars = [];
         }
@@ -1290,6 +1448,8 @@
 
         function resetTyping() {
             setTypingStatus(false);
+            document.getElementById('practice-fullscreen-shell').classList.remove('mobile-typing-mode');
+            document.body.classList.remove('mobile-typing-mode');
             const input = document.getElementById('typing-input');
             if (!isCustomMode) {
                 const nextLessonId = getNextLessonId();
@@ -2547,6 +2707,7 @@
 
             // Start banner rotation
             startBannerRotation();
+            listenSecondaryBanner();
 
             const stored = localStorage.getItem('currentUser');
             if (stored) {
@@ -2586,7 +2747,15 @@
                 if (event.key === 'Escape') closeImageViewer();
             });
 
-            document.getElementById('typing-input').addEventListener('input', function() {
+            const typingInput = document.getElementById('typing-input');
+            typingInput.addEventListener('focus', function() {
+                if (loggedInUser && !document.fullscreenElement && window.matchMedia('(max-width: 640px)').matches) {
+                    document.getElementById('practice-fullscreen-shell').classList.add('mobile-typing-mode');
+                    document.body.classList.add('mobile-typing-mode');
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }
+            });
+            typingInput.addEventListener('input', function() {
                 if (!loggedInUser) {
                     this.value = '';
                     openAuth();
@@ -2599,6 +2768,16 @@
                 if (!isStarted) {
                     isStarted = true;
                     startTimer();
+                    const isMobileTypingMode = window.matchMedia('(max-width: 640px)').matches && !document.fullscreenElement;
+                    if (isMobileTypingMode) {
+                        document.getElementById('practice-fullscreen-shell').classList.add('mobile-typing-mode');
+                        document.body.classList.add('mobile-typing-mode');
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                    } else if (!document.fullscreenElement) {
+                        const navHeight = document.querySelector('nav').getBoundingClientRect().height;
+                        const inputTop = this.getBoundingClientRect().top + window.scrollY;
+                        window.scrollTo({ top: Math.max(0, inputTop - navHeight - 16), behavior: 'instant' });
+                    }
                 }
                 const typed = splitGraphemes(this.value);
                 let commonPrefix = 0;
@@ -2640,7 +2819,16 @@
                 if (typed.length > 0 && typed.length === displayChars.length) {
                     document.getElementById('submit-btn').classList.remove('hidden');
                 }
-                displayChars[typed.length]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const currentChar = displayChars[typed.length];
+                if (currentChar) {
+                    const displayBox = document.getElementById('display-box');
+                    const boxRect = displayBox.getBoundingClientRect();
+                    const charTop = currentChar.getBoundingClientRect().top - boxRect.top + displayBox.scrollTop;
+                    const targetTop = displayBox.clientHeight * 0.4;
+                    if (charTop > targetTop) {
+                        displayBox.scrollTop = charTop - targetTop;
+                    }
+                }
             });
 
             document.addEventListener('visibilitychange', () => {
@@ -2663,5 +2851,72 @@
 
         window.onload = init;
     </script>
+    <script>
+        const ANNOUNCEMENT_LANGUAGES = {
+            af: ['🇿🇦', 'Afrikaans'], sq: ['🇦🇱', 'Albanian'], am: ['🇪🇹', 'Amharic'],
+            ar: ['🇸🇦', 'Arabic'], hy: ['🇦🇲', 'Armenian'], az: ['🇦🇿', 'Azerbaijani'],
+            eu: ['🇪🇸', 'Basque'], be: ['🇧🇾', 'Belarusian'], bn: ['🇧🇩', 'Bengali'],
+            bs: ['🇧🇦', 'Bosnian'], bg: ['🇧🇬', 'Bulgarian'], ca: ['🇪🇸', 'Catalan'],
+            ceb: ['🇵🇭', 'Cebuano'], 'zh-CN': ['🇨🇳', 'Chinese (Simplified)'],
+            'zh-TW': ['🇹🇼', 'Chinese (Traditional)'], co: ['🇫🇷', 'Corsican'],
+            hr: ['🇭🇷', 'Croatian'], cs: ['🇨🇿', 'Czech'], da: ['🇩🇰', 'Danish'],
+            nl: ['🇳🇱', 'Dutch'], en: ['🇬🇧', 'English'], eo: ['🌐', 'Esperanto'],
+            et: ['🇪🇪', 'Estonian'], fi: ['🇫🇮', 'Finnish'], fr: ['🇫🇷', 'French'],
+            fy: ['🇳🇱', 'Frisian'], gl: ['🇪🇸', 'Galician'], ka: ['🇬🇪', 'Georgian'],
+            de: ['🇩🇪', 'German'], el: ['🇬🇷', 'Greek'], gu: ['🇮🇳', 'Gujarati'],
+            ht: ['🇭🇹', 'Haitian Creole'], ha: ['🇳🇬', 'Hausa'], haw: ['🇺🇸', 'Hawaiian'],
+            he: ['🇮🇱', 'Hebrew'], hi: ['🇮🇳', 'Hindi'], hmn: ['🌐', 'Hmong'],
+            hu: ['🇭🇺', 'Hungarian'], is: ['🇮🇸', 'Icelandic'], ig: ['🇳🇬', 'Igbo'],
+            id: ['🇮🇩', 'Indonesian'], ga: ['🇮🇪', 'Irish'], it: ['🇮🇹', 'Italian'],
+            ja: ['🇯🇵', 'Japanese'], jv: ['🇮🇩', 'Javanese'], kn: ['🇮🇳', 'Kannada'],
+            kk: ['🇰🇿', 'Kazakh'], km: ['🇰🇭', 'Khmer'], ko: ['🇰🇷', 'Korean'],
+            ku: ['🇮🇶', 'Kurdish'], ky: ['🇰🇬', 'Kyrgyz'], lo: ['🇱🇦', 'Lao'],
+            la: ['🇻🇦', 'Latin'], lv: ['🇱🇻', 'Latvian'], lt: ['🇱🇹', 'Lithuanian'],
+            lb: ['🇱🇺', 'Luxembourgish'], mk: ['🇲🇰', 'Macedonian'], mg: ['🇲🇬', 'Malagasy'],
+            ms: ['🇲🇾', 'Malay'], ml: ['🇮🇳', 'Malayalam'], mt: ['🇲🇹', 'Maltese'],
+            mi: ['🇳🇿', 'Maori'], mr: ['🇮🇳', 'Marathi'], mn: ['🇲🇳', 'Mongolian'],
+            my: ['🇲🇲', 'Myanmar'], ne: ['🇳🇵', 'Nepali'], no: ['🇳🇴', 'Norwegian'],
+            ny: ['🇲🇼', 'Nyanja'], ps: ['🇦🇫', 'Pashto'], fa: ['🇮🇷', 'Persian'],
+            pl: ['🇵🇱', 'Polish'], pt: ['🇵🇹', 'Portuguese'], pa: ['🇮🇳', 'Punjabi'],
+            ro: ['🇷🇴', 'Romanian'], ru: ['🇷🇺', 'Russian'], sm: ['🇼🇸', 'Samoan'],
+            gd: ['🏴', 'Scots Gaelic'], sr: ['🇷🇸', 'Serbian'], st: ['🇱🇸', 'Sesotho'],
+            sn: ['🇿🇼', 'Shona'], sd: ['🇵🇰', 'Sindhi'], si: ['🇱🇰', 'Sinhala'],
+            sk: ['🇸🇰', 'Slovak'], sl: ['🇸🇮', 'Slovenian'], so: ['🇸🇴', 'Somali'],
+            es: ['🇪🇸', 'Spanish'], su: ['🇮🇩', 'Sundanese'], sw: ['🇰🇪', 'Swahili'],
+            sv: ['🇸🇪', 'Swedish'], tl: ['🇵🇭', 'Filipino'], tg: ['🇹🇯', 'Tajik'],
+            ta: ['🇮🇳', 'Tamil'], te: ['🇮🇳', 'Telugu'], th: ['🇹🇭', 'Thai'],
+            tr: ['🇹🇷', 'Turkish'], uk: ['🇺🇦', 'Ukrainian'], ur: ['🇵🇰', 'Urdu'],
+            uz: ['🇺🇿', 'Uzbek'], vi: ['🇻🇳', 'Vietnamese'], cy: ['🏴', 'Welsh'],
+            xh: ['🇿🇦', 'Xhosa'], yi: ['🌐', 'Yiddish'], yo: ['🇳🇬', 'Yoruba'],
+            zu: ['🇿🇦', 'Zulu']
+        };
+
+        function initializeAnnouncementLanguagePicker() {
+            const picker = document.getElementById('announcement-language-picker');
+            Object.entries(ANNOUNCEMENT_LANGUAGES).forEach(([code, [flag, name]]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${flag} ${name}`;
+                picker.appendChild(option);
+            });
+            const translateCookie = document.cookie.split('; ').find(cookie => cookie.startsWith('googtrans='));
+            const cookieLanguage = translateCookie ? translateCookie.split('/').pop() : '';
+            const language = localStorage.getItem('announcementLanguage') || cookieLanguage || 'en';
+            picker.value = ANNOUNCEMENT_LANGUAGES[language] ? language : 'en';
+            if (!document.cookie.split('; ').some(cookie => cookie.startsWith('googtrans='))) {
+                document.cookie = `googtrans=/bn/${picker.value}; path=/; SameSite=Lax`;
+            }
+        }
+
+        initializeAnnouncementLanguagePicker();
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'bn',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
