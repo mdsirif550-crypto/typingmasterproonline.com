@@ -335,7 +335,6 @@
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
                 <span class="live-typing-pill" title="Visitors currently connected to the site"><span class="live-typing-dot"></span>Viewing now: <span id="live-viewer-count">0</span></span>
-                <span class="live-typing-pill" title="Logged-in users currently connected"><span class="live-typing-dot"></span>Logged in: <span id="live-online-count">0</span></span>
                 <span class="live-typing-pill" title="Logged-in users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
                 <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
                 <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
@@ -373,7 +372,7 @@
                     <p class="announcement-highlight">🔥 Stay With Us for More Updates!</p>
                     <p class="banner-website-glow">🌐 TypingMasterProOnline.com</p>
                 </div>
-                <div id="banner-monthly-winners" class="banner-monthly-winners hidden" aria-label="Previous month's top three winners"></div>
+                <div id="banner-monthly-winners" class="banner-monthly-winners hidden" aria-label="This month's top three players"></div>
                 <div id="banner-featured-user" class="banner-featured-user flex items-center justify-center gap-2 hidden">
                     <div id="banner-avatar-wrap" class="level-frame-wrap">
                         <span class="crown" id="banner-crown">👑</span>
@@ -692,7 +691,6 @@
         let customTextContent = '';
         let rotateIdx = 0;
         let rotationTimer = null;
-        let monthlyEventWinners = [];
         let observedMonthKey = null;
         let onlineUserIds = new Set();
         let isBannerCollapsed = false;
@@ -807,17 +805,12 @@
         }
 
         function updateBannerRotation() {
-            if (monthlyEventWinners.length > 0) {
-                document.getElementById('banner-monthly-winners').classList.remove('hidden');
-                document.getElementById('banner-featured-user').classList.add('hidden');
-                return;
-            }
-            document.getElementById('banner-monthly-winners').classList.add('hidden');
-            const sorted = [...allUsers].sort((a, b) => {
-                const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
-                if (mb !== ma) return mb - ma;
-                return (b.points || 0) - (a.points || 0);
-            }).slice(0, 10);
+            const currentMonth = getCurrentMonthKey();
+            const getMonthlyPoints = user => user.monthlyPointsMonth === currentMonth ? (user.monthlyPoints || 0) : 0;
+            const sorted = [...allUsers].sort((a, b) =>
+                getMonthlyPoints(b) - getMonthlyPoints(a) || (b.points || 0) - (a.points || 0)
+            ).slice(0, 10);
+            renderMonthlyWinners(sorted.filter(user => getMonthlyPoints(user) > 0).slice(0, 3), getMonthlyPoints);
             
             if (sorted.length === 0) {
                 document.getElementById('banner-rank').textContent = '#--';
@@ -844,7 +837,7 @@
             const bannerId = document.getElementById('banner-id');
             bannerId.textContent = 'ID: ' + (user.id || '').toUpperCase();
             setUserIdChip(bannerId, user.id);
-            document.getElementById('banner-points').textContent = (user.points || 0) + ' pts';
+            document.getElementById('banner-points').textContent = getMonthlyPoints(user) + ' monthly pts';
             document.getElementById('banner-avatar').src = user.pic || DEFAULT_AVATAR;
             applyLevelFrame(document.getElementById('banner-avatar'), user);
             document.getElementById('banner-level').textContent = 'LVL ' + level;
@@ -863,11 +856,11 @@
             // প্রথমবার আপডেট
             updateBannerRotation();
             
-            // প্রতি 5 সেকেন্ডে রোটেট
+            // প্রতি 10 সেকেন্ডে রোটেট
             rotationTimer = setInterval(() => {
-                rotateIdx = (rotateIdx + 1) % 10;
+                rotateIdx = (rotateIdx + 1) % Math.max(1, Math.min(10, allUsers.length));
                 updateBannerRotation();
-            }, 5000);
+            }, 10000);
         }
 
         function getCurrentMonthKey() {
@@ -945,18 +938,18 @@
                 const element = document.getElementById('monthly-event-previous-winner');
                 const previousMonth = getPreviousMonthKey();
                 if (!result || result.month !== previousMonth) {
-                    monthlyEventWinners = [];
                     updateBannerRotation();
                     element.classList.add('hidden');
                     return;
                 }
-                monthlyEventWinners = Array.isArray(result.topPlayers) && result.topPlayers.length
-                    ? result.topPlayers.slice(0, 3)
-                    : (result.winner ? [result.winner] : []);
-                renderMonthlyWinners();
-                updateBannerRotation();
-                const winner = monthlyEventWinners[0];
-                element.textContent = `🥇 Last month's winner (${result.month}): ${winner.name || winner.id} — ${winner.monthlyPoints || 0} points · ${result.participantCount || 0} participants`;
+                const previousWinner = Array.isArray(result.topPlayers) && result.topPlayers.length
+                    ? result.topPlayers[0]
+                    : result.winner;
+                if (!previousWinner) {
+                    element.classList.add('hidden');
+                    return;
+                }
+                element.textContent = `🥇 Last month's winner (${result.month}): ${previousWinner.name || previousWinner.id} — ${previousWinner.monthlyPoints || 0} points · ${result.participantCount || 0} participants`;
                 element.classList.remove('hidden');
             }, error => console.error('Monthly event results listener failed:', error));
         }
@@ -967,10 +960,10 @@
             return `${previousMonth.getUTCFullYear()}-${String(previousMonth.getUTCMonth() + 1).padStart(2, '0')}`;
         }
 
-        function renderMonthlyWinners() {
+        function renderMonthlyWinners(winners, getMonthlyPoints) {
             const container = document.getElementById('banner-monthly-winners');
             container.replaceChildren();
-            monthlyEventWinners.slice(0, 3).forEach((winner, index) => {
+            winners.forEach((winner, index) => {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'banner-winner-card';
@@ -993,12 +986,12 @@
                 name.textContent = winner.name || winner.id;
                 const score = document.createElement('span');
                 score.className = 'banner-winner-score';
-                score.textContent = `${winner.monthlyPoints || 0} monthly points`;
+                score.textContent = `${getMonthlyPoints(winner)} monthly points`;
                 details.append(rank, name, score);
                 button.append(avatarFrame, details);
                 container.appendChild(button);
             });
-            container.classList.toggle('hidden', monthlyEventWinners.length === 0);
+            container.classList.toggle('hidden', winners.length === 0);
         }
 
         function updateMonthlyCountdown() {
@@ -1536,14 +1529,12 @@
                 });
                 onlineUserIds = activeUserIds;
                 liveTypingSpeeds = typingSpeeds;
-                document.getElementById('live-online-count').textContent = onlineUserIds.size;
                 document.getElementById('live-typing-count').textContent = Object.keys(typingSpeeds).length;
                 refreshTypingSprints();
             }, err => {
                 console.error('Typing count listener failed:', err);
                 onlineUserIds = new Set();
                 liveTypingSpeeds = Object.create(null);
-                document.getElementById('live-online-count').textContent = '—';
                 document.getElementById('live-typing-count').textContent = '—';
                 refreshTypingSprints();
             });
