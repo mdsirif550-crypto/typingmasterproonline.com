@@ -164,7 +164,7 @@
     .welcome-banner-topline { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .welcome-banner-account { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; }
     .welcome-banner-identity, .welcome-banner-controls { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
-    .welcome-banner-logo { width: 64px; height: 64px; object-fit: contain; border-radius: 12px; background: rgba(255,255,255,0.08); }
+    .welcome-banner-logo { display: block; width: 84px; height: 84px; flex: 0 0 84px; object-fit: contain; border: 2px solid rgba(255,255,255,0.85); border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.28); }
     .welcome-banner-identity h1 { color: #fff; font-size: clamp(22px, 4vw, 34px); font-weight: 900; line-height: 1.1; letter-spacing: 0.3px; text-shadow: 0 3px 12px rgba(0,0,0,0.35); }
     .welcome-banner-identity h1 span { color: #7dd3fc; }
     .welcome-banner-about { margin-left: 8px; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.26); border-radius: 999px; background: linear-gradient(135deg, #047857, #0f766e); color: #fff; font-size: 12px; font-weight: 800; text-decoration: none; white-space: nowrap; }
@@ -351,7 +351,7 @@
       .welcome-banner-topline { flex-wrap: wrap; justify-content: center; gap: 7px; }
       .welcome-banner-identity { width: 100%; gap: 8px; justify-content: center; }
       .welcome-banner-account { width: 100%; }
-      .welcome-banner-logo { width: 46px; height: 46px; }
+      .welcome-banner-logo { width: 58px; height: 58px; flex-basis: 58px; border-radius: 13px; }
       .welcome-banner-identity h1 { min-width: 0; font-size: clamp(18px, 5vw, 24px); }
       .welcome-banner-controls { width: 100%; gap: 8px; flex-wrap: wrap; }
       .welcome-banner-about { margin-left: 0; padding: 6px 9px; font-size: 10px; }
