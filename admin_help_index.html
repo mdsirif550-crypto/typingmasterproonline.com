@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ADMIN - Typing Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f1f5f9; }
+        .hidden { display: none !important; }
+        .tab-btn { transition: all 0.2s; cursor: pointer; }
+        .tab-btn.active { background: #2563eb; color: white; }
+        .glass { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); padding: 20px; }
+        .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+        .online-dot.online { background: #22c55e; animation: pulse 1.5s infinite; }
+        .online-dot.offline { background: #94a3b8; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        .chat-container { display: flex; height: 500px; gap: 12px; }
+        .chat-sidebar { width: 280px; flex-shrink: 0; border-right: 1px solid #e2e8f0; overflow-y: auto; padding-right: 8px; }
+        .chat-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 12px; background: #f8fafc; border-radius: 12px; min-height: 300px; max-height: 400px; }
+        .chat-input-area { display: flex; gap: 8px; padding: 8px 0; }
+        
+        .chat-item { padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .chat-item:hover { background: #f1f5f9; }
+        .chat-item.active { background: #dbeafe; border-color: #2563eb; }
+        .chat-item .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; flex-shrink: 0; }
+        .chat-item .info { flex: 1; min-width: 0; }
+        .chat-item .name { font-weight: 700; font-size: 13px; color: #0f172a; }
+        .chat-item .last-msg { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item .time { font-size: 9px; color: #94a3b8; flex-shrink: 0; }
+        .chat-item .badge { background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 1px 8px; border-radius: 999px; flex-shrink: 0; }
+        .chat-item .online-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .chat-item .online-status.online { background: #22c55e; }
+        .chat-item .online-status.offline { background: #94a3b8; }
+        
+        .msg-bubble { max-width: 75%; padding: 8px 14px; border-radius: 16px; margin-bottom: 4px; word-wrap: break-word; }
+        .msg-bubble.sent { background: #2563eb; color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg-bubble.received { background: white; color: #1e293b; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
+        .msg-bubble .time { font-size: 9px; opacity: 0.7; display: block; margin-top: 2px; }
+        .msg-bubble .sender { font-size: 10px; font-weight: 700; display: block; margin-bottom: 2px; }
+        .msg-date { text-align: center; font-size: 10px; color: #94a3b8; padding: 8px 0; }
+        
+        .lesson-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .lesson-item .lang-tag { font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+        .lang-tag.bn { background: #dbeafe; color: #1e40af; }
+        .lang-tag.en { background: #dcfce7; color: #166534; }
+        
+        .btn { padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 11px; border: none; cursor: pointer; transition: 0.15s; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-success:hover { background: #16a34a; }
+        .btn-sm { padding: 3px 10px; font-size: 9px; }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; border-radius: 20px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+        .slim-input { width: 100%; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc; }
+        .slim-input:focus { border-color: #2563eb; background: white; }
+        
+        .delete-btn { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .delete-btn:hover { background: #fef2f2; color: #ef4444; }
+        
+        @media (max-width: 768px) {
+            .chat-container { flex-direction: column; height: auto; }
+            .chat-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; max-height: 200px; padding-bottom: 8px; }
+            .chat-messages { min-height: 200px; max-height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center">
+            <h2 class="text-xl font-black uppercase text-slate-800">🔐 Admin Login</h2>
+            <p class="text-xs text-slate-500 mb-4">Enter admin password</p>
+            <input id="admin-pass" type="password" placeholder="Password" class="slim-input text-center mb-3" onkeypress="if(event.key==='Enter')checkAdmin()">
+            <button onclick="checkAdmin()" class="btn btn-primary w-full">Login</button>
+            <p class="text-[10px] text-slate-400 mt-3">Default: admin123</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <div class="w-56 md:w-64 bg-slate-900 text-white flex flex-col h-full flex-shrink-0">
+            <div class="p-4 border-b border-slate-700 text-center">
+                <h1 class="text-sm font-black uppercase text-blue-400">Typing<span class="text-white">Admin</span></h1>
+                <p class="text-[9px] text-slate-400">Control Panel</p>
+            </div>
+            <nav class="flex-1 p-3 space-y-1">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-white bg-blue-600">📊 Dashboard</button>
+                <button onclick="switchTab('lessons')" id="tab-lessons" class="tab-btn w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-slate-300 hover:bg-slate-800">📝 Lessons</button>
+                <button onclick="switchTab('banner')" id="tab-banner" class="tab-btn w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-slate-300 hover:bg-slate-800">📢 Announcement</button>
+                <button onclick="switchTab('users')" id="tab-users" class="tab-btn w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-slate-300 hover:bg-slate-800">👥 Users</button>
+                <button onclick="switchTab('verification')" id="tab-verification" class="tab-btn w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-slate-300 hover:bg-slate-800">✅ Verification <span id="verification-pending-count" class="ml-1 rounded-full bg-red-500 px-1.5 py-0.5 text-[9px] text-white">0</span></button>
+                <button onclick="switchTab('chat')" id="tab-chat" class="tab-btn w-full text-left px-3 py-2 rounded-lg font-bold text-xs transition text-slate-300 hover:bg-slate-800">💬 Chat</button>
+            </nav>
+            <div class="p-3 border-t border-slate-700">
+                <div class="flex items-center justify-between text-xs mb-2">
+                    <span>🟢 Online: <span id="online-count" class="font-bold text-emerald-400">0</span></span>
+                </div>
+                <button onclick="location.reload()" class="btn btn-danger w-full text-xs">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-3 md:p-6">
+
+            <!-- Dashboard Tab -->
+            <div id="view-dashboard" class="view-section">
+                <h2 class="text-2xl font-black text-slate-800 mb-4">📊 Overview</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-blue-600 text-white p-4 rounded-xl shadow"><p class="text-xs opacity-80 font-bold">Users</p><p id="stat-users" class="text-3xl font-black">0</p></div>
+                    <div class="bg-emerald-600 text-white p-4 rounded-xl shadow"><p class="text-xs opacity-80 font-bold">Lessons</p><p id="stat-lessons" class="text-3xl font-black">0</p></div>
+                    <div class="bg-purple-600 text-white p-4 rounded-xl shadow"><p class="text-xs opacity-80 font-bold">Online</p><p id="stat-online" class="text-3xl font-black">0</p></div>
+                </div>
+            </div>
+
+            <!-- Lessons Tab -->
+            <div id="view-lessons" class="view-section hidden">
+                <h2 class="text-2xl font-black text-slate-800 mb-4">📝 Manage Lessons</h2>
+                
+                <div class="glass mb-4">
+                    <h3 class="text-sm font-bold mb-2">➕ Add New Lesson</h3>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        <select id="lesson-lang" class="slim-input w-auto">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="bn">🇧🇩 বাংলা</option>
+                        </select>
+                    </div>
+                    <textarea id="lesson-text" class="slim-input mb-2 h-20" placeholder="Type lesson text here..."></textarea>
+                    <button onclick="addLesson()" class="btn btn-primary">Add Lesson</button>
+                </div>
+
+                <div class="glass">
+                    <h3 class="text-sm font-bold mb-3">📚 All Lessons (<span id="lesson-count">0</span>)</h3>
+                    <div id="lessons-list"></div>
+                </div>
+            </div>
+
+            <!-- Announcement Banner Tab -->
+            <div id="view-banner" class="view-section hidden">
+                <h2 class="text-2xl font-black text-slate-800 mb-4">📢 Announcement Banner</h2>
+                <div class="glass">
+                    <p class="text-xs text-slate-500 mb-3">এই লেখা মূল পেজে লিডারবোর্ড ব্যানারের নিচে কালো ব্যানারে সাদা অক্ষরে দেখাবে। একাধিক লাইনের জন্য নতুন লাইন ব্যবহার করুন।</p>
+                    <label for="announcement-banner-text" class="text-xs font-bold text-slate-500">Banner text</label>
+                    <textarea id="announcement-banner-text" class="slim-input mb-3 h-32" placeholder="এখানে ব্যানারের লেখা লিখুন..."></textarea>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" onclick="saveAnnouncementBanner()" class="btn btn-primary">Save Banner</button>
+                        <span id="announcement-banner-status" class="text-xs font-bold" role="status" aria-live="polite"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="view-users" class="view-section hidden">
+                <h2 class="text-2xl font-black text-slate-800 mb-4">👥 Manage Users</h2>
+                <div class="glass overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-100 text-slate-600 uppercase">
+                            <tr><th class="p-2 text-center">Status</th><th class="p-2 text-left">ID</th><th class="p-2 text-left">Name</th><th class="p-2 text-center">Points</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th><th class="p-2 text-center">Verified badge</th><th class="p-2 text-center">Actions</th></tr>
+                        </thead>
+                        <tbody id="users-list"></tbody>
+                    </table>
+                    <p id="users-badge-status" class="mt-2 text-xs font-bold" role="status" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <!-- Verified Badge Requests Tab -->
+            <div id="view-verification" class="view-section hidden">
+                <h2 class="text-2xl font-black text-slate-800 mb-2">✅ Verified Badge Requests</h2>
+                <p class="text-xs text-slate-500 mb-4">Choose one of the three badge styles before approving an application.</p>
+                <div id="verification-requests-status" class="text-xs font-bold mb-3" role="status" aria-live="polite"></div>
+                <div id="verification-requests-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="view-chat" class="view-section hidden">
+                <h2 class="text-2xl font-black text-slate-800 mb-4">💬 Live Chat</h2>
+                <div class="glass chat-container">
+                    <!-- Sidebar: Chat List -->
+                    <div class="chat-sidebar" id="chat-sidebar">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-500 uppercase">Chats</span>
+                            <span id="chat-count" class="text-[10px] font-bold text-slate-400">0</span>
+                        </div>
+                        <div id="chat-list"></div>
+                    </div>
+                    
+                    <!-- Main: Chat Window -->
+                    <div class="chat-main">
+                        <div id="chat-header" class="flex items-center gap-3 p-2 border-b border-slate-200">
+                            <img id="chat-user-avatar" class="w-10 h-10 rounded-full object-cover border-2 border-slate-200" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                            <div>
+                                <div class="font-bold text-sm" id="chat-user-name">Select a chat</div>
+                                <div class="text-[10px] text-slate-500" id="chat-user-status">Offline</div>
+                            </div>
+                            <div class="ml-auto flex gap-1">
+                                <button onclick="deleteChat()" class="delete-btn" title="Delete chat">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="text-center text-slate-400 text-sm py-10">Select a user to start chatting</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input id="chat-input" class="slim-input" placeholder="Type a message...">
+                            <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="text-lg font-bold mb-3">✏️ Edit User</h2>
+            <input type="hidden" id="edit-uid">
+            <label class="text-xs font-bold text-slate-500">Name</label>
+            <input id="edit-uname" class="slim-input mb-2" placeholder="Name">
+            <label class="text-xs font-bold text-slate-500">Points</label>
+            <input id="edit-upoints" type="number" class="slim-input mb-2" placeholder="Points">
+            <label class="text-xs font-bold text-slate-500">Password</label>
+            <input id="edit-upass" class="slim-input mb-3" placeholder="Password">
+            <div class="flex gap-2">
+                <button onclick="saveUserEdit()" class="btn btn-success flex-1">Save</button>
+                <button onclick="document.getElementById('edit-user-modal').classList.remove('active')" class="btn btn-danger flex-1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Lesson Modal -->
+    <div id="edit-lesson-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="text-lg font-bold mb-3">✏️ Edit Lesson</h2>
+            <input type="hidden" id="edit-lid">
+            <label class="text-xs font-bold text-slate-500">Language</label>
+            <select id="edit-llang" class="slim-input mb-2">
+                <option value="en">English</option>
+                <option value="bn">বাংলা</option>
+            </select>
+            <label class="text-xs font-bold text-slate-500">Text</label>
+            <textarea id="edit-ltext" class="slim-input mb-3 h-20"></textarea>
+            <div class="flex gap-2">
+                <button onclick="saveLessonEdit()" class="btn btn-success flex-1">Save</button>
+                <button onclick="document.getElementById('edit-lesson-modal').classList.remove('active')" class="btn btn-danger flex-1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIG
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",
+            authDomain: "eirnbooster.firebaseapp.com",
+            databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
+            projectId: "eirnbooster",
+            messagingSenderId: "1062288115898",
+            appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const DEFAULT_SECONDARY_BANNER_TEXT = 'TypingMaster Pro Online-এ স্বাগতম!';
+        const VERIFIED_BADGE_TYPES = [
+            { value: 'profile_star', label: 'Profile + star' },
+            { value: 'gold_check', label: 'Gold seal' },
+            { value: 'winged_check', label: 'Blue wings + star' }
+        ];
+
+        function escapeAdminHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+        }
+
+        function badgeTypeOptions(selectedType = '') {
+            return `<option value="">No badge</option>${VERIFIED_BADGE_TYPES.map(type =>
+                `<option value="${type.value}" ${selectedType === type.value ? 'selected' : ''}>${type.label}</option>`
+            ).join('')}`;
+        }
+
+        let allUsers = [];
+        let allLessons = [];
+        let onlineUsers = {};
+        let chatMessages = {};
+        let currentChatUser = null;
+        let chatListListener = null;
+        let chatMsgListener = null;
+        let verificationRequests = {};
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        function checkAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === 'admin123') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                initAdmin();
+            } else {
+                alert('Wrong password!');
+            }
+        }
+
+        // ============================================
+        // TAB SWITCH
+        // ============================================
+        function switchTab(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active', 'bg-blue-600', 'text-white');
+                b.classList.add('text-slate-300');
+            });
+            const btn = document.getElementById('tab-' + tab);
+            btn.classList.add('active', 'bg-blue-600', 'text-white');
+            btn.classList.remove('text-slate-300');
+            if (tab === 'chat') {
+                loadChatList();
+            }
+            if (tab === 'verification') renderVerificationRequests();
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        function initAdmin() {
+            console.log('🚀 Admin started');
+            loadUsers();
+            loadVerificationRequests();
+            loadLessons();
+            trackOnline();
+            loadChatList();
+            loadAnnouncementBanner();
+        }
+
+        function loadAnnouncementBanner() {
+            const status = document.getElementById('announcement-banner-status');
+            status.textContent = 'Loading...';
+            db.ref('site_banners/secondary').once('value').then(snapshot => {
+                const bannerConfig = snapshot.val();
+                const text = bannerConfig && typeof bannerConfig.text === 'string'
+                    ? bannerConfig.text
+                    : DEFAULT_SECONDARY_BANNER_TEXT;
+                document.getElementById('announcement-banner-text').value = text;
+                status.textContent = '';
+            }).catch(error => {
+                console.error('Announcement banner load failed:', error);
+                status.textContent = 'Could not load banner text. Please try again.';
+            });
+        }
+
+        function saveAnnouncementBanner() {
+            const text = document.getElementById('announcement-banner-text').value;
+            const status = document.getElementById('announcement-banner-status');
+            status.textContent = 'Saving...';
+            db.ref('site_banners/secondary').update({ text, updatedAt: Date.now() }).then(() => {
+                status.textContent = 'Banner saved successfully.';
+            }).catch(error => {
+                console.error('Announcement banner save failed:', error);
+                status.textContent = 'Could not save banner. Please try again.';
+            });
+        }
+
+        // ============================================
+        // ONLINE TRACKING
+        // ============================================
+        function trackOnline() {
+            db.ref('online_users').on('value', snap => {
+                const data = snap.val() || {};
+                onlineUsers = Object.keys(data).reduce((acc, key) => {
+                    acc[String(key).toLowerCase()] = data[key];
+                    return acc;
+                }, {});
+                const count = Object.keys(data).filter(k => isPresenceOnline(data[k])).length;
+                document.getElementById('online-count').textContent = count;
+                document.getElementById('stat-online').textContent = count;
+                updateUserStatus();
+                renderChatList();
+            });
+
+            db.ref('.info/connected').on('value', snap => {
+                if (snap.val() === true) {
+                    db.ref('online_users/admin').set({ uid: 'admin', name: 'Admin', online: true, lastSeen: Date.now() });
+                    db.ref('online_users/admin').onDisconnect().remove();
+                }
+            });
+        }
+
+        function updateUserStatus() {
+            document.querySelectorAll('#users-list tr').forEach(row => {
+                const id = row.dataset.userId;
+                if (id) {
+                    const dot = row.querySelector('.online-dot');
+                    if (dot) {
+                        const isOnline = isUserOnline(id);
+                        dot.className = 'online-dot ' + (isOnline ? 'online' : 'offline');
+                        dot.title = isOnline ? 'Online' : 'Offline';
+                    }
+                }
+            });
+        }
+
+        function isUserOnline(id) {
+            const key = String(id || '').toLowerCase();
+            return isPresenceOnline(onlineUsers[key]);
+        }
+
+        function isPresenceOnline(presence) {
+            if (!presence) return false;
+            if (presence.online === true) return true;
+            return Object.values(presence.connections || {}).some(connection => connection && connection.online === true);
+        }
+
+        // ============================================
+        // USERS
+        // ============================================
+        function loadUsers() {
+            db.ref('users').on('value', snap => {
+                const data = snap.val() || {};
+                allUsers = Object.keys(data).map(k => ({ ...data[k], id: k }));
+                document.getElementById('stat-users').textContent = allUsers.length;
+                renderUsers();
+                renderChatList();
+            });
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('users-list');
+            tbody.innerHTML = allUsers.map(u => {
+                const isOnline = isUserOnline(u.id);
+                const userId = escapeAdminHtml(u.id);
+                const badgeType = u.verifiedBadge === true
+                    ? (VERIFIED_BADGE_TYPES.some(type => type.value === u.verifiedBadgeType) ? u.verifiedBadgeType : 'profile_star')
+                    : '';
+                return `<tr data-user-id="${userId}" class="border-b hover:bg-slate-50">
+                    <td class="p-2 text-center"><span class="online-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></span></td>
+                    <td class="p-2 font-bold text-blue-600 uppercase text-[11px]">${userId}</td>
+                    <td class="p-2 font-bold text-slate-800">${escapeAdminHtml(u.name || u.id)}${u.verifiedBadge === true ? ` <span title="Admin verified">${escapeAdminHtml(VERIFIED_BADGE_TYPES.find(type => type.value === badgeType)?.label || 'Verified')}</span>` : ''}</td>
+                    <td class="p-2 text-center font-bold">${u.points || 0}</td>
+                    <td class="p-2 text-center font-bold text-emerald-600">${u.monthlyPoints || 0}</td>
+                    <td class="p-2 text-center font-bold text-orange-600">${u.bestWpm || 0}</td>
+                    <td class="p-2 text-center">
+                        <div class="flex min-w-36 flex-col gap-1">
+                            <select data-badge-type="${userId}" class="slim-input !mb-0 !py-1 text-[10px]" aria-label="Verified badge for ${userId}">${badgeTypeOptions(badgeType)}</select>
+                            <button type="button" data-save-badge="${userId}" class="btn btn-primary btn-sm">Save badge</button>
+                        </div>
+                    </td>
+                    <td class="p-2 text-center">
+                        <button onclick="openEditUser('${userId}')" class="btn btn-primary btn-sm">Edit</button>
+                        <button onclick="deleteUser('${userId}')" class="btn btn-danger btn-sm">Del</button>
+                        <button onclick="openChat('${userId}')" class="btn btn-success btn-sm">Chat</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">No users</td></tr>';
+            tbody.querySelectorAll('[data-save-badge]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const userId = button.dataset.saveBadge;
+                    const select = button.closest('tr')?.querySelector('[data-badge-type]');
+                    saveUserBadge(userId, select);
+                });
+            });
+        }
+
+        async function saveUserBadge(userId, select) {
+            if (!select) return;
+            const status = document.getElementById('users-badge-status');
+            const badgeType = select.value;
+            if (badgeType && !VERIFIED_BADGE_TYPES.some(type => type.value === badgeType)) {
+                status.textContent = 'Choose a valid badge style.';
+                return;
+            }
+            status.textContent = `Saving badge for ${userId}...`;
+            try {
+                await db.ref(`users/${userId}`).update({
+                    verifiedBadge: Boolean(badgeType),
+                    verifiedBadgeType: badgeType || null,
+                    verifiedAt: badgeType ? Date.now() : null
+                });
+                status.textContent = badgeType
+                    ? `Badge assigned to ${userId}.`
+                    : `Verified badge removed from ${userId}.`;
+            } catch (error) {
+                console.error('Could not update user verified badge:', error);
+                status.textContent = error.message || `Could not update the badge for ${userId}. Check database access.`;
+            }
+        }
+
+        function loadVerificationRequests() {
+            db.ref('verification_requests').on('value', snapshot => {
+                verificationRequests = snapshot.val() || {};
+                renderVerificationRequests();
+            }, error => {
+                console.error('Verification requests listener failed:', error);
+                document.getElementById('verification-requests-status').textContent =
+                    'Could not load verification requests. Check the database connection and permissions.';
+            });
+        }
+
+        function renderVerificationRequests() {
+            const container = document.getElementById('verification-requests-list');
+            const status = document.getElementById('verification-requests-status');
+            if (!container || !status) return;
+            const requests = Object.entries(verificationRequests)
+                .filter(([, request]) => request && request.status === 'pending')
+                .sort(([, a], [, b]) => (Number(a.requestedAt) || 0) - (Number(b.requestedAt) || 0));
+            document.getElementById('verification-pending-count').textContent = String(requests.length);
+            container.replaceChildren();
+            status.textContent = requests.length ? `${requests.length} application${requests.length === 1 ? '' : 's'} waiting for review.` : 'No pending applications.';
+            requests.forEach(([userId, request]) => {
+                const card = document.createElement('article');
+                card.className = 'glass flex flex-wrap items-start justify-between gap-4';
+                const details = document.createElement('div');
+                details.className = 'min-w-0 flex-1';
+                const name = document.createElement('h3');
+                name.className = 'font-black text-slate-800';
+                name.textContent = String(request.name || userId);
+                const id = document.createElement('p');
+                id.className = 'text-xs text-slate-500';
+                id.textContent = `User ID: ${userId}`;
+                const note = document.createElement('p');
+                note.className = 'mt-2 text-sm text-slate-700';
+                note.textContent = String(request.note || 'No application note provided.');
+                const date = document.createElement('p');
+                date.className = 'mt-1 text-[10px] text-slate-400';
+                date.textContent = request.requestedAt
+                    ? `Applied: ${new Date(Number(request.requestedAt)).toLocaleString()}`
+                    : 'Application date unavailable';
+                const requestType = document.createElement('p');
+                requestType.className = 'mt-1 text-xs font-bold text-blue-700';
+                const requestedBadge = VERIFIED_BADGE_TYPES.find(type => type.value === request.badgeType);
+                requestType.textContent = request.changeRequest
+                    ? `Badge change request: ${requestedBadge ? requestedBadge.label : 'Choose a badge below'}`
+                    : `Requested badge: ${requestedBadge ? requestedBadge.label : 'Choose a badge below'}`;
+                details.append(name, id, requestType, note, date);
+
+                const actions = document.createElement('div');
+                actions.className = 'flex flex-wrap items-center gap-2';
+                const badgeType = document.createElement('select');
+                badgeType.className = 'slim-input !mb-0 !w-auto !py-1 text-[10px]';
+                badgeType.setAttribute('aria-label', `Badge style for ${userId}`);
+                const selectedRequestType = VERIFIED_BADGE_TYPES.some(type => type.value === request.badgeType)
+                    ? request.badgeType
+                    : 'profile_star';
+                badgeType.innerHTML = badgeTypeOptions(selectedRequestType).replace('<option value="">No badge</option>', '');
+                const approve = document.createElement('button');
+                approve.type = 'button';
+                approve.className = 'btn btn-success';
+                approve.textContent = 'Approve';
+                approve.addEventListener('click', () => reviewVerificationRequest(userId, true, badgeType.value));
+                const reject = document.createElement('button');
+                reject.type = 'button';
+                reject.className = 'btn btn-danger';
+                reject.textContent = 'Reject';
+                reject.addEventListener('click', () => reviewVerificationRequest(userId, false));
+                actions.append(badgeType, approve, reject);
+                card.append(details, actions);
+                container.append(card);
+            });
+        }
+
+        async function reviewVerificationRequest(userId, approve, badgeType = 'profile_star') {
+            const request = verificationRequests[userId];
+            if (!request || request.status !== 'pending') return;
+            const action = approve ? 'approve' : 'reject';
+            if (!confirm(`Are you sure you want to ${action} the verified badge request for ${request.name || userId}?`)) return;
+
+            const status = document.getElementById('verification-requests-status');
+            status.textContent = `${approve ? 'Approving' : 'Rejecting'} ${request.name || userId}...`;
+            try {
+                if (approve) {
+                    if (!VERIFIED_BADGE_TYPES.some(type => type.value === badgeType)) {
+                        throw new Error('Choose one of the available badge styles before approving.');
+                    }
+                    const userSnapshot = await db.ref(`users/${userId}`).once('value');
+                    if (!userSnapshot.exists()) throw new Error('The requesting user no longer exists.');
+                    await db.ref().update({
+                        [`users/${userId}/verifiedBadge`]: true,
+                        [`users/${userId}/verifiedBadgeType`]: badgeType,
+                        [`users/${userId}/verifiedAt`]: Date.now(),
+                        [`verification_requests/${userId}`]: null
+                    });
+                } else {
+                    await db.ref(`verification_requests/${userId}`).remove();
+                }
+            } catch (error) {
+                console.error(`Could not ${action} verified badge request:`, error);
+                status.textContent = error.message || `Could not ${action} this request. Check the connection and try again.`;
+            }
+        }
+
+        function openEditUser(id) {
+            const u = allUsers.find(x => x.id === id);
+            if (!u) return;
+            document.getElementById('edit-uid').value = u.id;
+            document.getElementById('edit-uname').value = u.name || '';
+            document.getElementById('edit-upoints').value = u.points || 0;
+            document.getElementById('edit-upass').value = u.password || '';
+            document.getElementById('edit-user-modal').classList.add('active');
+        }
+
+        function saveUserEdit() {
+            const id = document.getElementById('edit-uid').value;
+            const name = document.getElementById('edit-uname').value;
+            const points = parseInt(document.getElementById('edit-upoints').value) || 0;
+            const pass = document.getElementById('edit-upass').value;
+            db.ref('users/' + id).update({ name, points, password: pass }).then(() => {
+                document.getElementById('edit-user-modal').classList.remove('active');
+                alert('✅ User updated');
+            });
+        }
+
+        function deleteUser(id) {
+            if (confirm('Delete user ' + id + '?')) {
+                db.ref('users/' + id).remove();
+                db.ref('online_users/' + id).remove();
+                // Delete chat messages
+                db.ref('chat_messages').orderByChild('from').equalTo(id).once('value', snap => {
+                    snap.forEach(child => child.ref.remove());
+                });
+                db.ref('chat_messages').orderByChild('to').equalTo(id).once('value', snap => {
+                    snap.forEach(child => child.ref.remove());
+                });
+                if (currentChatUser === id) currentChatUser = null;
+            }
+        }
+
+        // ============================================
+        // LESSONS
+        // ============================================
+        function loadLessons() {
+            db.ref('lessons').on('value', snap => {
+                const data = snap.val() || {};
+                allLessons = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+                document.getElementById('stat-lessons').textContent = allLessons.length;
+                document.getElementById('lesson-count').textContent = allLessons.length;
+                renderLessons();
+                console.log('📚 Lessons loaded:', allLessons.length);
+            });
+        }
+
+        function renderLessons() {
+            const container = document.getElementById('lessons-list');
+            if (allLessons.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm">No lessons added yet.</p>';
+                return;
+            }
+            container.innerHTML = allLessons.map(l => `
+                <div class="lesson-item">
+                    <div>
+                        <span class="lang-tag ${l.language || 'en'}">${l.language === 'bn' ? '🇧🇩 বাংলা' : '🇬🇧 English'}</span>
+                        <span class="font-medium text-sm ml-2">${l.text}</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="openEditLesson('${l.id}')" class="btn btn-primary btn-sm">Edit</button>
+                        <button onclick="deleteLesson('${l.id}')" class="btn btn-danger btn-sm">Del</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addLesson() {
+            const text = document.getElementById('lesson-text').value.trim();
+            const lang = document.getElementById('lesson-lang').value;
+            if (!text) return alert('Enter lesson text');
+            db.ref('lessons').push({ text, language: lang, createdAt: Date.now() }).then(() => {
+                document.getElementById('lesson-text').value = '';
+                alert('✅ Lesson added!');
+            });
+        }
+
+        function openEditLesson(id) {
+            const l = allLessons.find(x => x.id === id);
+            if (!l) return;
+            document.getElementById('edit-lid').value = l.id;
+            document.getElementById('edit-ltext').value = l.text || '';
+            document.getElementById('edit-llang').value = l.language || 'en';
+            document.getElementById('edit-lesson-modal').classList.add('active');
+        }
+
+        function saveLessonEdit() {
+            const id = document.getElementById('edit-lid').value;
+            const text = document.getElementById('edit-ltext').value.trim();
+            const language = document.getElementById('edit-llang').value;
+            if (!text) return alert('Enter text');
+            db.ref('lessons/' + id).update({ text, language }).then(() => {
+                document.getElementById('edit-lesson-modal').classList.remove('active');
+                alert('✅ Lesson updated!');
+            });
+        }
+
+        function deleteLesson(id) {
+            if (confirm('Delete this lesson?')) {
+                db.ref('lessons/' + id).remove();
+            }
+        }
+
+        // ============================================
+        // CHAT SYSTEM - FIXED (no .off errors)
+        // ============================================
+        function loadChatList() {
+            // Remove old listener safely
+            if (chatListListener) {
+                try { chatListListener.off(); } catch(e) {}
+                chatListListener = null;
+            }
+            
+            chatListListener = db.ref('chat_messages').orderByChild('timestamp').on('value', snap => {
+                const data = snap.val() || {};
+                chatMessages = data;
+                renderChatList();
+                if (currentChatUser) {
+                    renderMessages(currentChatUser);
+                }
+            });
+        }
+
+        function getChatUsers() {
+            const users = {};
+            Object.keys(chatMessages).forEach(key => {
+                const msg = chatMessages[key];
+                if (msg.from === 'admin' && msg.to) {
+                    users[msg.to] = true;
+                } else if (msg.to === 'admin' && msg.from) {
+                    users[msg.from] = true;
+                }
+            });
+            return Object.keys(users);
+        }
+
+        function getLastMessage(userId) {
+            const msgs = Object.values(chatMessages)
+                .filter(m => (m.from === userId && m.to === 'admin') || (m.from === 'admin' && m.to === userId))
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            return msgs[0] || null;
+        }
+
+        function getUnreadCount(userId) {
+            return Object.values(chatMessages)
+                .filter(m => m.from === userId && m.to === 'admin' && !m.read).length;
+        }
+
+        function renderChatList() {
+            const container = document.getElementById('chat-list');
+            const users = getChatUsers();
+            document.getElementById('chat-count').textContent = users.length;
+
+            if (users.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-400 text-sm py-6">No chats yet</div>';
+                return;
+            }
+
+            const sorted = users.sort((a, b) => {
+                const la = getLastMessage(a);
+                const lb = getLastMessage(b);
+                return (lb?.timestamp || 0) - (la?.timestamp || 0);
+            });
+
+            container.replaceChildren();
+            sorted.forEach(uid => {
+                const user = allUsers.find(u => u.id === uid);
+                const last = getLastMessage(uid);
+                const unread = getUnreadCount(uid);
+                const isOnline = isUserOnline(uid);
+                const isActive = currentChatUser === uid;
+                const item = document.createElement('div');
+                item.className = `chat-item ${isActive ? 'active' : ''}`;
+                item.addEventListener('click', () => openChat(uid));
+                const avatar = document.createElement('img');
+                avatar.className = 'avatar';
+                avatar.src = user?.pic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                const info = document.createElement('div');
+                info.className = 'info';
+                const name = document.createElement('div');
+                name.className = 'name';
+                name.textContent = user?.name || last?.senderName || uid;
+                const preview = document.createElement('div');
+                preview.className = 'last-msg';
+                preview.textContent = last
+                    ? `${last.from === 'admin' ? '👤 You: ' : ''}${last.message || ''}`
+                    : 'No messages';
+                info.append(name, preview);
+                const details = document.createElement('div');
+                const online = document.createElement('span');
+                online.className = `online-status ${isOnline ? 'online' : 'offline'}`;
+                details.appendChild(online);
+                if (unread > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.textContent = unread;
+                    details.appendChild(badge);
+                }
+                const time = document.createElement('div');
+                time.className = 'time';
+                time.textContent = last
+                    ? new Date(last.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : '';
+                details.appendChild(time);
+                item.append(avatar, info, details);
+                container.appendChild(item);
+            });
+        }
+
+        function openChat(userId) {
+            currentChatUser = userId;
+            renderChatList();
+            renderMessages(userId);
+            
+            // Mark messages as read
+            Object.keys(chatMessages).forEach(key => {
+                const msg = chatMessages[key];
+                if (msg.from === userId && msg.to === 'admin' && !msg.read) {
+                    db.ref('chat_messages/' + key).update({ read: true });
+                }
+            });
+
+            // Update header
+            const user = allUsers.find(u => u.id === userId);
+            const lastMessage = getLastMessage(userId);
+            document.getElementById('chat-user-name').textContent = user?.name || lastMessage?.senderName || userId;
+            document.getElementById('chat-user-avatar').src = user?.pic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            const isOnline = isUserOnline(userId);
+            document.getElementById('chat-user-status').textContent = isOnline ? '🟢 Online' : '⚪ Offline';
+            document.getElementById('chat-user-status').style.color = isOnline ? '#22c55e' : '#94a3b8';
+
+            document.getElementById('chat-input').focus();
+        }
+
+        function renderMessages(userId) {
+            const container = document.getElementById('chat-messages');
+            const msgs = Object.values(chatMessages)
+                .filter(m => (m.from === userId && m.to === 'admin') || (m.from === 'admin' && m.to === userId))
+                .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+            if (msgs.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-400 text-sm py-10">No messages yet. Say hello! 👋</div>';
+                return;
+            }
+
+            container.replaceChildren();
+            let lastDate = '';
+            msgs.forEach(m => {
+                const date = new Date(m.timestamp).toLocaleDateString();
+                if (date !== lastDate) {
+                    const dateLabel = document.createElement('div');
+                    dateLabel.className = 'msg-date';
+                    dateLabel.textContent = date;
+                    container.appendChild(dateLabel);
+                    lastDate = date;
+                }
+                const isAdmin = m.from === 'admin';
+                const senderName = isAdmin
+                    ? 'You'
+                    : (allUsers.find(u => u.id === m.from)?.name || m.senderName || m.from);
+                const bubble = document.createElement('div');
+                bubble.className = `msg-bubble ${isAdmin ? 'sent' : 'received'}`;
+                if (!isAdmin) {
+                    const sender = document.createElement('span');
+                    sender.className = 'sender';
+                    sender.textContent = senderName;
+                    bubble.appendChild(sender);
+                }
+                const text = document.createElement('span');
+                text.textContent = String(m.message || '');
+                const time = document.createElement('span');
+                time.className = 'time';
+                time.textContent = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                bubble.append(text, time);
+                container.appendChild(bubble);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || !currentChatUser) return;
+
+            db.ref('chat_messages').push({
+                from: 'admin',
+                to: currentChatUser,
+                message: text,
+                timestamp: Date.now(),
+                read: false,
+                type: 'chat'
+            }).then(() => {
+                input.value = '';
+                renderMessages(currentChatUser);
+            });
+        }
+
+        function deleteChat() {
+            if (!currentChatUser) return;
+            if (!confirm('Delete all messages with ' + currentChatUser + '?')) return;
+
+            const toDelete = Object.keys(chatMessages).filter(key => {
+                const m = chatMessages[key];
+                return (m.from === currentChatUser && m.to === 'admin') || 
+                       (m.from === 'admin' && m.to === currentChatUser);
+            });
+
+            const promises = toDelete.map(key => db.ref('chat_messages/' + key).remove());
+            Promise.all(promises).then(() => {
+                currentChatUser = null;
+                document.getElementById('chat-messages').innerHTML = '<div class="text-center text-slate-400 text-sm py-10">Select a user to start chatting</div>';
+                document.getElementById('chat-user-name').textContent = 'Select a chat';
+                document.getElementById('chat-user-avatar').src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                document.getElementById('chat-user-status').textContent = 'Offline';
+                renderChatList();
+            });
+        }
+
+        // Enter key for chat
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('chat-input')?.addEventListener('keypress', e => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            document.getElementById('admin-pass')?.addEventListener('keypress', e => {
+                if (e.key === 'Enter') checkAdmin();
+            });
+        });
+    </script>
+</body>
+</html>
