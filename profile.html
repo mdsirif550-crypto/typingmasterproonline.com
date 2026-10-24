@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#041e12">
+  <title>Typing Profile - TypingMaster Pro</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, sans-serif;
+      background: #041e12;
+      color: #f8fafc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px 16px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(ellipse at top, #16452c, #041e12 65%);
+    }
+    main {
+      width: min(100%, 520px);
+      padding: 28px;
+      border: 1px solid rgba(148, 163, 184, .35);
+      border-radius: 24px;
+      background: #10251a;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .35);
+      text-align: center;
+    }
+    .avatar {
+      width: 112px;
+      height: 112px;
+      border: 4px solid #34d399;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1e293b;
+    }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar-upload-button {
+      position: absolute;
+      right: 0;
+      bottom: 3px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 2px solid #10251a;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      font: inherit;
+      font-size: 25px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: none;
+      transition: background-color .12s ease;
+    }
+    .avatar-upload-button:focus-visible { outline: 3px solid #a7f3d0; outline-offset: 2px; }
+    .avatar-upload-button:hover:not(:disabled) { background: #1d4ed8; }
+    .avatar-upload-button:active:not(:disabled) { background: #1e40af; }
+    .avatar-upload-button:disabled { cursor: wait; filter: grayscale(.2); opacity: .8; }
+    #profile-photo-status { min-height: 16px; margin: 8px 0; color: #cbd5e1; font-size: 12px; }
+    h1 { margin: 16px 0 6px; font-size: 28px; overflow-wrap: anywhere; }
+    .user-id, .bio, #profile-status { color: #cbd5e1; }
+    .bio { margin: 18px auto; max-width: 420px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .edit-form { margin: 20px 0; padding: 18px; border-radius: 16px; background: #1b3527; text-align: left; }
+    .edit-form label { display: block; margin: 12px 0 6px; color: #e2e8f0; font-size: 13px; font-weight: 700; }
+    .edit-form input:not([type="checkbox"]):not([type="file"]) {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #64748b;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #0f172a;
+      font: inherit;
+    }
+    .edit-form input[type="file"] { width: 100%; color: #e2e8f0; font-size: 12px; }
+    .phone-input-row { display: flex; gap: 8px; }
+    .country-code-picker { display: flex; flex: 0 0 154px; align-items: center; gap: 5px; }
+    .country-code-picker img { width: 22px; height: 16px; flex: 0 0 22px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 2px; }
+    .country-code-picker select { flex: 1; min-width: 0; }
+    .phone-input-row input { flex: 1; min-width: 0; }
+    .phone-input-row select,
+    .phone-input-row input {
+      padding: 11px;
+      border: 1px solid #64748b;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #0f172a;
+      font: inherit;
+    }
+    .edit-form .visibility-option { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+    .edit-form .visibility-option input { width: 16px; height: 16px; }
+    .edit-note, #edit-status { color: #cbd5e1; font-size: 12px; line-height: 1.5; }
+    .verification-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+    .verification-controls input {
+      flex: 1 1 130px;
+      min-width: 0;
+      padding: 11px;
+      border: 1px solid #64748b;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #0f172a;
+      font: inherit;
+    }
+    .verification-status { min-height: 16px; margin: 4px 0 12px; color: #cbd5e1; font-size: 12px; line-height: 1.5; }
+    .verified-badge {
+      display: inline-grid;
+      width: 18px;
+      height: 18px;
+      place-items: center;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+    .verified-badge[hidden] { display: none; }
+    #edit-status { min-height: 18px; }
+    .edit-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 22px 0;
+    }
+    .stat {
+      padding: 14px 8px;
+      border-radius: 14px;
+      background: #1b3527;
+    }
+    .stat strong { display: block; color: #6ee7b7; font-size: 22px; }
+    .stat span { color: #cbd5e1; font-size: 12px; }
+    #profile-rank-status { min-height: 16px; margin: -12px 0 14px; color: #cbd5e1; font-size: 12px; }
+    .contacts { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+    .button {
+      display: inline-block;
+      padding: 11px 17px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 12px;
+      background: linear-gradient(145deg, #4385ff, #1d4ed8);
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #123b9b, 0 8px 14px rgba(0, 0, 0, .28), inset 0 1px 1px rgba(255, 255, 255, .3);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-2px); }
+    .button:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #123b9b, 0 4px 8px rgba(0, 0, 0, .25), inset 0 1px 2px rgba(0, 0, 0, .16);
+    }
+    .button:focus-visible { outline: 3px solid #a7f3d0; outline-offset: 3px; }
+    .button:disabled { cursor: wait; filter: grayscale(.25); opacity: .75; }
+    .button.secondary {
+      background: linear-gradient(145deg, #64748b, #334155);
+      box-shadow: 0 5px 0 #1e293b, 0 8px 14px rgba(0, 0, 0, .28), inset 0 1px 1px rgba(255, 255, 255, .25);
+    }
+    .button.secondary:active:not(:disabled) {
+      box-shadow: 0 2px 0 #1e293b, 0 4px 8px rgba(0, 0, 0, .25), inset 0 1px 2px rgba(0, 0, 0, .16);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .button, .avatar-upload-button { transition: none; }
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 420px) {
+      main { padding: 22px 16px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p id="profile-status" role="status" aria-live="polite">Loading profile...</p>
+    <button id="profile-retry" class="button" type="button" hidden>Try again</button>
+    <section id="profile-content" hidden>
+      <div class="avatar-wrap">
+        <img id="profile-avatar" class="avatar" src="logo.png" alt="Profile photo">
+        <button id="avatar-upload-button" class="avatar-upload-button" type="button" aria-label="Choose a profile photo" title="Choose a profile photo" hidden>+</button>
+        <input id="edit-photo-file" type="file" accept="image/*" hidden>
+      </div>
+      <p id="profile-photo-status" role="status" aria-live="polite"></p>
+      <h1><span id="profile-name"></span><span id="profile-verified-badge" class="verified-badge" aria-label="Admin verified profile" title="Admin verified profile" hidden>✓</span></h1>
+      <div id="profile-id" class="user-id"></div>
+      <p id="profile-bio" class="bio"></p>
+      <div class="stats" aria-label="Typing statistics">
+        <div class="stat"><strong id="profile-rank">#--</strong><span>Monthly rank</span></div>
+        <div class="stat"><strong id="profile-monthly-points">0</strong><span>Monthly points</span></div>
+        <div class="stat"><strong id="profile-points">0</strong><span>Total points</span></div>
+        <div class="stat"><strong id="profile-wpm">0</strong><span>Best WPM</span></div>
+      </div>
+      <p id="profile-rank-status" role="status" aria-live="polite"></p>
+      <button id="edit-toggle" class="button secondary" type="button" hidden>Edit profile</button>
+      <section id="verification-application" class="edit-form" hidden aria-labelledby="verification-application-title">
+        <h2 id="verification-application-title">Verified badge</h2>
+        <p class="edit-note">Apply for an admin review. The verified tick appears only after an admin approves your application.</p>
+        <label for="verification-application-reason">Application note (optional)</label>
+        <input id="verification-application-reason" type="text" maxlength="240" placeholder="Add a short note for the admin">
+        <button id="verification-application-submit" class="button" type="button">Apply for verified badge</button>
+        <p id="verification-application-status" class="verification-status" role="status" aria-live="polite"></p>
+      </section>
+      <form id="profile-edit-form" class="edit-form" hidden>
+        <h2>Edit profile</h2>
+        <label for="edit-name">Name</label>
+        <input id="edit-name" type="text" maxlength="60" autocomplete="name" required>
+        <label for="edit-id">User ID</label>
+        <input id="edit-id" type="text" maxlength="60" autocomplete="username" required>
+        <p class="edit-note">Changing your ID moves your account record. Older activity or messages may still show the previous ID.</p>
+        <label for="edit-whatsapp">WhatsApp number (with country code)</label>
+        <div class="phone-input-row">
+          <div class="country-code-picker">
+            <img id="edit-country-flag" src="https://flagcdn.com/w40/bd.png" alt="Bangladesh flag">
+            <select id="edit-country-code" autocomplete="tel-country-code" aria-label="Select country calling code">
+              <option value="+880" data-country="bd" data-name="Bangladesh">Bangladesh +880</option>
+              <option value="+1" data-country="us" data-name="United States">United States +1</option>
+              <option value="+44" data-country="gb" data-name="United Kingdom">United Kingdom +44</option>
+              <option value="+91" data-country="in" data-name="India">India +91</option>
+              <option value="+92" data-country="pk" data-name="Pakistan">Pakistan +92</option>
+              <option value="+977" data-country="np" data-name="Nepal">Nepal +977</option>
+              <option value="+94" data-country="lk" data-name="Sri Lanka">Sri Lanka +94</option>
+              <option value="+971" data-country="ae" data-name="United Arab Emirates">UAE +971</option>
+              <option value="+966" data-country="sa" data-name="Saudi Arabia">Saudi Arabia +966</option>
+              <option value="+61" data-country="au" data-name="Australia">Australia +61</option>
+              <option value="+81" data-country="jp" data-name="Japan">Japan +81</option>
+              <option value="+65" data-country="sg" data-name="Singapore">Singapore +65</option>
+              <option value="+60" data-country="my" data-name="Malaysia">Malaysia +60</option>
+              <option value="+33" data-country="fr" data-name="France">France +33</option>
+              <option value="+49" data-country="de" data-name="Germany">Germany +49</option>
+              <option value="+7" data-country="ru" data-name="Russia">Russia +7</option>
+              <option value="+90" data-country="tr" data-name="Turkey">Turkey +90</option>
+              <option value="+86" data-country="cn" data-name="China">China +86</option>
+              <option value="+63" data-country="ph" data-name="Philippines">Philippines +63</option>
+              <option value="+62" data-country="id" data-name="Indonesia">Indonesia +62</option>
+              <option value="+20" data-country="eg" data-name="Egypt">Egypt +20</option>
+            </select>
+          </div>
+          <input id="edit-whatsapp" type="tel" maxlength="18" autocomplete="tel-national" inputmode="numeric" placeholder="1XXXXXXXXX">
+        </div>
+        <label class="visibility-option"><input id="edit-show-whatsapp" type="checkbox"> Show my number on my public profile</label>
+        <label class="visibility-option"><input id="edit-has-whatsapp" type="checkbox"> This number has a WhatsApp account</label>
+        <div class="verification-controls">
+          <button id="send-phone-code" class="button secondary" type="button">Send SMS code</button>
+          <input id="phone-verification-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit SMS code" aria-label="SMS verification code" hidden>
+          <button id="verify-phone-code" class="button" type="button" hidden>Verify number</button>
+        </div>
+        <p id="phone-verification-status" class="verification-status" role="status" aria-live="polite"></p>
+        <label for="edit-email">Email address</label>
+        <input id="edit-email" type="email" maxlength="254" autocomplete="email" placeholder="name@example.com">
+        <label class="visibility-option"><input id="edit-show-email" type="checkbox"> Show email on my public profile</label>
+        <button id="send-email-verification" class="button secondary" type="button">Send email verification link</button>
+        <p id="email-verification-status" class="verification-status" role="status" aria-live="polite"></p>
+        <p id="edit-status" role="status" aria-live="polite"></p>
+        <div class="edit-actions">
+          <button class="button secondary" id="edit-cancel" type="button">Cancel</button>
+          <button class="button" id="edit-save" type="submit">Save changes</button>
+        </div>
+        <div id="phone-recaptcha-container"></div>
+      </form>
+      <div id="profile-contacts" class="contacts" hidden>
+        <span id="profile-whatsapp-number" class="button secondary" hidden></span>
+        <a id="profile-whatsapp" class="button" target="_blank" rel="noopener noreferrer" hidden>WhatsApp</a>
+        <a id="profile-email" class="button" hidden>Email</a>
+      </div>
+    </section>
+    <nav class="contacts" aria-label="Profile navigation">
+      <a class="button secondary" href="index.html">Home</a>
+      <a class="button" href="typing_Master_Pro.html#typing-input">Join Leaderboard</a>
+    </nav>
+  </main>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    const profileFirebaseConfig = {
+      apiKey: "AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",
+      authDomain: "eirnbooster.firebaseapp.com",
+      databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
+      projectId: "eirnbooster",
+      messagingSenderId: "1062288115898",
+      appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
+    };
+    let profileDatabase = null;
+    let profileAccount = null;
+    let profileAccountId = null;
+    let loggedInUserId = "";
+    let phoneConfirmation = null;
+    let phoneRecaptchaVerifier = null;
+
+    const PENDING_EMAIL_VERIFICATION_KEY = "typingMasterPendingEmailVerification";
+
+    function currentDhakaMonth() {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Dhaka",
+        year: "numeric",
+        month: "2-digit"
+      }).formatToParts(new Date());
+      const year = parts.find(part => part.type === "year").value;
+      const month = parts.find(part => part.type === "month").value;
+      return `${year}-${month}`;
+    }
+
+    function showProfileError(message) {
+      document.getElementById("profile-status").textContent = message;
+      document.getElementById("profile-status").hidden = false;
+      if (!profileAccount) document.getElementById("profile-content").hidden = true;
+      document.getElementById("profile-retry").hidden = false;
+    }
+
+    function withTimeout(promise, timeoutMs, label) {
+      let timeoutId;
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error(`${label} timed out.`)), timeoutMs);
+        })
+      ]).finally(() => clearTimeout(timeoutId));
+    }
+
+    function toggleProfileEditor(show) {
+      document.getElementById("profile-edit-form").hidden = !show;
+      document.getElementById("edit-toggle").textContent = show ? "Close editor" : "Edit profile";
+      document.getElementById("edit-status").textContent = "";
+    }
+
+    function setPhoneEditorValue(phone) {
+      const countryCode = document.getElementById("edit-country-code");
+      const phoneInput = document.getElementById("edit-whatsapp");
+      let digits = String(phone || "").replace(/\D/g, "");
+      const matchingOption = [...countryCode.options]
+        .sort((a, b) => b.value.length - a.value.length)
+        .find(option => digits.startsWith(option.value.slice(1)));
+      if (matchingOption) {
+        countryCode.value = matchingOption.value;
+        digits = digits.slice(matchingOption.value.length - 1);
+      } else {
+        countryCode.value = "+880";
+        if (digits.startsWith("0")) digits = digits.slice(1);
+      }
+      phoneInput.value = digits;
+      updateSelectedCountryFlag();
+    }
+
+    function normalizePhone(phone) {
+      let digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return "";
+      if (digits.startsWith("00")) digits = digits.slice(2);
+      if (digits.startsWith("0")) return `+880${digits.slice(1)}`;
+      return `+${digits}`;
+    }
+
+    function getEditorPhone() {
+      const countryCode = document.getElementById("edit-country-code").value;
+      let phoneDigits = document.getElementById("edit-whatsapp").value.replace(/\D/g, "");
+      if (phoneDigits.startsWith("0")) phoneDigits = phoneDigits.slice(1);
+      return phoneDigits ? `${countryCode}${phoneDigits}` : "";
+    }
+
+    function updateSelectedCountryFlag() {
+      const selectedOption = document.getElementById("edit-country-code").selectedOptions[0];
+      const flag = document.getElementById("edit-country-flag");
+      const countryCode = selectedOption.dataset.country;
+      flag.src = `https://flagcdn.com/w40/${countryCode}.png`;
+      flag.alt = `${selectedOption.dataset.name} flag`;
+    }
+
+    function fillProfileEditor(user, id) {
+      document.getElementById("edit-id").value = id;
+      document.getElementById("edit-name").value = String(user.name || id);
+      document.getElementById("edit-photo-file").value = "";
+      setPhoneEditorValue(user.whatsapp);
+      document.getElementById("edit-show-whatsapp").checked = user.showWhatsApp === true;
+      document.getElementById("edit-has-whatsapp").checked = user.hasWhatsApp !== false;
+      document.getElementById("edit-email").value = String(user.email || "");
+      document.getElementById("edit-show-email").checked = user.showEmail === true;
+      document.getElementById("phone-verification-code").value = "";
+      document.getElementById("phone-verification-code").hidden = true;
+      document.getElementById("verify-phone-code").hidden = true;
+      document.getElementById("phone-verification-status").textContent =
+        user.phoneVerified === true ? "Saved phone number is verified." : "";
+      document.getElementById("email-verification-status").textContent =
+        user.emailVerified === true ? "Saved email address is verified." : "";
+    }
+
+    async function compressProfilePhoto(file) {
+      const objectUrl = URL.createObjectURL(file);
+      const image = new Image();
+      try {
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = () => reject(new Error("Could not read the selected photo."));
+          image.src = objectUrl;
+        });
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Photo compression is not supported in this browser.");
+      const longestSide = Math.max(image.naturalWidth, image.naturalHeight);
+      for (const maxDimension of [400, 300, 220]) {
+        const scale = Math.min(1, maxDimension / longestSide);
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        for (const quality of [0.82, 0.68, 0.54, 0.4]) {
+          const compressed = canvas.toDataURL("image/jpeg", quality);
+          if (compressed.length <= 350000) return compressed;
+        }
+      }
+      throw new Error("The selected photo could not be compressed to a supported size.");
+    }
+
+    async function saveProfile(event) {
+      event.preventDefault();
+      const status = document.getElementById("edit-status");
+      const saveButton = document.getElementById("edit-save");
+      if (!profileDatabase || !profileAccount || !profileAccountId) {
+        status.textContent = "Profile data is not ready. Please reload and try again.";
+        return;
+      }
+      if (loggedInUserId !== profileAccountId.toLowerCase()) {
+        status.textContent = "Log in with this account to edit this profile.";
+        return;
+      }
+
+      const newId = document.getElementById("edit-id").value.trim().toLowerCase();
+      const name = document.getElementById("edit-name").value.trim();
+      const photoFile = document.getElementById("edit-photo-file").files[0];
+      const whatsapp = getEditorPhone();
+      const email = document.getElementById("edit-email").value.trim();
+      const showWhatsApp = document.getElementById("edit-show-whatsapp").checked;
+      const hasWhatsApp = document.getElementById("edit-has-whatsapp").checked;
+      const showEmail = document.getElementById("edit-show-email").checked;
+      if (!newId || !name) {
+        status.textContent = "User ID and name are required.";
+        return;
+      }
+      if (/[.#$\/\[\]]/.test(newId)) {
+        status.textContent = "User ID cannot contain . # $ / [ or ].";
+        return;
+      }
+      const whatsappDigits = whatsapp.replace(/\D/g, "");
+      if (whatsapp && (whatsappDigits.length < 8 || whatsappDigits.length > 15)) {
+        status.textContent = "Enter a valid WhatsApp number with country code.";
+        return;
+      }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        status.textContent = "Enter a valid email address.";
+        return;
+      }
+      if (showWhatsApp && !whatsapp) {
+        status.textContent = "Add a WhatsApp number or turn off public visibility.";
+        return;
+      }
+      if (showEmail && !email) {
+        status.textContent = "Add an email or turn off public visibility.";
+        return;
+      }
+      const phoneChanged = normalizePhone(whatsapp) !== normalizePhone(profileAccount.whatsapp);
+      const emailChanged = email.trim().toLowerCase() !== String(profileAccount.email || "").trim().toLowerCase();
+      const phoneIsVerified = profileAccount.phoneVerified === true &&
+        normalizePhone(profileAccount.verifiedPhone) === normalizePhone(whatsapp);
+      const emailIsVerified = profileAccount.emailVerified === true &&
+        String(profileAccount.email || "").trim().toLowerCase() === email.trim().toLowerCase();
+      if (whatsapp && (phoneChanged || showWhatsApp) && !phoneIsVerified) {
+        status.textContent = "Verify the new phone number with its SMS code before saving.";
+        return;
+      }
+      if (email && (emailChanged || showEmail) && !emailIsVerified) {
+        status.textContent = "Verify the new email using the link sent to that address before saving.";
+        return;
+      }
+
+      saveButton.disabled = true;
+      status.textContent = "Saving profile...";
+      try {
+        const usersSnapshot = await profileDatabase.ref("users").once("value");
+        const users = usersSnapshot.val() || {};
+        const matchingId = Object.keys(users).find(id => id.toLowerCase() === newId);
+        if (matchingId && matchingId.toLowerCase() !== profileAccountId.toLowerCase()) {
+          status.textContent = "That User ID is already in use.";
+          return;
+        }
+        let pic = profileAccount.pic || "";
+        if (photoFile) pic = await compressProfilePhoto(photoFile);
+        const updatedUser = {
+          ...profileAccount,
+          id: newId,
+          name,
+          pic,
+          whatsapp,
+          email,
+          showWhatsApp,
+          hasWhatsApp,
+          showEmail
+        };
+        if (!whatsapp) {
+          updatedUser.phoneVerified = false;
+          updatedUser.verifiedPhone = "";
+        }
+        if (!email) updatedUser.emailVerified = false;
+
+        const updates = {};
+        updates[`users/${newId}`] = updatedUser;
+        if (newId !== profileAccountId) updates[`users/${profileAccountId}`] = null;
+        await profileDatabase.ref().update(updates);
+
+        const updatedUsers = { ...users };
+        if (newId !== profileAccountId) delete updatedUsers[profileAccountId];
+        updatedUsers[newId] = updatedUser;
+        profileAccount = updatedUser;
+        profileAccountId = newId;
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+        history.replaceState(null, "", `profile.html?id=${encodeURIComponent(newId)}`);
+        renderProfile(updatedUser, newId, updatedUsers);
+        fillProfileEditor(updatedUser, newId);
+        toggleProfileEditor(false);
+        status.textContent = "Profile updated successfully.";
+      } catch (error) {
+        console.error("Profile update failed:", error);
+        status.textContent = error.message || "Could not update profile. Check your connection and try again.";
+      } finally {
+        saveButton.disabled = false;
+      }
+    }
+
+    function renderProfile(user, id, users, ranksAreComplete = true) {
+      const currentMonth = currentDhakaMonth();
+      const rankedUsers = ranksAreComplete ? Object.entries(users).map(([userId, account]) => ({
+        id: userId,
+        monthlyPoints: account && account.monthlyPointsMonth === currentMonth
+          ? Number(account.monthlyPoints) || 0
+          : 0,
+        points: Number(account && account.points) || 0
+      })) : [];
+      if (ranksAreComplete) {
+        const userIndex = rankedUsers.findIndex(account => account.id === id);
+        if (userIndex < 0) rankedUsers.push({
+          id,
+          monthlyPoints: user.monthlyPointsMonth === currentMonth ? Number(user.monthlyPoints) || 0 : 0,
+          points: Number(user.points) || 0
+        });
+        rankedUsers.sort((a, b) => b.monthlyPoints - a.monthlyPoints || b.points - a.points);
+      }
+      const rank = ranksAreComplete ? rankedUsers.findIndex(account => account.id === id) + 1 : 0;
+      const monthlyPoints = user.monthlyPointsMonth === currentMonth
+        ? Number(user.monthlyPoints) || 0
+        : 0;
+
+      const avatar = document.getElementById("profile-avatar");
+      avatar.onerror = () => {
+        avatar.onerror = null;
+        avatar.src = "logo.png";
+      };
+      avatar.src = typeof user.pic === "string" && user.pic.trim() ? user.pic : "logo.png";
+      document.getElementById("profile-name").textContent = String(user.name || id);
+      document.getElementById("profile-verified-badge").hidden = user.verifiedBadge !== true;
+      document.getElementById("profile-id").textContent = `ID: ${id}`;
+      document.getElementById("profile-bio").textContent = String(user.bio || "Typing profile");
+      document.getElementById("profile-rank").textContent = rank > 0 ? `#${rank}` : "#--";
+      document.getElementById("profile-rank-status").textContent = ranksAreComplete ? "" : "Loading leaderboard position...";
+      document.getElementById("profile-monthly-points").textContent = String(monthlyPoints);
+      document.getElementById("profile-points").textContent = String(Number(user.points) || 0);
+      document.getElementById("profile-wpm").textContent = String(Number(user.bestWpm) || 0);
+
+      const whatsapp = String(user.whatsapp || "").replace(/\D/g, "");
+      const validWhatsappNumber = user.showWhatsApp === true &&
+        user.phoneVerified === true &&
+        normalizePhone(user.verifiedPhone) === normalizePhone(user.whatsapp) &&
+        whatsapp.length >= 8 && whatsapp.length <= 15;
+      const showWhatsapp = validWhatsappNumber && user.hasWhatsApp !== false;
+      const showEmail = user.showEmail === true && user.emailVerified === true &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(user.email || ""));
+      const whatsappNumber = document.getElementById("profile-whatsapp-number");
+      const whatsappLink = document.getElementById("profile-whatsapp");
+      const emailLink = document.getElementById("profile-email");
+      whatsappNumber.hidden = !validWhatsappNumber;
+      if (validWhatsappNumber) whatsappNumber.textContent = String(user.whatsapp);
+      whatsappLink.hidden = !showWhatsapp;
+      emailLink.hidden = !showEmail;
+      if (showWhatsapp) whatsappLink.href = `https://wa.me/${whatsapp}`;
+      if (showEmail) emailLink.href = `mailto:${user.email}`;
+      document.getElementById("profile-contacts").hidden = !validWhatsappNumber && !showEmail;
+    }
+
+    async function sendPhoneVerificationCode() {
+      const status = document.getElementById("phone-verification-status");
+      const phone = getEditorPhone();
+      const digits = phone.replace(/\D/g, "");
+      if (loggedInUserId !== String(profileAccountId || "").toLowerCase()) {
+        status.textContent = "Log in with this account to verify its phone number.";
+        return;
+      }
+      if (digits.length < 8 || digits.length > 15) {
+        status.textContent = "Select a country code and enter a valid phone number.";
+        return;
+      }
+      if (!["http:", "https:"].includes(location.protocol)) {
+        status.textContent = "SMS verification needs the website to run on its hosted domain or localhost, not from a file.";
+        return;
+      }
+
+      const button = document.getElementById("send-phone-code");
+      button.disabled = true;
+      status.textContent = "Preparing secure SMS verification...";
+      try {
+        const auth = firebase.auth();
+        auth.languageCode = "bn";
+        if (phoneRecaptchaVerifier) phoneRecaptchaVerifier.clear();
+        phoneRecaptchaVerifier = new firebase.auth.RecaptchaVerifier("phone-recaptcha-container", {
+          size: "invisible"
+        });
+        await phoneRecaptchaVerifier.render();
+        phoneConfirmation = await auth.signInWithPhoneNumber(phone, phoneRecaptchaVerifier);
+        document.getElementById("phone-verification-code").hidden = false;
+        document.getElementById("verify-phone-code").hidden = false;
+        status.textContent = `A verification code was sent to ${phone}.`;
+      } catch (error) {
+        console.error("Could not send phone verification code:", error);
+        if (phoneRecaptchaVerifier) {
+          phoneRecaptchaVerifier.clear();
+          phoneRecaptchaVerifier = null;
+        }
+        status.textContent = error.code === "auth/unauthorized-domain"
+          ? "This site is not authorized for Firebase Authentication. Add its domain in Firebase Console."
+          : error.code === "auth/operation-not-allowed"
+            ? "Phone sign-in is not enabled in Firebase Console."
+            : error.message || "Could not send the SMS code. Check your connection and try again.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function verifyPhoneCode() {
+      const status = document.getElementById("phone-verification-status");
+      const code = document.getElementById("phone-verification-code").value.trim();
+      if (!phoneConfirmation) {
+        status.textContent = "Request an SMS code first.";
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        status.textContent = "Enter the 6-digit SMS code.";
+        return;
+      }
+      const button = document.getElementById("verify-phone-code");
+      button.disabled = true;
+      status.textContent = "Verifying phone number...";
+      try {
+        const credential = await phoneConfirmation.confirm(code);
+        const verifiedPhone = normalizePhone(credential.user.phoneNumber || getEditorPhone());
+        if (verifiedPhone !== normalizePhone(getEditorPhone())) {
+          throw new Error("The verified phone does not match the number in the form.");
+        }
+        const updates = {
+          whatsapp: verifiedPhone,
+          verifiedPhone,
+          phoneVerified: true
+        };
+        await profileDatabase.ref(`users/${profileAccountId}`).update(updates);
+        profileAccount = { ...profileAccount, ...updates };
+        localStorage.setItem("currentUser", JSON.stringify({
+          ...JSON.parse(localStorage.getItem("currentUser") || "{}"),
+          ...updates
+        }));
+        fillProfileEditor(profileAccount, profileAccountId);
+        renderProfile(profileAccount, profileAccountId, { [profileAccountId]: profileAccount }, false);
+        status.textContent = "Phone number verified and saved.";
+        phoneConfirmation = null;
+        await firebase.auth().signOut();
+      } catch (error) {
+        console.error("Phone verification failed:", error);
+        status.textContent = error.code === "auth/invalid-verification-code"
+          ? "That SMS code is incorrect. Check it and try again."
+          : error.message || "Could not verify this phone number.";
+        try {
+          if (firebase.auth().currentUser) await firebase.auth().signOut();
+        } catch (signOutError) {
+          console.error("Could not sign out after phone verification:", signOutError);
+        }
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function sendEmailVerificationLink() {
+      const status = document.getElementById("email-verification-status");
+      const email = document.getElementById("edit-email").value.trim();
+      if (loggedInUserId !== String(profileAccountId || "").toLowerCase()) {
+        status.textContent = "Log in with this account to verify its email address.";
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        status.textContent = "Enter a valid email address first.";
+        return;
+      }
+      if (!["http:", "https:"].includes(location.protocol)) {
+        status.textContent = "Email verification needs the website to run on its hosted domain or localhost, not from a file.";
+        return;
+      }
+
+      const button = document.getElementById("send-email-verification");
+      button.disabled = true;
+      status.textContent = "Sending verification link...";
+      try {
+        const actionUrl = new URL(location.href);
+        actionUrl.searchParams.set("verifyEmail", "1");
+        const emailLinkSettings = {
+          url: actionUrl.toString(),
+          handleCodeInApp: true
+        };
+        await firebase.auth().sendSignInLinkToEmail(email, emailLinkSettings);
+        localStorage.setItem(PENDING_EMAIL_VERIFICATION_KEY, JSON.stringify({
+          email,
+          id: profileAccountId
+        }));
+        status.textContent = `Verification link sent to ${email}. Open it on this device to finish verifying.`;
+      } catch (error) {
+        console.error("Could not send email verification link:", error);
+        status.textContent = error.code === "auth/unauthorized-continue-uri"
+          ? "Add this website address to authorized domains in Firebase Console."
+          : error.code === "auth/operation-not-allowed"
+            ? "Email link sign-in is not enabled in Firebase Console."
+            : error.message || "Could not send the email link. Check the address and try again.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function completeEmailVerification(app) {
+      const auth = app.auth();
+      if (!auth.isSignInWithEmailLink(location.href)) return;
+      const status = document.getElementById("email-verification-status");
+      try {
+        const pending = JSON.parse(localStorage.getItem(PENDING_EMAIL_VERIFICATION_KEY) || "null");
+        if (!pending || !pending.email || !pending.id) {
+          status.textContent = "This verification link is missing its saved request. Request a new link from your profile.";
+          return;
+        }
+        const result = await auth.signInWithEmailLink(pending.email, location.href);
+        if (!result.user.emailVerified ||
+            String(result.user.email || "").toLowerCase() !== String(pending.email).toLowerCase()) {
+          throw new Error("The verification link did not confirm the requested email address.");
+        }
+        if (String(pending.id).toLowerCase() !== String(profileAccountId).toLowerCase()) {
+          throw new Error("The profile ID changed while the email verification was pending. Request a new link.");
+        }
+        const updates = { email: pending.email, emailVerified: true };
+        await profileDatabase.ref(`users/${profileAccountId}`).update(updates);
+        profileAccount = { ...profileAccount, ...updates };
+        localStorage.setItem("currentUser", JSON.stringify({
+          ...JSON.parse(localStorage.getItem("currentUser") || "{}"),
+          ...updates
+        }));
+        fillProfileEditor(profileAccount, profileAccountId);
+        renderProfile(profileAccount, profileAccountId, { [profileAccountId]: profileAccount }, false);
+        localStorage.removeItem(PENDING_EMAIL_VERIFICATION_KEY);
+        status.textContent = "Email address verified and saved.";
+        const cleanUrl = new URL(location.href);
+        cleanUrl.searchParams.delete("verifyEmail");
+        ["apiKey", "oobCode", "mode", "lang", "continueUrl"].forEach(key => cleanUrl.searchParams.delete(key));
+        history.replaceState(null, "", cleanUrl);
+      } catch (error) {
+        console.error("Email verification failed:", error);
+        status.textContent = error.code === "auth/invalid-action-code"
+          ? "This email verification link is invalid or expired. Request a new link."
+          : error.message || "Could not verify this email address.";
+      } finally {
+        try {
+          if (auth.currentUser) await auth.signOut();
+        } catch (error) {
+          console.error("Could not sign out after email verification:", error);
+        }
+      }
+    }
+
+    async function loadProfile() {
+      const retryButton = document.getElementById("profile-retry");
+      retryButton.hidden = true;
+      document.getElementById("profile-status").hidden = false;
+      document.getElementById("profile-status").textContent = "Loading profile...";
+      const profileId = new URLSearchParams(location.search).get("id");
+      if (!profileId) {
+        showProfileError("No profile was selected.");
+        return;
+      }
+      if (typeof firebase === "undefined" || !firebase.database) {
+        showProfileError("Could not connect to the profile service. Please check your connection and try again.");
+        return;
+      }
+
+      try {
+        let storedUser = null;
+        try {
+          storedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+          loggedInUserId = String(storedUser && storedUser.id || "").trim().toLowerCase();
+        } catch (error) {
+          console.error("Could not read signed-in account:", error);
+        }
+        if (storedUser && String(storedUser.id || "").toLowerCase() === profileId.toLowerCase()) {
+          const cachedId = String(storedUser.id);
+          renderProfile(storedUser, cachedId, { [cachedId]: storedUser }, false);
+          document.getElementById("profile-content").hidden = false;
+          document.getElementById("profile-status").textContent = "Refreshing your profile...";
+        }
+
+        const app = firebase.apps.find(existing => existing.name === "[DEFAULT]") ||
+          firebase.initializeApp(profileFirebaseConfig);
+        profileDatabase = app.database();
+        const directSnapshot = await withTimeout(
+          profileDatabase.ref(`users/${profileId}`).once("value"),
+          8000,
+          "Profile request"
+        );
+        let id = profileId;
+        let user = directSnapshot.val();
+        let users = user ? { [id]: user } : null;
+        if (!user) {
+          const usersSnapshot = await withTimeout(
+            profileDatabase.ref("users").once("value"),
+            8000,
+            "Profile search"
+          );
+          users = usersSnapshot.val() || {};
+          const entries = Object.entries(users);
+          const entry = entries.find(([key]) => key.toLowerCase() === profileId.toLowerCase()) ||
+            entries.find(([, account]) => String(account && account.id || "").toLowerCase() === profileId.toLowerCase());
+          if (!entry) {
+            showProfileError("This profile could not be found.");
+            return;
+          }
+          [id, user] = entry;
+        }
+        profileAccount = user;
+        profileAccountId = id;
+        renderProfile(user, id, users, false);
+        const isOwner = loggedInUserId === id.toLowerCase();
+        document.getElementById("edit-toggle").hidden = !isOwner;
+        document.getElementById("avatar-upload-button").hidden = !isOwner;
+        document.getElementById("verification-application").hidden = !isOwner || user.verifiedBadge === true;
+        if (isOwner) loadVerificationApplicationStatus();
+        if (isOwner) fillProfileEditor(user, id);
+
+        document.getElementById("profile-status").hidden = true;
+        document.getElementById("profile-content").hidden = false;
+        await completeEmailVerification(app);
+        if (Object.keys(users).length > 1) {
+          renderProfile(user, id, users, true);
+        } else {
+          withTimeout(
+            profileDatabase.ref("users").once("value"),
+            12000,
+            "Leaderboard ranking request"
+          ).then(snapshot => {
+            const allUsers = snapshot.val() || {};
+            renderProfile(user, id, allUsers, true);
+          }).catch(error => {
+            console.error("Could not load the full leaderboard for profile rank:", error);
+            document.getElementById("profile-rank-status").textContent =
+              "Profile loaded. Leaderboard rank is temporarily unavailable.";
+          });
+        }
+      } catch (error) {
+        console.error("Could not load profile:", error);
+        showProfileError(error.message && error.message.includes("timed out")
+          ? "The profile server is taking too long to respond. Check your connection and try again."
+          : "Could not load this profile. Please check your connection and try again.");
+      }
+    }
+
+    async function loadVerificationApplicationStatus() {
+      const status = document.getElementById("verification-application-status");
+      const button = document.getElementById("verification-application-submit");
+      try {
+        const snapshot = await withTimeout(
+          profileDatabase.ref(`verification_requests/${profileAccountId}`).once("value"),
+          8000,
+          "Verification application request"
+        );
+        const request = snapshot.val();
+        if (request && request.status === "pending") {
+          status.textContent = "Your application is waiting for admin review.";
+          button.disabled = true;
+          button.textContent = "Application pending";
+        } else {
+          status.textContent = "";
+          button.disabled = false;
+          button.textContent = "Apply for verified badge";
+        }
+      } catch (error) {
+        console.error("Could not load verification application status:", error);
+        status.textContent = "Could not check your application status. Please try again.";
+      }
+    }
+
+    async function submitVerificationApplication() {
+      const status = document.getElementById("verification-application-status");
+      const button = document.getElementById("verification-application-submit");
+      if (!profileDatabase || !profileAccount || !profileAccountId ||
+          loggedInUserId !== profileAccountId.toLowerCase()) {
+        status.textContent = "Log in with this account to apply.";
+        return;
+      }
+      if (profileAccount.verifiedBadge === true) {
+        status.textContent = "This profile already has an admin-verified badge.";
+        return;
+      }
+      button.disabled = true;
+      status.textContent = "Submitting application...";
+      try {
+        const requestRef = profileDatabase.ref(`verification_requests/${profileAccountId}`);
+        const existing = await withTimeout(requestRef.once("value"), 8000, "Verification request");
+        if (existing.val() && existing.val().status === "pending") {
+          status.textContent = "Your application is already waiting for admin review.";
+          button.textContent = "Application pending";
+          return;
+        }
+        await requestRef.set({
+          userId: profileAccountId,
+          name: String(profileAccount.name || profileAccountId),
+          note: document.getElementById("verification-application-reason").value.trim(),
+          status: "pending",
+          requestedAt: Date.now()
+        });
+        status.textContent = "Application sent. An admin will review your profile.";
+        button.textContent = "Application pending";
+      } catch (error) {
+        console.error("Could not submit verified badge application:", error);
+        status.textContent = error.message || "Could not submit your application. Check your connection and try again.";
+        button.disabled = false;
+      }
+    }
+
+    document.getElementById("profile-retry").addEventListener("click", loadProfile);
+    document.getElementById("edit-toggle").addEventListener("click", () => {
+      toggleProfileEditor(document.getElementById("profile-edit-form").hidden);
+    });
+    document.getElementById("verification-application-submit").addEventListener("click", submitVerificationApplication);
+    document.getElementById("edit-cancel").addEventListener("click", () => toggleProfileEditor(false));
+    document.getElementById("profile-edit-form").addEventListener("submit", saveProfile);
+    document.getElementById("avatar-upload-button").addEventListener("click", () => {
+      document.getElementById("edit-photo-file").click();
+    });
+    document.getElementById("edit-country-code").addEventListener("change", updateSelectedCountryFlag);
+    document.getElementById("send-phone-code").addEventListener("click", sendPhoneVerificationCode);
+    document.getElementById("verify-phone-code").addEventListener("click", verifyPhoneCode);
+    document.getElementById("send-email-verification").addEventListener("click", sendEmailVerificationLink);
+    document.getElementById("edit-photo-file").addEventListener("change", event => {
+      const file = event.target.files[0];
+      if (file) autoSaveProfilePhoto(file);
+    });
+
+    async function autoSaveProfilePhoto(file) {
+      const status = document.getElementById("profile-photo-status");
+      const uploadButton = document.getElementById("avatar-upload-button");
+      const avatar = document.getElementById("profile-avatar");
+      const photoInput = document.getElementById("edit-photo-file");
+      const originalPic = profileAccount && profileAccount.pic || "";
+      if (!profileDatabase || !profileAccount || !profileAccountId ||
+          loggedInUserId !== profileAccountId.toLowerCase()) {
+        status.textContent = "Log in with this account to change its photo.";
+        photoInput.value = "";
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        status.textContent = "Please choose an image file.";
+        photoInput.value = "";
+        return;
+      }
+
+      uploadButton.disabled = true;
+      status.textContent = "Updating profile photo...";
+      const previewUrl = URL.createObjectURL(file);
+      if (avatar.dataset.previewUrl) URL.revokeObjectURL(avatar.dataset.previewUrl);
+      avatar.dataset.previewUrl = previewUrl;
+      avatar.src = previewUrl;
+      try {
+        const pic = await compressProfilePhoto(file);
+        await profileDatabase.ref(`users/${profileAccountId}`).update({ pic });
+        profileAccount = { ...profileAccount, pic };
+        const storedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (storedUser && String(storedUser.id || "").toLowerCase() === profileAccountId.toLowerCase()) {
+          localStorage.setItem("currentUser", JSON.stringify({ ...storedUser, pic }));
+        }
+        avatar.src = pic;
+        delete avatar.dataset.previewUrl;
+        URL.revokeObjectURL(previewUrl);
+        status.textContent = "Profile photo updated.";
+      } catch (error) {
+        console.error("Profile photo update failed:", error);
+        avatar.src = originalPic || "logo.png";
+        delete avatar.dataset.previewUrl;
+        URL.revokeObjectURL(previewUrl);
+        status.textContent = error.message || "Could not update the photo. Check your connection and try again.";
+      } finally {
+        uploadButton.disabled = false;
+        photoInput.value = "";
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
