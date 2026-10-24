@@ -184,6 +184,7 @@
         .all-users-player .leader-img { width: 32px; height: 32px; }
         .all-users-player-details { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 3px; }
         .all-users-player-name { max-width: 190px; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .verified-profile-tick { display: inline-block; width: 24px; height: 24px; flex: 0 0 24px; margin-left: 4px; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(15, 23, 42, .25)); }
         .all-users-player-id { max-width: 190px; overflow: hidden; overflow-wrap: normal; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
         .all-users-table th, .all-users-table td { padding: 5px 6px; }
         .direct-messages-modal { max-width: min(560px, calc(100vw - 32px)); }
@@ -531,7 +532,8 @@
             <input id="edit-name" class="slim-input mb-2" placeholder="Display Name">
             <input id="edit-pic" class="slim-input mb-2" placeholder="Avatar URL" oninput="document.getElementById('edit-preview').src=this.value||DEFAULT_AVATAR">
             <input id="edit-whatsapp" type="tel" inputmode="tel" class="slim-input mb-2" placeholder="WhatsApp number with country code">
-            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-whatsapp" type="checkbox" class="accent-green-600"> Show WhatsApp on my public profile</label>
+            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-whatsapp" type="checkbox" class="accent-green-600"> Show my number on my public profile</label>
+            <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-has-whatsapp" type="checkbox" class="accent-green-600"> This number has a WhatsApp account</label>
             <input id="edit-email" type="email" autocomplete="email" class="slim-input mb-2" placeholder="Email address">
             <label class="flex items-center gap-2 text-[10px] font-bold text-slate-600 mb-2"><input id="edit-show-email" type="checkbox" class="accent-blue-600"> Show email on my public profile</label>
             <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 mb-2">
@@ -678,6 +680,7 @@
                     <p id="preview-bio" class="text-[13px] italic opacity-90">"No bio"</p>
                 </div>
                 <div id="preview-contacts" class="hidden mt-4 flex flex-wrap gap-2">
+                    <span id="preview-whatsapp-number" class="hidden rounded-xl bg-white/10 px-4 py-2 text-xs font-bold text-white"></span>
                     <a id="preview-whatsapp" target="_blank" rel="noopener noreferrer" class="hidden rounded-xl bg-green-500 px-4 py-2 text-xs font-bold text-white hover:bg-green-600">WhatsApp</a>
                     <a id="preview-email" class="hidden rounded-xl bg-blue-500 px-4 py-2 text-xs font-bold text-white hover:bg-blue-600">Email</a>
                 </div>
@@ -756,6 +759,7 @@
         let selectedDirectRecipient = null;
         let pendingDirectRecipientId = null;
         let currentProfileUserId = null;
+        let pendingProfileId = null;
         let isScoreSubmitting = false;
         let displayChars = [];
         let previousTypedChars = [];
@@ -1212,6 +1216,13 @@
                 updateBannerRotation();
                 updateMonthlyCountdown();
                 if (loggedInUser) updateNav();
+                if (pendingProfileId) {
+                    const requestedProfile = allUsers.find(user =>
+                        String(user.id).toLowerCase() === pendingProfileId.toLowerCase()
+                    );
+                    pendingProfileId = null;
+                    if (requestedProfile) viewProfile(requestedProfile.id);
+                }
             }, err => {
                 console.error('Users listener failed:', err);
             });
@@ -1753,7 +1764,7 @@
                     <td class="leaderboard-player-cell">
                         <div class="leaderboard-player">
                             <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
-                            <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</p>
+                            <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderVerifiedBadge(u)}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</p>
                             <span class="user-id-chip leaderboard-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
                     </td>
@@ -1794,7 +1805,7 @@
                     <td class="all-users-player-cell">
                         <div class="all-users-player">
                             <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
-                            <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</span>
+                            <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderVerifiedBadge(u)}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</span>
                             <span class="user-id-chip all-users-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
                     </td>
@@ -1807,6 +1818,19 @@
         }
         function closeAllUsers() { document.getElementById('all-users-modal').classList.remove('active'); }
 
+        function renderVerifiedBadge(user) {
+            if (user.verifiedBadge !== true) return '';
+            const type = ['profile_star', 'gold_check', 'winged_check'].includes(user.verifiedBadgeType)
+                ? user.verifiedBadgeType
+                : 'profile_star';
+            const icons = {
+                profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
+                gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
+                winged_check: '<path d="M38 31 12 16q-8-3-8 5l2 16 19 12-17-4q-7-2-4 6l8 13 18 4-13 2q-6 1-2 7l10 9 15-2zM62 31l26-15q8-3 8 5l-2 16-19 12 17-4q7-2 4 6l-8 13-18 4 13 2q6 1 2 7l-10 9-15-2z" fill="#14a8f5"/><circle cx="50" cy="44" r="31" fill="#08264b" stroke="#168ef5" stroke-width="7"/><path d="m37 43 10 10 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 67 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>'
+            };
+            return `<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Admin verified" title="Admin verified">${icons[type]}</svg>`;
+        }
+
         function viewProfile(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
@@ -1817,7 +1841,11 @@
             const progressText = getNextLevelTargetText(points);
             document.getElementById('preview-avatar').src = user.pic || DEFAULT_AVATAR;
             applyLevelFrame(document.getElementById('preview-avatar'), user);
-            document.getElementById('preview-name').textContent = user.name || user.id;
+            const previewName = document.getElementById('preview-name');
+            previewName.textContent = user.name || user.id;
+            if (user.verifiedBadge === true) {
+                previewName.insertAdjacentHTML('beforeend', renderVerifiedBadge(user));
+            }
             document.getElementById('preview-typing-status').classList.toggle(
                 'hidden',
                 !Object.prototype.hasOwnProperty.call(liveTypingSpeeds, user.id)
@@ -1849,15 +1877,19 @@
             document.getElementById('preview-progress-text').textContent = progressText;
             document.getElementById('preview-bio').textContent = user.bio ? '"' + user.bio + '"' : '"No bio"';
             const whatsappLink = document.getElementById('preview-whatsapp');
+            const whatsappNumberText = document.getElementById('preview-whatsapp-number');
             const emailLink = document.getElementById('preview-email');
             const whatsappNumber = String(user.whatsapp || '').replace(/\D/g, '');
-            const showWhatsApp = user.showWhatsApp === true && whatsappNumber.length >= 8 && whatsappNumber.length <= 15;
+            const showNumber = user.showWhatsApp === true && whatsappNumber.length >= 8 && whatsappNumber.length <= 15;
+            const showWhatsApp = showNumber && user.hasWhatsApp !== false;
             const showEmail = user.showEmail === true && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(user.email || ''));
+            whatsappNumberText.classList.toggle('hidden', !showNumber);
+            if (showNumber) whatsappNumberText.textContent = String(user.whatsapp);
             whatsappLink.classList.toggle('hidden', !showWhatsApp);
             emailLink.classList.toggle('hidden', !showEmail);
             if (showWhatsApp) whatsappLink.href = `https://wa.me/${whatsappNumber}`;
             if (showEmail) emailLink.href = `mailto:${user.email}`;
-            document.getElementById('preview-contacts').classList.toggle('hidden', !showWhatsApp && !showEmail);
+            document.getElementById('preview-contacts').classList.toggle('hidden', !showNumber && !showEmail);
             document.getElementById('preview-modal').classList.add('active');
             refreshTypingSprints();
         }
@@ -2282,6 +2314,7 @@
             document.getElementById('edit-bio').value = loggedInUser.bio || '';
             document.getElementById('edit-whatsapp').value = loggedInUser.whatsapp || '';
             document.getElementById('edit-show-whatsapp').checked = loggedInUser.showWhatsApp === true;
+            document.getElementById('edit-has-whatsapp').checked = loggedInUser.hasWhatsApp !== false;
             document.getElementById('edit-email').value = loggedInUser.email || '';
             document.getElementById('edit-show-email').checked = loggedInUser.showEmail === true;
             document.getElementById('edit-location').value = loggedInUser.location || '';
@@ -2403,6 +2436,7 @@
             const whatsapp = document.getElementById('edit-whatsapp').value.trim();
             const email = document.getElementById('edit-email').value.trim();
             const showWhatsApp = document.getElementById('edit-show-whatsapp').checked;
+            const hasWhatsApp = document.getElementById('edit-has-whatsapp').checked;
             const showEmail = document.getElementById('edit-show-email').checked;
             const location = document.getElementById('edit-location').value.trim();
             const showLocation = document.getElementById('edit-show-location').checked;
@@ -2424,7 +2458,7 @@
                 }
             }
 
-            const updated = { ...loggedInUser, id: newId, name, pic, bio, whatsapp, email, showWhatsApp, showEmail, location, showLocation };
+            const updated = { ...loggedInUser, id: newId, name, pic, bio, whatsapp, email, showWhatsApp, hasWhatsApp, showEmail, location, showLocation };
 
             const finish = () => {
                 loggedInUser = updated;
@@ -2446,7 +2480,7 @@
                     alert('❌ প্রোফাইল আপডেট করতে পারিনি, আবার চেষ্টা করুন।');
                 });
             } else {
-                db.ref('users/' + oldId).update({ name, pic, bio, whatsapp, email, showWhatsApp, showEmail, location, showLocation }).then(finish).catch(err => {
+                db.ref('users/' + oldId).update({ name, pic, bio, whatsapp, email, showWhatsApp, hasWhatsApp, showEmail, location, showLocation }).then(finish).catch(err => {
                     console.error('Profile save failed:', err);
                     alert('❌ প্রোফাইল আপডেট করতে পারিনি, আবার চেষ্টা করুন।');
                 });
@@ -2693,6 +2727,15 @@
         // INIT
         // ============================================
         function init() {
+            const queryParams = new URLSearchParams(window.location.search);
+            const openLoginOnLoad = queryParams.get('openLogin') === '1';
+            pendingProfileId = queryParams.get('profile');
+            if (openLoginOnLoad || pendingProfileId) {
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('openLogin');
+                cleanUrl.searchParams.delete('profile');
+                history.replaceState(null, '', cleanUrl);
+            }
             console.log('🚀 App starting...');
             setupMessageNotifications();
             document.addEventListener('fullscreenchange', updatePracticeFullscreenButton);
@@ -2745,6 +2788,7 @@
                 }
             } else {
                 updateNav();
+                if (openLoginOnLoad) openAuth();
             }
 
             // Typing input
