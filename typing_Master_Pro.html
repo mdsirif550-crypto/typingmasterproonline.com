@@ -38,6 +38,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         * { box-sizing: border-box; }
+        html { overflow-anchor: none; }
         body { font-family: 'Noto Sans Bengali', 'Segoe UI', sans-serif; background: #f1f5f9; padding-top: 45px; }
         .marquee { background: #0f172a; color: #facc15; padding: 4px 0; overflow: hidden; white-space: nowrap; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; }
         .marquee span { display: inline-block; animation: scrollMarquee 25s linear infinite; }
@@ -76,7 +77,7 @@
         .banner-announcement p { margin: 1px 0; font-size: 9px; line-height: 1.25; font-weight: 700; text-align: center; }
         .banner-announcement .announcement-highlight { color: #7c2d12; font-weight: 900; }
         .banner-website-glow {
-            background: linear-gradient(90deg, #7c3aed, #db2777, #ea580c, #16a34a, #2563eb, #7c3aed);
+            background: linear-gradient(90deg, #7c3aed, #db2777, #ea580c, #013815, #2563eb, #7c3aed);
             background-size: 250% auto;
             background-clip: text;
             -webkit-background-clip: text;
@@ -268,18 +269,6 @@
             .leader-img { width: 32px; height: 32px; }
             .control-select { font-size: 10px; padding: 4px 8px; }
             .banner-avatar { width: 34px; height: 34px; }
-            body.mobile-typing-mode { padding-top: 0; overflow: hidden; }
-            #practice-fullscreen-shell.mobile-typing-mode { display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
-            #practice-fullscreen-shell.mobile-typing-mode > .marquee,
-            #practice-fullscreen-shell.mobile-typing-mode > nav { display: none; }
-            #practice-fullscreen-shell.mobile-typing-mode > .practice-page-content { display: flex; flex: 1; flex-direction: column; width: 100%; max-width: none; min-height: 0; margin: 0; padding: max(8px, env(safe-area-inset-top)) 10px max(8px, env(safe-area-inset-bottom)); gap: 6px; }
-            #practice-fullscreen-shell.mobile-typing-mode .practice-page-content > :not(#practice-stage):not(#practice-stats) { display: none; }
-            #practice-fullscreen-shell.mobile-typing-mode #practice-stage { flex: 1; min-height: 0; gap: 8px; overflow: hidden; }
-            #practice-fullscreen-shell.mobile-typing-mode #display-box { flex: 1 1 0; height: auto; min-height: 0; padding: 12px; font-size: 1.2rem; line-height: 1.7; }
-            #practice-fullscreen-shell.mobile-typing-mode #typing-input { flex: 0 0 32%; height: auto; min-height: 120px; max-height: 36%; margin-top: 0; padding: 14px; border-radius: 16px; font-size: 1.1rem; }
-            #practice-fullscreen-shell.mobile-typing-mode #practice-stats { flex: 0 0 auto; justify-content: center; gap: 6px; margin: 0; padding: 6px; border-radius: 12px; }
-            #practice-fullscreen-shell.mobile-typing-mode #practice-stats > div > .stat-pill:not(:first-child) { display: none; }
-            #practice-fullscreen-shell.mobile-typing-mode #practice-stats .stat-pill { padding: 3px 8px; }
             #leaderboard-section .leaderboard-table { display: block; width: 100%; max-width: none; table-layout: auto; }
             #leaderboard-section .leaderboard-table thead { display: none; }
             #leaderboard-section .leaderboard-table tbody { display: grid; gap: 4px; }
@@ -728,6 +717,7 @@
         }, err => console.error('Server time offset listener failed:', err));
 
         const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        const MAX_PROFILE_AVATAR_DATA_URL_LENGTH = 350000;
         const ADMIN_WHATSAPP = '8801877902991';
         const DEFAULT_SECONDARY_BANNER_TEXT = 'TypingMaster Pro Online-এ স্বাগতম!';
         const EMPTY_ANNOUNCEMENT_VIDEOS = Array.from({ length: 5 }, () => null);
@@ -739,6 +729,7 @@
         let typingLang = 'en';
         let currentLanguage = 'en';
         let isStarted = false, startTime = null, sessionMistakes = 0, correctChars = 0;
+        let typingSpeedSamples = [];
         let timeLeft = 300, timerInterval = null, isTimeOver = false;
         let helpListener = null;
         let helpListenerCallback = null;
@@ -1413,8 +1404,6 @@
 
         function resetTyping() {
             setTypingStatus(false);
-            document.getElementById('practice-fullscreen-shell').classList.remove('mobile-typing-mode');
-            document.body.classList.remove('mobile-typing-mode');
             const input = document.getElementById('typing-input');
             if (!isCustomMode) {
                 const nextLessonId = getNextLessonId();
@@ -1430,6 +1419,7 @@
             isStarted = false;
             isTimeOver = false;
             startTime = null;
+            typingSpeedSamples = [];
             timeLeft = 300;
             sessionMistakes = 0;
             correctChars = 0;
@@ -2303,15 +2293,56 @@
         }
         function closeEdit() { document.getElementById('edit-modal').classList.remove('active'); }
 
-        function handleAvatarUpload(e) {
-            const file = e.target.files[0];
+        async function compressProfileAvatar(source) {
+            let imageUrl = source;
+            const shouldRevokeUrl = source instanceof Blob;
+            if (shouldRevokeUrl) imageUrl = URL.createObjectURL(source);
+
+            const image = new Image();
+            try {
+                await new Promise((resolve, reject) => {
+                    image.onload = resolve;
+                    image.onerror = () => reject(new Error('Could not read the selected image.'));
+                    image.src = imageUrl;
+                });
+            } finally {
+                if (shouldRevokeUrl) URL.revokeObjectURL(imageUrl);
+            }
+
+            const longestSide = Math.max(image.naturalWidth, image.naturalHeight);
+            if (!longestSide) throw new Error('The selected image has invalid dimensions.');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            if (!context) throw new Error('Image compression is unavailable in this browser.');
+
+            for (const maxDimension of [400, 300, 220]) {
+                const scale = Math.min(1, maxDimension / longestSide);
+                canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+                canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+                context.fillStyle = '#fff';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                for (const quality of [0.82, 0.68, 0.54, 0.4]) {
+                    const compressed = canvas.toDataURL('image/jpeg', quality);
+                    if (compressed.length <= MAX_PROFILE_AVATAR_DATA_URL_LENGTH) return compressed;
+                }
+            }
+
+            throw new Error('The image could not be compressed to a safe size.');
+        }
+
+        async function handleAvatarUpload(e) {
+            const file = e.target.files && e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                document.getElementById('edit-preview').src = ev.target.result;
-                document.getElementById('edit-pic').value = ev.target.result;
-            };
-            reader.readAsDataURL(file);
+            try {
+                const compressed = await compressProfileAvatar(file);
+                document.getElementById('edit-preview').src = compressed;
+                document.getElementById('edit-pic').value = compressed;
+            } catch (err) {
+                console.error('Avatar processing failed:', err);
+                alert('ছবিটি ব্যবহার করা যাচ্ছে না। অন্য একটি ছবি নির্বাচন করে আবার চেষ্টা করুন।');
+            }
         }
 
         function clearProfileLocation() {
@@ -2360,14 +2391,14 @@
             }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 3600000 });
         }
 
-        function saveProfile() {
+        async function saveProfile() {
             if (!loggedInUser) return;
             const oldId = loggedInUser.id;
             const oldIdNorm = String(oldId || '').trim().toLowerCase();
             const rawId = document.getElementById('edit-id').value.trim();
             const newId = String(rawId).trim().toLowerCase();
             const name = document.getElementById('edit-name').value.trim();
-            const pic = document.getElementById('edit-pic').value.trim();
+            let pic = document.getElementById('edit-pic').value.trim();
             const bio = document.getElementById('edit-bio').value.trim();
             const whatsapp = document.getElementById('edit-whatsapp').value.trim();
             const email = document.getElementById('edit-email').value.trim();
@@ -2383,6 +2414,15 @@
             if (showWhatsApp && !whatsapp) return alert('Add a WhatsApp number or turn off its profile visibility.');
             if (showEmail && !email) return alert('Add an email address or turn off its profile visibility.');
             if (showLocation && !location) return alert('Detect a city/country or turn off its profile visibility.');
+
+            if (pic.startsWith('data:image/') && pic.length > MAX_PROFILE_AVATAR_DATA_URL_LENGTH) {
+                try {
+                    pic = await compressProfileAvatar(pic);
+                } catch (err) {
+                    console.error('Avatar compression failed:', err);
+                    return alert('প্রোফাইল ছবিটি ছোট করা যাচ্ছে না। অন্য ছবি নির্বাচন করে আবার চেষ্টা করুন।');
+                }
+            }
 
             const updated = { ...loggedInUser, id: newId, name, pic, bio, whatsapp, email, showWhatsApp, showEmail, location, showLocation };
 
@@ -2713,13 +2753,66 @@
             });
 
             const typingInput = document.getElementById('typing-input');
-            typingInput.addEventListener('focus', function() {
-                if (loggedInUser && !document.fullscreenElement && window.matchMedia('(max-width: 640px)').matches) {
-                    document.getElementById('practice-fullscreen-shell').classList.add('mobile-typing-mode');
-                    document.body.classList.add('mobile-typing-mode');
-                    window.scrollTo({ top: 0, behavior: 'instant' });
+            let typingScrollPosition = null;
+            let manualTypingScroll = false;
+            let manualTypingScrollTimeout = null;
+            const allowManualTypingScroll = () => {
+                manualTypingScroll = true;
+                clearTimeout(manualTypingScrollTimeout);
+                manualTypingScrollTimeout = setTimeout(() => {
+                    manualTypingScroll = false;
+                }, 800);
+            };
+            typingInput.addEventListener('pointerdown', () => {
+                typingScrollPosition = { x: window.scrollX, y: window.scrollY };
+            });
+            typingInput.addEventListener('focus', () => {
+                if (!typingScrollPosition) {
+                    typingScrollPosition = { x: window.scrollX, y: window.scrollY };
+                }
+                const restoreScrollPosition = () => {
+                    if (manualTypingScroll) return;
+                    window.scrollTo({
+                        left: typingScrollPosition.x,
+                        top: typingScrollPosition.y,
+                        behavior: 'instant'
+                    });
+                };
+                setTimeout(restoreScrollPosition, 0);
+                setTimeout(restoreScrollPosition, 100);
+            });
+            document.addEventListener('wheel', allowManualTypingScroll, { passive: true });
+            document.addEventListener('touchmove', allowManualTypingScroll, { passive: true });
+            document.addEventListener('pointerdown', event => {
+                if (event.target !== typingInput) allowManualTypingScroll();
+            });
+            document.addEventListener('pointerup', () => {
+                if (manualTypingScroll) {
+                    clearTimeout(manualTypingScrollTimeout);
+                    manualTypingScrollTimeout = setTimeout(() => {
+                        manualTypingScroll = false;
+                    }, 800);
                 }
             });
+            window.addEventListener('scroll', () => {
+                if (!isStarted || document.activeElement !== typingInput) return;
+                const currentPosition = { x: window.scrollX, y: window.scrollY };
+                if (manualTypingScroll) {
+                    typingScrollPosition = currentPosition;
+                    return;
+                }
+                if (!typingScrollPosition) {
+                    typingScrollPosition = currentPosition;
+                    return;
+                }
+                if (currentPosition.x !== typingScrollPosition.x || currentPosition.y !== typingScrollPosition.y) {
+                    window.scrollTo({
+                        left: typingScrollPosition.x,
+                        top: typingScrollPosition.y,
+                        behavior: 'instant'
+                    });
+                }
+            }, { passive: true });
             typingInput.addEventListener('input', function() {
                 if (!loggedInUser) {
                     this.value = '';
@@ -2733,16 +2826,7 @@
                 if (!isStarted) {
                     isStarted = true;
                     startTimer();
-                    const isMobileTypingMode = window.matchMedia('(max-width: 640px)').matches && !document.fullscreenElement;
-                    if (isMobileTypingMode) {
-                        document.getElementById('practice-fullscreen-shell').classList.add('mobile-typing-mode');
-                        document.body.classList.add('mobile-typing-mode');
-                        window.scrollTo({ top: 0, behavior: 'instant' });
-                    } else if (!document.fullscreenElement) {
-                        const navHeight = document.querySelector('nav').getBoundingClientRect().height;
-                        const inputTop = this.getBoundingClientRect().top + window.scrollY;
-                        window.scrollTo({ top: Math.max(0, inputTop - navHeight - 16), behavior: 'instant' });
-                    }
+                    typingSpeedSamples = [{ time: startTime, correctChars: 0 }];
                 }
                 const typed = splitGraphemes(this.value);
                 let commonPrefix = 0;
@@ -2773,8 +2857,18 @@
                     }
                 }
                 previousTypedChars = typed;
-                const time = (Date.now() - startTime) / 60000;
-                const wpm = time > 0 ? Math.round((correctChars / 5) / time) : 0;
+                const now = Date.now();
+                typingSpeedSamples.push({ time: now, correctChars });
+                while (typingSpeedSamples.length > 1 &&
+                    typingSpeedSamples[1].time <= now - 10000) {
+                    typingSpeedSamples.shift();
+                }
+                const firstSample = typingSpeedSamples[0];
+                const elapsedMs = now - firstSample.time;
+                const correctCharsInWindow = Math.max(0, correctChars - firstSample.correctChars);
+                const wpm = elapsedMs >= 1000
+                    ? Math.round((correctCharsInWindow / 5) / (elapsedMs / 60000))
+                    : 0;
                 setTypingStatus(true, wpm);
                 const accuracy = typed.length > 0 ? Math.max(0, Math.round((correctChars / typed.length) * 100)) : 0;
                 document.getElementById('live-chars').textContent = typed.length;
