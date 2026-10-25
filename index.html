@@ -299,6 +299,29 @@
     .char-correct { color: var(--success) !important; background-color: rgba(16, 185, 129, 0.1) !important; }
     .char-wrong { color: var(--danger) !important; background-color: rgba(239, 68, 68, 0.25) !important; border-bottom: 3px solid var(--danger) !important; }
     .char-current { color: var(--text-main); background-color: rgba(192, 38, 211, 0.25); border-bottom: 3px solid var(--primary); }
+    .typing-panel.bengali-mode .dashboard > .stat-box:first-child,
+    .typing-panel.bengali-mode #customLessonButton,
+    .typing-panel.bengali-mode #statusFeedback { display: none; }
+    .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) { grid-column: 1 / -1; }
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) .controls { display: flex; justify-content: stretch; width: 100%; }
+    .typing-panel.bengali-mode #lessonSelect { width: 100%; max-width: none; padding: 9px 12px; font-size: 14px; }
+    .bijoy-notice-button { display: none; flex: 0 0 auto; padding: 8px 12px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .bijoy-notice-button:hover { background: #1d4ed8; }
+    .typing-panel.bengali-mode .bijoy-notice-button { display: inline-flex; align-items: center; justify-content: center; }
+    .bijoy-notice-content { max-height: min(80vh, 650px); overflow-y: auto; text-align: left; }
+    .bijoy-notice-content h2 { color: var(--primary); margin-bottom: 12px; }
+    .bijoy-notice-content p, .bijoy-notice-content li { color: var(--text-main); font-size: 14px; line-height: 1.75; }
+    .bijoy-notice-content ol { margin: 12px 0 16px; padding-left: 24px; }
+    .bijoy-notice-content code { padding: 2px 6px; border-radius: 5px; background: rgba(255,255,255,0.1); color: #fde68a; font-family: inherit; }
+    .bijoy-conjunct-table { display: block; width: 100%; margin-top: 14px; overflow-x: auto; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    .bijoy-conjunct-table th, .bijoy-conjunct-table td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.12); color: var(--text-main); font-size: 13px; line-height: 1.6; vertical-align: top; }
+    .bijoy-conjunct-table th { color: #6ee7b7; }
+    .typing-panel.bengali-mode .text-display { min-height: 180px; padding: 18px; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; background: rgba(4,30,18,0.48); font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; letter-spacing: 0; white-space: pre-wrap; }
+    .bengali-typing-box { display: none; }
+    .typing-panel.bengali-mode .bengali-typing-box { display: block; width: 100%; min-height: 120px; margin-top: 14px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; background: rgba(4,30,18,0.48); color: var(--text-main); font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-size: 22px; line-height: 1.7; resize: vertical; }
+    .typing-panel.bengali-mode .bengali-typing-box:focus { border-color: var(--primary); outline: 2px solid rgba(192,38,211,0.22); }
+    .keyboard-container.bengali-hidden { display: none; }
     .keyboard-container { width: min(100%, 900px); min-width: 0; margin: 0 auto; background-color: var(--panel-bg); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
     .keyboard-row { display: flex; justify-content: center; gap: 6px; width: 100%; min-width: 0; margin-bottom: 10px; }
     .keyboard-row:last-child { margin-bottom: 0; }
@@ -373,6 +396,13 @@
       .home-top-three-join { padding: 5px 6px; font-size: 9px; }
       .home-top-three-header .home-top-three-title { flex: 0 0 100%; }
       .home-top-three-list { gap: 5px; }
+      .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) .controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+      .typing-panel.bengali-mode #lessonSelect { grid-column: 1 / -1; }
+      .typing-panel.bengali-mode .bijoy-notice-button, .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) .controls .btn-reset { width: 100%; margin: 0 !important; }
+      .typing-panel.bengali-mode #lessonSelect { min-width: 0; }
+      .typing-panel.bengali-mode .text-display { padding: 12px; min-height: 150px; }
+      .typing-panel.bengali-mode .bengali-typing-box { min-height: 100px; padding: 12px; font-size: 18px; }
       .home-top-player { padding: 5px 3px; }
       .welcome-banner-controls .adu-office-app-widget { padding: 2px 19px 2px 3px; }
       .welcome-banner-controls .adu-office-app-link { font-size: 9px; }
@@ -609,7 +639,7 @@
     <div id="typingPanel" class="typing-panel" tabindex="0">
       <div class="dashboard">
         <div class="stat-box"><div class="stat-label">Level Select</div><div class="controls"><select id="levelSelect" onchange="populateLessonsDropdown(); loadLesson()"><option value="basic">Basic Level</option><option value="level1">Level 1</option><option value="level2">Level 2</option><option value="level3">Level 3</option><option value="advanced">Advanced Level</option></select></div></div>
-        <div class="stat-box"><div class="stat-label">Lesson Select</div><div class="controls"><select id="lessonSelect" onchange="loadLesson()"></select><button class="btn-reset" onclick="openCustomModal()" style="background-color: #3b82f6; margin-right: 5px;">Custom</button><button class="btn-reset" onclick="resetExercise()">Reset</button></div></div>
+        <div class="stat-box"><div class="stat-label">Lesson Select</div><div class="controls"><select id="lessonSelect" onchange="loadLesson()"></select><button id="customLessonButton" class="btn-reset" onclick="openCustomModal()" style="background-color: #3b82f6; margin-right: 5px;">Custom</button><button type="button" class="bijoy-notice-button" onclick="openBijoyNotice()" aria-haspopup="dialog">যুক্তবর্ণ টাইপের নিয়ম</button><button class="btn-reset" onclick="resetExercise()">Reset</button></div></div>
         <div class="stat-box"><div class="stat-label">Progress</div><div id="progressVal" class="stat-val highlight">0 / 0</div></div>
         <div class="stat-box"><div class="stat-label">WPM</div><div id="wpmVal" class="stat-val highlight">00</div></div>
         <div class="stat-box"><div class="stat-label">Accuracy</div><div id="accuracyVal" class="stat-val">100%</div></div>
@@ -623,10 +653,57 @@
         </div>
       </div>
       <div id="statusFeedback" class="status-feedback"><span style="color: var(--text-muted)">Press any key to start typing...</span></div>
-      <div id="textDisplay" class="text-display"></div>
-      <div id="summaryModal" class="modal"><div class="modal-content"><h2>Exercise Complete! </h2><div class="modal-stats"><div class="modal-stat-line"><span>Speed:</span><strong><span id="modalWpm">0</span> WPM</strong></div><div class="modal-stat-line"><span>Accuracy:</span><strong><span id="modalAccuracy">100</span>%</strong></div><div class="modal-stat-line"><span>Time:</span><strong><span id="modalTime">00:00</span></strong></div><div class="modal-stat-line"><span>Errors:</span><strong><span id="modalErrors" style="color:var(--danger)">0</span></strong></div></div><div class="trainer-tip">Keep typing !</div><button class="modal-btn" onclick="loadNextLesson()" style="margin-top: 15px; background-color: var(--success);">Next Lesson ➔</button><button class="modal-btn" onclick="closeSummary()" style="margin-top: 10px; background-color: var(--key-bg);">Try good typing </button></div></div>
+      <div id="textDisplay" class="text-display" aria-label="লেসনের লেখা"></div>
+      <textarea id="bengaliTypingBox" class="bengali-typing-box" aria-label="বাংলা টাইপিং বক্স" placeholder="এখানে টাইপ করুন..." autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+      <div id="summaryModal" class="modal"><div class="modal-content"><h2>Exercise Complete! </h2><div class="modal-stats"><div class="modal-stat-line"><span>Speed:</span><strong><span id="modalWpm">0</span> WPM</strong></div><div class="modal-stat-line"><span>Accuracy:</span><strong><span id="modalAccuracy">100</span>%</strong></div><div class="modal-stat-line"><span>Time:</span><strong><span id="modalTime">00:00</span></strong></div><div class="modal-stat-line"><span>Errors:</span><strong><span id="modalErrors" style="color:var(--danger)">0</span></strong></div></div><div class="trainer-tip">Keep typing !</div><button id="nextLessonButton" class="modal-btn" onclick="loadNextLesson()" style="margin-top: 15px; background-color: var(--success);">Next Lesson ➔</button><button class="modal-btn" onclick="closeSummary()" style="margin-top: 10px; background-color: var(--key-bg);">Try good typing </button></div></div>
     </div>
-    <div class="keyboard-container">
+    <div id="bijoyNoticeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="bijoyNoticeTitle" aria-hidden="true">
+      <div class="modal-content bijoy-notice-content">
+        <h2 id="bijoyNoticeTitle">যুক্তবর্ণ কীভাবে টাইপ করবেন</h2>
+        <p><strong>বাংলা টাইপ করার আগে আপনার কম্পিউটারে Bijoy 52 চালু/সক্রিয় রাখুন।</strong> নিচের কী-ক্রম এই পেজের Bijoy key map অনুযায়ী। বড় হাতের অক্ষরের আগে <strong>Shift</strong> ধরে চাপুন। সাধারণ যুক্তবর্ণে প্রথম বর্ণ, <code>g</code> (হসন্ত), তারপর পরের বর্ণ লিখুন।</p>
+        <table class="bijoy-conjunct-table">
+          <thead><tr><th>যুক্তবর্ণ</th><th>যে কী চাপবেন</th><th>গঠন</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ক্ষ</strong></td><td><code>J</code>, তারপর <code>Shift+N</code></td><td>Bijoy 52 shortcut</td></tr>
+            <tr><td><strong>ক্ত</strong></td><td><code>j</code> + <code>g</code> + <code>k</code></td><td>ক + ্ + ত</td></tr>
+            <tr><td><strong>ক্র</strong></td><td><code>j</code> + <code>z</code></td><td>ক + ্র</td></tr>
+            <tr><td><strong>ক্ল</strong></td><td><code>j</code> + <code>g</code> + <code>Shift+V</code></td><td>ক + ্ + ল</td></tr>
+            <tr><td><strong>গ্র</strong></td><td><code>o</code> + <code>z</code></td><td>গ + ্র</td></tr>
+            <tr><td><strong>ঙ্ক</strong></td><td><code>q</code> + <code>g</code> + <code>j</code></td><td>ঙ + ্ + ক</td></tr>
+            <tr><td><strong>ঙ্গ</strong></td><td><code>q</code> + <code>g</code> + <code>o</code></td><td>ঙ + ্ + গ</td></tr>
+            <tr><td><strong>ঙ্ঘ</strong></td><td><code>q</code> + <code>g</code> + <code>Shift+O</code></td><td>ঙ + ্ + ঘ</td></tr>
+            <tr><td><strong>চ্চ</strong></td><td><code>y</code> + <code>g</code> + <code>y</code></td><td>চ + ্ + চ</td></tr>
+            <tr><td><strong>চ্ছ</strong></td><td><code>y</code> + <code>g</code> + <code>Shift+Y</code></td><td>চ + ্ + ছ</td></tr>
+            <tr><td><strong>জ্জ</strong></td><td><code>u</code> + <code>g</code> + <code>u</code></td><td>জ + ্ + জ</td></tr>
+            <tr><td><strong>জ্ঞ</strong></td><td><code>u</code> + <code>g</code> + <code>Shift+I</code></td><td>জ + ্ + ঞ</td></tr>
+            <tr><td><strong>ঞ্চ</strong></td><td><code>Shift+I</code> + <code>g</code> + <code>y</code></td><td>ঞ + ্ + চ</td></tr>
+            <tr><td><strong>ঞ্জ</strong></td><td><code>Shift+I</code> + <code>g</code> + <code>u</code></td><td>ঞ + ্ + জ</td></tr>
+            <tr><td><strong>ট্ট</strong></td><td><code>t</code> + <code>g</code> + <code>t</code></td><td>ট + ্ + ট</td></tr>
+            <tr><td><strong>ড্ড</strong></td><td><code>e</code> + <code>g</code> + <code>e</code></td><td>ড + ্ + ড</td></tr>
+            <tr><td><strong>ণ্ঠ</strong></td><td><code>Shift+B</code> + <code>g</code> + <code>Shift+T</code></td><td>ণ + ্ + ঠ</td></tr>
+            <tr><td><strong>ণ্ড</strong></td><td><code>Shift+B</code> + <code>g</code> + <code>e</code></td><td>ণ + ্ + ড</td></tr>
+            <tr><td><strong>ত্ত</strong></td><td><code>k</code> + <code>g</code> + <code>k</code></td><td>ত + ্ + ত</td></tr>
+            <tr><td><strong>ত্র</strong></td><td><code>k</code> + <code>z</code></td><td>ত + ্র</td></tr>
+            <tr><td><strong>থ্য</strong></td><td><code>Shift+K</code> + <code>g</code> + <code>w</code></td><td>থ + ্ + য</td></tr>
+            <tr><td><strong>দ্দ</strong></td><td><code>l</code> + <code>g</code> + <code>l</code></td><td>দ + ্ + দ</td></tr>
+            <tr><td><strong>দ্ধ</strong></td><td><code>l</code> + <code>g</code> + <code>Shift+L</code></td><td>দ + ্ + ধ</td></tr>
+            <tr><td><strong>দ্ব</strong></td><td><code>l</code> + <code>g</code> + <code>h</code></td><td>দ + ্ + ব</td></tr>
+            <tr><td><strong>ন্দ</strong></td><td><code>b</code> + <code>g</code> + <code>l</code></td><td>ন + ্ + দ</td></tr>
+            <tr><td><strong>ন্ধ</strong></td><td><code>b</code> + <code>g</code> + <code>Shift+L</code></td><td>ন + ্ + ধ</td></tr>
+            <tr><td><strong>ন্ত</strong></td><td><code>b</code> + <code>g</code> + <code>k</code></td><td>ন + ্ + ত</td></tr>
+            <tr><td><strong>প্ন</strong></td><td><code>r</code> + <code>g</code> + <code>b</code></td><td>প + ্ + ন</td></tr>
+            <tr><td><strong>প্র</strong></td><td><code>r</code> + <code>z</code></td><td>প + ্র</td></tr>
+            <tr><td><strong>ম্প</strong></td><td><code>m</code> + <code>g</code> + <code>r</code></td><td>ম + ্ + প</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 10px;">Bijoy 52 সক্রিয় না থাকলে এই কী-ক্রমে বাংলা অক্ষর আসবে না। Bijoy-এর সংস্করণ বা সেটিংস অনুযায়ী কী-ক্রমে পার্থক্য হলে আপনার কিবোর্ড লেআউট দেখে মিলিয়ে নিন।</p>
+          </tbody>
+        </table>
+        <p style="margin-top: 10px;">একই যুক্তবর্ণের কী Bijoy সংস্করণ বা সেটিংস অনুযায়ী আলাদা হতে পারে। আপনার কিবোর্ডে ফল না মিললে, Bijoy layout দেখে মিলিয়ে নিন।</p>
+        <button type="button" class="modal-btn" style="margin-top: 16px;" onclick="closeBijoyNotice()">বুঝেছি</button>
+      </div>
+    </div>
+    <div id="keyboardContainer" class="keyboard-container">
       <div class="keyboard-row"><div class="key" id="key-`" data-key="`">`</div><div class="key" id="key-1" data-key="1">1</div><div class="key" id="key-2" data-key="2">2</div><div class="key" id="key-3" data-key="3">3</div><div class="key" id="key-4" data-key="4">4</div><div class="key" id="key-5" data-key="5">5</div><div class="key" id="key-6" data-key="6">6</div><div class="key" id="key-7" data-key="7">7</div><div class="key" id="key-8" data-key="8">8</div><div class="key" id="key-9" data-key="9">9</div><div class="key" id="key-0" data-key="10">10</div><div class="key" id="key--" data-key="11">11</div><div class="key" id="key-=" data-key="12">12</div><div class="key backspace" id="key-backspace" data-key="Backspace">Backspace</div></div>
       <div class="keyboard-row"><div class="key tab" id="key-tab" data-key="Tab">Tab</div><div class="key" id="key-q" data-key="q">Q</div><div class="key" id="key-w" data-key="w">W</div><div class="key" id="key-e" data-key="e">E</div><div class="key" id="key-r" data-key="r">R</div><div class="key" id="key-t" data-key="t">T</div><div class="key" id="key-y" data-key="y">Y</div><div class="key" id="key-u" data-key="u">U</div><div class="key" id="key-i" data-key="i">I</div><div class="key" id="key-o" data-key="o">O</div><div class="key" id="key-p" data-key="p">P</div><div class="key" id="key-[" data-key="[">[</div><div class="key" id="key-]" data-key="]">]</div><div class="key" id="key-backslash" data-key="&#92;">&#92;</div></div>
       <div class="keyboard-row"><div class="key caps" id="key-capslock" data-key="CapsLock">Caps Lock</div><div class="key" id="key-a" data-key="a">A</div><div class="key" id="key-s" data-key="s">S</div><div class="key" id="key-d" data-key="d">D</div><div class="key" id="key-f" data-key="f">F</div><div class="key" id="key-g" data-key="g">G</div><div class="key" id="key-h" data-key="h">H</div><div class="key" id="key-j" data-key="j">J</div><div class="key" id="key-k" data-key="k">K</div><div class="key" id="key-l" data-key="l">L</div><div class="key" id="key-;" data-key=";">;</div><div class="key" id="key-'" data-key="'">'</div><div class="key enter" id="key-enter" data-key="Enter">Enter</div></div>
@@ -724,14 +801,15 @@
 
     function renderHomeVerifiedBadge(user) {
       if (user.verifiedBadge !== true) return "";
-      const type = ["profile_star", "gold_check", "winged_check", "blue_seal"].includes(user.verifiedBadgeType)
+      const type = ["profile_star", "gold_check", "winged_check", "blue_seal", "red_seal"].includes(user.verifiedBadgeType)
         ? user.verifiedBadgeType
         : "profile_star";
       const icons = {
         profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
         gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
         winged_check: '<path d="M38 31 12 16q-8-3-8 5l2 16 19 12-17-4q-7-2-4 6l8 13 18 4-13 2q-6 1-2 7l10 9 15-2zM62 31l26-15q8-3 8 5l-2 16-19 12 17-4q7-2 4 6l-8 13-18 4 13 2q6 1 2 7l-10 9-15-2z" fill="#14a8f5"/><circle cx="50" cy="44" r="31" fill="#08264b" stroke="#168ef5" stroke-width="7"/><path d="m37 43 10 10 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 67 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>',
-        blue_seal: '<path d="M0 23h29v12H0zM0 42h24v9H0zM0 58h29v8H0z" fill="#8bd3ff"/><path d="M50 3 60 8l11-2 6 10 11 4-1 12 7 9-6 10 2 11-10 7-3 11-12 1-8 9-10-7-12 3-7-9-12-3-2-12-9-8 4-11-4-11 9-8 3-12 12-2z" fill="#0868ee" stroke="#74c7ff" stroke-width="5" stroke-linejoin="round"/><path d="m32 51 12 12 25-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+        blue_seal: '<path d="M0 23h29v12H0zM0 42h24v9H0zM0 58h29v8H0z" fill="#8bd3ff"/><path d="M50 3 60 8l11-2 6 10 11 4-1 12 7 9-6 10 2 11-10 7-3 11-12 1-8 9-10-7-12 3-7-9-12-3-2-12-9-8 4-11-4-11 9-8 3-12 12-2z" fill="#0868ee" stroke="#74c7ff" stroke-width="5" stroke-linejoin="round"/><path d="m32 51 12 12 25-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
+        red_seal: '<path d="M50 3 63 11 78 9 84 23 96 31 93 46 100 59 91 70 90 85 76 91 69 104 54 100 40 106 30 95 15 92 12 77 1 67 5 52 0 39 11 28 14 13 29 11Z" fill="#080808" stroke="#444" stroke-width="3" stroke-linejoin="round"/><path d="M50 11 61 18 74 16 80 28 91 35 88 48 94 59 86 69 85 82 73 87 67 98 54 94 42 100 33 90 20 87 18 74 8 65 12 52 8 41 18 32 21 20 34 18Z" fill="#ed1018" stroke="#b90009" stroke-width="3" stroke-linejoin="round"/><path d="m29 52 13 13 30-34" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff"><path d="m50 12 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m15 55 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m84 57 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m50 83 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>'
       };
       return `<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Admin verified" title="Admin verified">${icons[type]}</svg>`;
     }
@@ -916,7 +994,18 @@
       advanced: ["Microsoft Word, Microsoft Excel, Microsoft PowerPoint, file management, internet browsing, and email communication. With dedication, patience, and continuous practice, anyone can become skilled in using a","computer. Computer knowledge is the key to success in education, employment, freelancing, and everyday life. Keep practicing every day, and your computer skills will continue to improve.","Computers have become an essential part of modern life. Almost every home, school, office, hospital, bank, and business organization uses computers to complete daily tasks. They help people save time, improve","accuracy, and increase productivity. A computer can process large amounts of information within a few seconds, making work easier and more efficient than ever before.","Students use computers to prepare assignments, attend online classes, conduct research, and improve their knowledge. Teachers use computers to create lesson plans, presentations, question papers, and educational","materials. Office workers use computers for writing reports, preparing spreadsheets, managing databases, sending emails, and organizing important documents. Hospitals use computers to keep patient records, schedule app","The internet has made computers even more powerful. People can communicate instantly through email, video calls, and social media. They can also access online libraries, educational websites, digital newspapers,","and learning platforms. Computers allow people to work remotely from anywhere in the world, creating new opportunities for freelancing and online businesses.","Learning computer skills is one of the best investments for the future. Skills such as typing, Microsoft Word, Microsoft Excel, Microsoft PowerPoint, graphic design, video editing, web development, programming, and","artificial intelligence are highly valuable in today's job market. Many successful freelancers and entrepreneurs started their careers by learning these skills step by step."]
     };
     const bengaliLessonsByLevel = {
-      basic: ["ক ক খ খ গ গ ঘ ঘ ঙ ঙ চ চ ছ ছ জ জ ঝ ঝ ঞ ঞ ট ট ঠ ঠ ড ড ন ন"," বাংলা মোডে টাইপ করতে একটু সমস্যা হতে পারে এটা নিয়ে আমরা কাজ করতেছি কিছু দিনের ভিতরে ঠিক হয়ে যাবে ৪ নাম্বার লেসন থেকে শুরু করুন "," ৪ নাম্বার লেসন থেকে শুরু করুন","কতদচজ হগড়টপদত হকহজটকত তদত বসর কহাহগ ","যমবনস রলস দতকগব গটগকড় জহগ","কম্পিউটার টাইপিং","বেসিক লেভেল অনুশীলন","কীবোর্ড অনুশীলন","সঠিক টাইপিং শিখি","প্রতিদিন অনুশীলন করি"],
+      basic: [
+        "ভোরের আলো ধীরে ধীরে জানালায় এসে পড়ে। পাখিরা ডালে বসে নতুন দিনের গান গায়। ঘাসের ডগায় জমে থাকা শিশির রোদের ছোঁয়ায় ঝিলমিল করে। দূরের মাঠে কৃষক কাজে বের হন, পথের ধারে শিশুরা স্কুলে যাওয়ার প্রস্তুতি নেয়। সকাল আমাদের মনে সতেজ ভাব জাগায়। প্রতিদিনের কাজ শুরু করার আগে একটু সময় নিয়ে চারপাশের সৌন্দর্য দেখলে মন শান্ত হয়। নিয়মিত চেষ্টা, ধৈর্য এবং সুন্দর অভ্যাস মানুষকে সামনে এগিয়ে নেয়। আজকের ছোট কাজ আগামী দিনের বড় সাফল্যের পথ তৈরি করে।",
+        "নদীর বুকে ভোরের আলো, জলের ঢেউয়ে সোনার জ্বালো।\nপাল তুলে যায় ছোট্ট নাও, মাঝির মুখে মিষ্টি গাও।\nদুই পারে সবুজ ধান, বাতাস আনে মাটির ঘ্রাণ।\nকাশফুল দোলে নদীর ধারে, সাদা মেঘের ছায়া পড়ে।\nমাছরাঙা বসে নীরব ডালে, মাছের খোঁজে জলের কূলে।\nসন্ধ্যা হলে ঘরে ফেরা, জোনাক জ্বালে পথের ধারা।\nনদী বয়ে চলে আপন মনে, গল্প লেখে মাঠে বনে।\nতারই সুরে গ্রাম জেগে রয়, ভালোবাসায় ভরে হৃদয়।",
+        "বাংলা আমাদের মায়ের ভাষা, হৃদয়ের কথা বলার সহজ পথ। এই ভাষায় আমরা গল্প করি, গান গাই, আনন্দ ভাগ করি এবং মনের ভাব প্রকাশ করি। ভাষাকে ভালোবাসা মানে নিজের ইতিহাস ও সংস্কৃতিকে সম্মান করা। প্রতিদিন বাংলা বই পড়লে নতুন শব্দ শেখা যায়, চিন্তা পরিষ্কার হয় এবং লেখার দক্ষতা বাড়ে। পরিবারের বড়দের কাছ থেকে শোনা গল্প আমাদের শেকড়ের সঙ্গে পরিচয় করায়। বিদ্যালয়ে মন দিয়ে পড়া, বন্ধুর সঙ্গে সুন্দরভাবে কথা বলা এবং শুদ্ধ বানান শেখা ভালো অভ্যাস। মাতৃভাষার যত্ন নিলে আগামী প্রজন্মও সমৃদ্ধ ঐতিহ্য পাবে।",
+        "টুপটাপ বৃষ্টি নামে, মেঘের নরম ঘরে,\nকদম ফুলের গন্ধ ভাসে সবুজ মাঠের পরে।\nছাতার নিচে দুজন শিশু হাঁটে পাশাপাশি,\nজমা জলে নৌকা ভাসে, হাসি ঝরে হাসি।\nপাতার কোলে মুক্তোর মতো বৃষ্টিবিন্দু দোলে,\nব্যাঙের ডাকে দুপুরবেলা নতুন সুরটি তোলে।\nমাটির বুকে শীতল হাওয়া ক্লান্তি দূরে নেয়,\nজানালাতে বসে থাকা মনও গান গেয়ে যায়।\nবৃষ্টি শেষে রোদ উঠিলে রঙিন আকাশ হাসে,\nসাতটি রঙের সেতু যেন মেঘের দেশে ভাসে।",
+        "একটি ছোট বাগানও প্রকৃতির জন্য অনেক উপকার করতে পারে। সেখানে ফুল ফুটলে প্রজাপতি আসে, গাছ ছায়া দেয় এবং বাতাস পরিষ্কার রাখতে সাহায্য করে। বাড়ির উঠোনে বা বারান্দায় টবে গাছ লাগানো যায়। প্রতিদিন অল্প পানি দেওয়া, শুকনো পাতা সরানো এবং গাছের যত্ন নেওয়া শেখায় দায়িত্ববোধ। সবজি গাছ বড় হলে নিজের হাতে ফলানো খাবার খেতে আনন্দ লাগে। গাছ কাটার বদলে নতুন চারা লাগালে পাখি ও ছোট প্রাণীর আশ্রয় বাড়ে। পরিচ্ছন্ন পরিবেশ, বিশুদ্ধ পানি এবং সবুজ পৃথিবী সবার জন্য প্রয়োজন। তাই আজই একটি গাছের যত্ন শুরু করি।",
+        "অ আ ক খ, শিখি নতুন অক্ষর সব।\nমায়ের মুখের মধুর বাণী, প্রাণে জাগায় রঙিন ছবি।\nবইয়ের পাতায় গল্প হাসে, ছড়ার তালে মনটি নাচে।\nলিখি ধীরে যতন করে, শব্দ ফুটে কাগজ জুড়ে।\nভুল হলে তা শুধরে নেব, আবার নতুন করে লিখব।\nভাষার আলো পথ দেখায়, জ্ঞানের দুয়ার খুলে যায়।\nবাংলা আমার গর্ব, বাংলা আপন সুর,\nএই ভাষাতেই স্বপ্ন দেখি সকাল দুপুর।\nসবাই মিলে বই পড়ি, সুন্দর করে কথা বলি,\nমনের মাঝে ভাষার প্রতি ভালোবাসা গড়ি।",
+        "গ্রামের পথ ধরে হাঁটলে চোখে পড়ে অনেক পরিচিত দৃশ্য। কোথাও ধানের ক্ষেত, কোথাও পুকুরে সাঁতার কাটে হাঁস। বাঁশবাগানের ফাঁক দিয়ে বাতাস বয়ে যায়, উঠোনে শিশুরা খেলাধুলা করে। বিকেলে কৃষকেরা কাজ শেষে বাড়ি ফেরেন, বাজারে মানুষ প্রয়োজনীয় জিনিস কেনেন। শহর ও গ্রামের জীবন আলাদা হলেও মানুষ পরস্পরের সহযোগিতায় এগিয়ে চলে। পরিষ্কার রাস্তা, নিরাপদ পানি এবং ভালো বিদ্যালয় প্রত্যেক এলাকার জন্য দরকার। নিজের এলাকার যত্ন নেওয়া আমাদের দায়িত্ব। প্রতিবেশীর বিপদে পাশে দাঁড়ালে সমাজ আরও সুন্দর ও বন্ধুত্বপূর্ণ হয়ে ওঠে।",
+        "আকাশ জুড়ে সাদা মেঘের ভেলা, রোদের সঙ্গে লুকোচুরি খেলা।\nমাঠের ধারে কাশের বন, বাতাস গায় আপন আপন মন।\nপ্রজাপতি রঙিন ডানা মেলে, ফুলের কাছে গল্প বলে।\nশালিক ডাকে গাছের ডালে, পিঁপড়া চলে সারি বেঁধে কালে।\nছোট্ট পাতা দোলে হাওয়ায়, শিশির হাসে ঘাসের গায়।\nপ্রকৃতি দেয় আলো, পানি, ফল, যত্ন করলে থাকে নির্মল।\nনদী, পাহাড়, বন ও মাঠ, রক্ষা করা সবার পাঠ।\nমাটি ভালো রাখি আমরা, সবুজ হোক দেশটা সারা।",
+        "নতুন কিছু শেখার জন্য কৌতূহল খুব দরকার। প্রশ্ন করলে অজানা বিষয় পরিষ্কার হয়, আর নিয়মিত অনুশীলনে দক্ষতা বাড়ে। কম্পিউটারে বাংলা টাইপ শেখার সময় প্রথমে ধীরে লিখুন। প্রতিটি শব্দ মন দিয়ে পড়ুন, তারপর নিজের লেখার সঙ্গে মিলিয়ে দেখুন। ভুল হলে ভয় পাওয়ার কিছু নেই; ভুল থেকে কারণ খুঁজে আবার চেষ্টা করা যায়। পড়াশোনার পাশাপাশি খেলাধুলা, বই পড়া এবং বিশ্রামের জন্য সময় রাখা ভালো। নিজের লক্ষ্য ছোট ধাপে ভাগ করলে কাজ সহজ মনে হয়। আজকের অধ্যবসায় আগামী দিনে আত্মবিশ্বাস ও সাফল্য এনে দেয়।",
+        "সবুজ মাঠে সূর্য ওঠে, জাগে সোনার দেশ,\nনদীর জলে নৌকা চলে, বাতাস আনে রেশ।\nকৃষকের ঘামে ফসল ফলে, ভরে সবার ঘর,\nশ্রমের মর্যাদা রাখব আমরা, থাকব নির্ভর।\nস্কুলের পথে বই হাতে যায় কিশোর কিশোরী,\nজ্ঞানের আলো ছড়িয়ে পড়ে নগর থেকে গ্রাম অবধি।\nভিন্ন মানুষ, ভিন্ন মত, তবু আপনজন,\nমিলেমিশে গড়ব সবাই শান্তির নীড়খান।\nসত্য বলি, কাজটি করি, রাখি দেশের মান,\nভালোবাসায় এগিয়ে যাক প্রিয় বাংলাদেশ মহান।"
+      ],
       level1: ["কতদচজ যুক্ত বর্ণ এখানে সঠিক ভাবে কাজ করবে না সরাসরি ওয়ার্ড ফাইলে গিয়ে করতে হবে হগড়টপ"," তকগা গজপজ দদত কবডটয হজজপ পগজহটগহ ততম ড়ড়দত ৎৎ ড়গ ]]মহট কীবোর্ডে সঠিকভাবে চাপুন","প্রথম লেভেলের অনুশীলনহচবপ’ক তড়গগহচ [দতগকটহ মমসসনস ","তকবহপহ গগকত তকদহ্ক স্মুথলি টাইপ করুন ","ধীরে ধীরে দক্ষতা বাড়ান","শুরুতে সহজ শব্দ ব্যবহার করুন","সতর্কতার সাথে টাইপ করুন","ভুল এড়িয়ে চলুন","অভ্যাস গড়ে তোলুন","পুরো মনোযোগ দিন"],
       level2: ["যুক্ত বর্ণ এখানে সঠিক ভাবে কাজ করবে না সরাসরি ওয়ার্ড ফাইলে গিয়ে করতে হব। কম্পিউটার ব্যবহার করে কাজ করা সহজ","টাইপিং দক্ষতা বাড়ায় সাফল্য","নিয়মিত অনুশীলন দরকার","ধীর গতিতে শুরু করে দ্রুত হোন","দক্ষতা বাড়াতে মনোযোগ দিন","ভুল কমাতে সতর্ক থাকুন","সঠিক postura বজায় রাখুন","কী বোর্ডে স্বাভাবিক চালনা করুন","প্রতিদিন কিছু সময় দিন","টেকনিক শিখে এগিয়ে যান"],
       level3: ["যুক্ত বর্ণ এখানে সঠিক ভাবে কাজ করবে না সরাসরি ওয়ার্ড ফাইলে গিয়ে করতে হব। টেকনোলজি শিক্ষায় কাজের ধরন বদলে দিয়েছে","দক্ষ টাইপিং আজকের সময়ের একটি গুরুত্বপূর্ণ skill","নিয়মিত অভ্যাসে দ্রুততা ও নির্ভুলতা বাড়ে","সঠিক পদ্ধতিতে টাইপ করলে কম ভুল হয়","দীর্ঘ পাঠ দিয়ে নিজের দক্ষতা যাচাই করুন","প্রতিদিনের অনুশীলন আপনাকে উন্নত করবে","সুশৃঙ্খলতা এবং মনোযোগ বাড়ায় ফলাফল","প্রফেশনাল লাইফে টাইপিং খুব দরকারি","চ্যালেঞ্জ গ্রহণ করে নিজের সীমা বাড়ান","অনুশীলন চালিয়ে যান, সফলতা আসবেই"],
@@ -1197,32 +1286,143 @@
       document.getElementById("keyboard-typing-cta").textContent = copy.keyboardCta;
     }
     function startTrainerSession() { document.getElementById("trainerWelcomeScreen").style.display = "none"; const panel = document.getElementById("typingPanel"); if (panel) panel.focus(); }
-    function setLanguage(lang) { currentLanguage = lang; document.getElementById("langEnBtn").classList.toggle("active", lang === 'en'); document.getElementById("langBnBtn").classList.toggle("active", lang === 'bn'); populateLessonsDropdown(); updateKeyboardLayoutDisplay(); loadLesson(); const panel = document.getElementById("typingPanel"); if (panel) panel.focus(); }
-    function populateLessonsDropdown() { const lessonSelect = document.getElementById("lessonSelect"); const levelSelect = document.getElementById("levelSelect"); const levelKey = levelSelect.value || "basic"; const lessons = currentLanguage === 'en' ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel[levelKey]; lessonSelect.innerHTML = ""; const grp = document.createElement("optgroup"); grp.label = currentLanguage === 'en' ? `${levelSelect.options[levelSelect.selectedIndex].text} Lessons` : `${levelSelect.options[levelSelect.selectedIndex].text} লেসন`; lessons.forEach((_lesson, i) => { const opt = document.createElement("option"); opt.value = i; opt.text = (currentLanguage === 'en' ? "Lesson " : "লেসন ") + (i + 1); grp.appendChild(opt); }); lessonSelect.appendChild(grp); lessonSelect.value = 0; }
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      const isBengali = lang === "bn";
+      document.getElementById("langEnBtn").classList.toggle("active", !isBengali);
+      document.getElementById("langBnBtn").classList.toggle("active", isBengali);
+      document.getElementById("typingPanel").classList.toggle("bengali-mode", isBengali);
+      document.getElementById("keyboardContainer").classList.toggle("bengali-hidden", isBengali);
+      populateLessonsDropdown();
+      updateKeyboardLayoutDisplay();
+      loadLesson();
+      const panel = document.getElementById("typingPanel");
+      if (isBengali) document.getElementById("bengaliTypingBox").focus();
+      else if (panel) panel.focus();
+    }
+    function populateLessonsDropdown() {
+      const lessonSelect = document.getElementById("lessonSelect");
+      const levelSelect = document.getElementById("levelSelect");
+      const levelKey = currentLanguage === "bn" ? "basic" : (levelSelect.value || "basic");
+      const lessons = currentLanguage === "en" ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel.basic.slice(0, 10);
+      document.querySelector("#lessonSelect").closest(".stat-box").querySelector(".stat-label").textContent = currentLanguage === "en" ? "Lesson Select" : "লেসন নির্বাচন";
+      lessonSelect.innerHTML = "";
+      const grp = document.createElement("optgroup");
+      grp.label = currentLanguage === "en" ? `${levelSelect.options[levelSelect.selectedIndex].text} Lessons` : "বাংলা লেসন";
+      lessons.forEach((_lesson, i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.text = (currentLanguage === "en" ? "Lesson " : "লেসন ") + (i + 1);
+        grp.appendChild(opt);
+      });
+      lessonSelect.appendChild(grp);
+      lessonSelect.value = 0;
+    }
     function updateKeyboardLayoutDisplay() { document.querySelectorAll(".key").forEach(keyEl => { const keyChar = keyEl.getAttribute("data-key"); if (keyChar && keyChar.length === 1) { if (currentLanguage === 'bn') { const bnChar = bengaliKeyLabelMap[keyChar.toLowerCase()]; keyEl.innerHTML = bnChar ? `<span style="font-size: 14px;">${keyChar.toUpperCase()}</span><span style="font-size: 11px; color: var(--primary); position: absolute; top: 2px; right: 6px;">${bnChar}</span>` : keyChar.toUpperCase(); } else keyEl.innerHTML = keyChar.toUpperCase(); } }); }
-    function loadLesson() { const levelSelect = document.getElementById("levelSelect"); const lessonSelect = document.getElementById("lessonSelect"); const levelKey = levelSelect.value || "basic"; const lessons = currentLanguage === 'en' ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel[levelKey]; targetText = lessons[lessonSelect.value] || lessons[0]; resetExercise(); }
-    function resetExercise() { if (timerInterval) clearInterval(timerInterval); setLiveTypingPresence(false); currentIndex = 0; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; document.getElementById("progressVal").innerText = `0 / ${targetText.length} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; const panel = document.getElementById("typingPanel"); if (panel) panel.focus(); }
-    function renderText() { const container = document.getElementById("textDisplay"); container.innerHTML = ""; targetText.split("").forEach((char, i) => { const span = document.createElement("span"); span.innerText = char; if (i < currentIndex) span.className = "char-correct"; else if (i === currentIndex) span.className = hasErrorAtCurrent ? "char-current char-wrong" : "char-current"; container.appendChild(span); }); }
-    function highlightKeyboardKey() { document.querySelectorAll(".key").forEach(k => k.classList.remove("target-highlight")); if (currentIndex >= targetText.length) return; const targetChar = targetText[currentIndex]; let keyId = ""; if (currentLanguage === 'en') keyId = targetChar.toLowerCase() === " " ? " " : targetChar.toLowerCase(); else { const guide = bijoyToEnglishGuide[targetChar]; if (guide) keyId = guide.key.toLowerCase(); } let lookupKey = keyId; if (keyId === "\\") lookupKey = 'backslash'; const el = document.getElementById(`key-${lookupKey}`); if (el) el.classList.add("target-highlight"); if (currentLanguage === 'en' && currentIndex < targetText.length) { const shiftChars = '~!@#$%^&*()_+{}|:\\"<>?'; const needsUpper = /[A-Z]/.test(targetChar); const needsShiftSymbol = shiftChars.includes(targetChar); if (needsUpper || needsShiftSymbol) { const leftShift = document.getElementById('key-shift'); const rightShift = document.getElementById('key-shiftright'); if (leftShift) leftShift.classList.add('target-highlight'); if (rightShift) rightShift.classList.add('target-highlight'); } } }
-    function updateFeedbackPrompt() { const feedbackEl = document.getElementById("statusFeedback"); if (currentIndex >= targetText.length) return; const targetChar = targetText[currentIndex]; if (currentLanguage === 'bn') { const guide = bijoyToEnglishGuide[targetChar]; feedbackEl.innerHTML = guide ? `👉 টাইপ করুন: <strong style="color: var(--success); font-size: 18px;">"${targetChar}"</strong> ➔ ইংরেজি কীবোর্ডের [ <strong style="color: #facc15;">${guide.label.toUpperCase()}</strong> ] চাপুন।` : ""; } else feedbackEl.innerHTML = `👉 Press: <strong style="color: var(--success); font-size: 18px;">"${targetChar}"</strong>`; if (currentLanguage === 'en') { const shiftChars = '~!@#$%^&*()_+{}|:\\"<>?'; const needsUpper = /[A-Z]/.test(targetChar); const needsShiftSymbol = shiftChars.includes(targetChar); if (needsUpper || needsShiftSymbol) { const displayChar = targetChar.toUpperCase(); feedbackEl.innerHTML = `👉 Press: <strong style="color: var(--success); font-size: 18px;">Shift + "${displayChar}"</strong>`; } else { feedbackEl.innerHTML = `👉 Press: <strong style="color: var(--success); font-size: 18px;">"${targetChar}"</strong>`; } } }
+    function loadLesson() {
+      const levelSelect = document.getElementById("levelSelect");
+      const lessonSelect = document.getElementById("lessonSelect");
+      const levelKey = currentLanguage === "bn" ? "basic" : (levelSelect.value || "basic");
+      const lessons = currentLanguage === "en" ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel.basic.slice(0, 10);
+      targetText = lessons[lessonSelect.value] || lessons[0];
+      document.getElementById("nextLessonButton").hidden = currentLanguage === "bn" && Number(lessonSelect.value) >= 9;
+      resetExercise();
+    }
+    function resetExercise() { if (timerInterval) clearInterval(timerInterval); setLiveTypingPresence(false); currentIndex = 0; userInputs = []; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; document.getElementById("progressVal").innerText = `0 / ${targetText.length} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; document.getElementById("bengaliTypingBox").value = ""; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; const panel = document.getElementById("typingPanel"); if (currentLanguage === "bn") document.getElementById("bengaliTypingBox").focus(); else if (panel) panel.focus(); }
+    function renderText() {
+      const container = document.getElementById("textDisplay");
+      if (currentLanguage === "bn") {
+        container.textContent = targetText;
+        return;
+      }
+      container.innerHTML = "";
+      targetText.split("").forEach((char, i) => {
+        const span = document.createElement("span");
+        span.innerText = char;
+        if (i < currentIndex) span.className = "char-correct";
+        else if (i === currentIndex) span.className = hasErrorAtCurrent ? "char-current char-wrong" : "char-current";
+        container.appendChild(span);
+      });
+    }
+    function highlightKeyboardKey() { document.querySelectorAll(".key").forEach(k => k.classList.remove("target-highlight")); if (currentLanguage === "bn" || currentIndex >= targetText.length) return; const targetChar = targetText[currentIndex]; const keyId = targetChar.toLowerCase() === " " ? " " : targetChar.toLowerCase(); let lookupKey = keyId; if (keyId === "\\") lookupKey = 'backslash'; const el = document.getElementById(`key-${lookupKey}`); if (el) el.classList.add("target-highlight"); if (currentIndex < targetText.length) { const shiftChars = '~!@#$%^&*()_+{}|:\\"<>?'; const needsUpper = /[A-Z]/.test(targetChar); const needsShiftSymbol = shiftChars.includes(targetChar); if (needsUpper || needsShiftSymbol) { const leftShift = document.getElementById('key-shift'); const rightShift = document.getElementById('key-shiftright'); if (leftShift) leftShift.classList.add('target-highlight'); if (rightShift) rightShift.classList.add('target-highlight'); } } }
+    function updateFeedbackPrompt() {
+      const feedbackEl = document.getElementById("statusFeedback");
+      if (currentLanguage === "bn" || currentIndex >= targetText.length) {
+        feedbackEl.textContent = "";
+        return;
+      }
+      const targetChar = targetText[currentIndex];
+      const shiftChars = '~!@#$%^&*()_+{}|:\\"<>?';
+      const needsUpper = /[A-Z]/.test(targetChar);
+      const needsShiftSymbol = shiftChars.includes(targetChar);
+      feedbackEl.innerHTML = needsUpper || needsShiftSymbol
+        ? `👉 Press: <strong style="color: var(--success); font-size: 18px;">Shift + "${targetChar.toUpperCase()}"</strong>`
+        : `👉 Press: <strong style="color: var(--success); font-size: 18px;">"${targetChar}"</strong>`;
+    }
+    document.getElementById("bengaliTypingBox").addEventListener("input", event => {
+      if (currentLanguage !== "bn") return;
+      const typingBox = event.currentTarget;
+      const typedChars = Array.from(typingBox.value);
+      const targetChars = Array.from(targetText);
+      const checkedChars = typedChars.slice(0, targetChars.length);
+      const inputs = checkedChars.map((char, index) => {
+        const expectedChar = targetChars[index];
+        const isMatch = char === expectedChar
+          || Boolean(bijoyToEnglishGuide[expectedChar] && bijoyToEnglishGuide[expectedChar].key === char);
+        return { isMatch };
+      });
+      userInputs = inputs;
+      currentIndex = Math.min(checkedChars.length, targetChars.length);
+      totalKeystrokes = checkedChars.length;
+      totalErrors = inputs.filter(input => !input.isMatch).length;
+      hasErrorAtCurrent = false;
+      if (typedChars.length > targetChars.length) {
+        typingBox.value = typedChars.slice(0, targetChars.length).join("");
+      }
+      if (checkedChars.length && !isStarted) {
+        isStarted = true;
+        startTimer();
+        setLiveTypingPresence(true);
+      } else if (!checkedChars.length && isStarted) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isStarted = false;
+        totalSeconds = 0;
+        document.getElementById("timeVal").innerText = "00:00";
+        document.getElementById("wpmVal").innerText = "00";
+        setLiveTypingPresence(false);
+      }
+      document.getElementById("accuracyVal").innerText = totalKeystrokes
+        ? Math.round(((totalKeystrokes - totalErrors) / totalKeystrokes) * 100) + "%"
+        : "100%";
+      document.getElementById("progressVal").innerText = `${currentIndex} / ${targetText.length} (${Math.round((currentIndex / targetText.length) * 100)}%)`;
+      document.getElementById("summaryModal").style.display = checkedChars.length === targetChars.length ? "flex" : "none";
+      if (checkedChars.length === targetChars.length) {
+        clearInterval(timerInterval);
+        setLiveTypingPresence(false);
+      }
+    });
     function triggerErrorEffect() { const panel = document.getElementById('typingPanel'); const feedback = document.getElementById('statusFeedback'); panel.classList.add('panel-shake'); feedback.style.backgroundColor = "rgba(239, 68, 68, 0.4)"; feedback.innerHTML = `<span style="color: #fff; font-size: 18px;">❌ ভুল হয়েছে! সঠিক কী চাপুন।</span>`; setTimeout(() => { panel.classList.remove('panel-shake'); feedback.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; updateFeedbackPrompt(); }, 400); }
     function startTimer() { timerInterval = setInterval(() => { totalSeconds++; const mins = Math.floor(totalSeconds / 60); const secs = totalSeconds % 60; document.getElementById("timeVal").innerText = `${mins < 10 ? "0":""}${mins}:${secs < 10 ? "0":""}${secs}`; const wpm = Math.round((currentIndex / 5) / (totalSeconds / 60)) || 0; document.getElementById("wpmVal").innerText = wpm < 10 ? "0" + wpm : wpm; }, 1000); }
     document.addEventListener("keydown", function(event) {
       const activeElement = document.activeElement;
-      if (activeElement && (activeElement.tagName === 'SELECT' || activeElement.tagName === 'OPTION' || activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) { return; }
+      const isBengaliTypingBox = currentLanguage === "bn" && activeElement && activeElement.id === "bengaliTypingBox";
+      if (activeElement && (activeElement.tagName === 'SELECT' || activeElement.tagName === 'OPTION' || activeElement.tagName === 'INPUT' || (activeElement.tagName === 'TEXTAREA' && !isBengaliTypingBox))) { return; }
+      if (isBengaliTypingBox) return;
       if (event.ctrlKey || event.altKey) return;
       const navKeys = ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","PageUp","PageDown","Home","End","Tab","Backspace"];
       if (navKeys.includes(event.key)) { event.preventDefault(); return; }
       if (["Shift", "CapsLock", "Control"].includes(event.key)) return;
       const isPrintable = (event.key.length === 1) || event.key === " ";
       if (!isPrintable) return;
+      if (currentIndex >= targetText.length) return;
       setLiveTypingPresence(true);
       if (event.key === " ") event.preventDefault();
       if (!isStarted) { isStarted = true; startTimer(); }
       const typedChar = event.key; const targetChar = targetText[currentIndex]; totalKeystrokes++;
       let isMatch = (typedChar === targetChar);
       if (!isMatch && currentLanguage === 'bn' && bijoyToEnglishGuide[targetChar]) { if (bijoyToEnglishGuide[targetChar].key === typedChar) isMatch = true; }
-      if (isMatch) { playKeySound(true); currentIndex++; hasErrorAtCurrent = false; } else { playKeySound(false); hasErrorAtCurrent = true; totalErrors++; triggerErrorEffect(); }
+      if (isMatch) { if (currentLanguage !== "bn") playKeySound(true); currentIndex++; hasErrorAtCurrent = false; } else { if (currentLanguage !== "bn") { playKeySound(false); triggerErrorEffect(); hasErrorAtCurrent = true; } else hasErrorAtCurrent = false; totalErrors++; }
       renderText(); highlightKeyboardKey(); updateFeedbackPrompt();
       document.getElementById("accuracyVal").innerText = Math.round(((totalKeystrokes - totalErrors) / totalKeystrokes) * 100) + "%";
       document.getElementById("progressVal").innerText = `${currentIndex} / ${targetText.length} (${Math.round((currentIndex / targetText.length) * 100)}%)`;
@@ -1230,8 +1430,46 @@
     });
     function openCustomModal() { document.getElementById("customTextModal").style.display = "flex"; }
     function closeCustomModal() { document.getElementById("customTextModal").style.display = "none"; }
+    let bijoyNoticeTrigger = null;
+    function openBijoyNotice() {
+      bijoyNoticeTrigger = document.activeElement;
+      const modal = document.getElementById("bijoyNoticeModal");
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+      modal.querySelector("button").focus();
+    }
+    function closeBijoyNotice() {
+      const modal = document.getElementById("bijoyNoticeModal");
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+      if (bijoyNoticeTrigger && bijoyNoticeTrigger.isConnected) bijoyNoticeTrigger.focus();
+    }
+    document.getElementById("bijoyNoticeModal").addEventListener("click", event => {
+      if (event.target === event.currentTarget) closeBijoyNotice();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && document.getElementById("bijoyNoticeModal").getAttribute("aria-hidden") === "false") closeBijoyNotice();
+    });
     function setCustomText() { const txt = document.getElementById("customTextArea").value.trim(); if (txt) { targetText = txt; resetExercise(); closeCustomModal(); } }
-    function loadNextLesson() { const levelSelect = document.getElementById("levelSelect"); const lessonSelect = document.getElementById("lessonSelect"); const levelKey = levelSelect.value || "basic"; const lessons = currentLanguage === 'en' ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel[levelKey]; const nextLessonIndex = Number(lessonSelect.value) + 1; if (nextLessonIndex < lessons.length) { lessonSelect.value = nextLessonIndex; loadLesson(); document.getElementById("summaryModal").style.display = "none"; } else { const levelOrder = ["basic", "level1", "level2", "level3", "advanced"]; const currentLevelIndex = levelOrder.indexOf(levelKey); const nextLevelKey = levelOrder[(currentLevelIndex + 1) % levelOrder.length]; levelSelect.value = nextLevelKey; populateLessonsDropdown(); lessonSelect.value = 0; loadLesson(); document.getElementById("summaryModal").style.display = "none"; } }
+    function loadNextLesson() {
+      const levelSelect = document.getElementById("levelSelect");
+      const lessonSelect = document.getElementById("lessonSelect");
+      const levelKey = currentLanguage === "bn" ? "basic" : (levelSelect.value || "basic");
+      const lessons = currentLanguage === "en" ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel.basic.slice(0, 10);
+      const nextLessonIndex = Number(lessonSelect.value) + 1;
+      if (nextLessonIndex < lessons.length) {
+        lessonSelect.value = nextLessonIndex;
+        loadLesson();
+      } else if (currentLanguage === "en") {
+        const levelOrder = ["basic", "level1", "level2", "level3", "advanced"];
+        const currentLevelIndex = levelOrder.indexOf(levelKey);
+        levelSelect.value = levelOrder[(currentLevelIndex + 1) % levelOrder.length];
+        populateLessonsDropdown();
+        lessonSelect.value = 0;
+        loadLesson();
+      }
+      document.getElementById("summaryModal").style.display = "none";
+    }
     function closeSummary() { document.getElementById("summaryModal").style.display = "none"; resetExercise(); }
     let deferredInstallPrompt = null;
     window.addEventListener("beforeinstallprompt", event => {
