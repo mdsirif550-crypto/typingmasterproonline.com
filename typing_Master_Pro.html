@@ -12,17 +12,27 @@
 
   <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>TypingMaster Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
-  <meta name="description" content="Start your premium typing practice on TypingMaster Pro Board. Improve your typing speed in English &amp; Bangla Bijoy 52 without any distraction.">
-  <meta name="keywords" content="typing master pro board, online typing board, bangla typing practice, english typing master pro, wpm booster, typing pro version">
+  <title>Online Typing Test &amp; Leaderboard | English and Bangla</title>
+  <meta name="description" content="Take a free online typing test in English or Bangla. Practice Bijoy 52, track your speed and accuracy, and compete on the TypingMaster Pro leaderboard.">
+  <meta name="keywords" content="online typing test, English typing test, Bangla typing test, Bijoy 52 practice, typing speed test, typing leaderboard">
   <meta name="author" content="TypingMaster Pro Online">
-  <link rel="canonical" href="https://typingmasterproonline.com">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://typingmasterproonline.com/typing_Master_Pro.html">
   
   <!-- সোশ্যাল মিডিয়া ও গুগলে আসল লোগো (logo.png) দেখানোর লিংকসমূহ -->
-  <meta property="og:title" content="TypingMaster Pro Board ⌨️🔥 - Test Your Speed">
-  <meta property="og:description" content="Advance Typing Practice Mode - Live WPM &amp; Accuracy Tracker">
-  <meta property="og:url" content="https://typingmasterproonline.com">
-  <meta property="og:image" content="https://typingmasterproonline.com">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TypingMaster Pro Online">
+  <meta property="og:title" content="Online Typing Test &amp; Leaderboard | English and Bangla">
+  <meta property="og:description" content="Take a free typing test in English or Bangla. Practice Bijoy 52 and track your typing speed and accuracy.">
+  <meta property="og:url" content="https://typingmasterproonline.com/typing_Master_Pro.html">
+  <meta property="og:image" content="https://typingmasterproonline.com/logo.png">
+  <meta property="og:image:alt" content="TypingMaster Pro Online Logo">
+  <meta property="og:locale" content="en_BD">
+  <meta property="og:locale:alternate" content="bn_BD">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Online Typing Test &amp; Leaderboard | English and Bangla">
+  <meta name="twitter:description" content="Take a free typing test in English or Bangla. Practice Bijoy 52 and track your speed and accuracy.">
+  <meta name="twitter:image" content="https://typingmasterproonline.com/logo.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
@@ -190,13 +200,23 @@
         .verified-profile-tick { display: inline-block; width: 24px; height: 24px; flex: 0 0 24px; margin-left: 4px; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(15, 23, 42, .25)); }
         .all-users-player-id { max-width: 190px; overflow: hidden; overflow-wrap: normal; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
         .all-users-table th, .all-users-table td { padding: 5px 6px; }
-        .direct-messages-modal { max-width: min(560px, calc(100vw - 32px)); }
-        .conversation-list { display: flex; max-height: 60vh; flex-direction: column; gap: 8px; overflow-y: auto; }
-        .conversation-item { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #0f172a; text-align: left; cursor: pointer; }
+        #messages-modal { padding: 0; background: #f8fafc; backdrop-filter: none; }
+        #messages-modal .direct-messages-modal { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; flex-direction: column; overflow: hidden; border-radius: 0; padding: clamp(14px, 3vw, 32px); box-shadow: none; }
+        .conversation-list { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .conversation-item { display: flex; min-width: 0; flex-direction: row; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #0f172a; text-align: left; cursor: pointer; }
         .conversation-item:hover { border-color: #93c5fd; background: #eff6ff; }
+        .conversation-avatar { width: 44px; height: 44px; flex: 0 0 44px; border: 2px solid #dbeafe; border-radius: 50%; object-fit: cover; background: white; }
+        .conversation-item-details { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
         .conversation-item-name { overflow: hidden; font-size: 12px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
         .conversation-item-preview { overflow: hidden; color: #64748b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-        .direct-chat-messages { display: flex; height: min(42vh, 360px); min-height: 180px; flex-direction: column; gap: 8px; overflow-y: auto; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+        .direct-chat-thread { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+        #direct-chat-thread.hidden { display: none; }
+        .direct-chat-header { display: flex; min-width: 0; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .direct-chat-avatar { width: 52px; height: 52px; flex: 0 0 52px; border: 2px solid #dbeafe; border-radius: 50%; object-fit: cover; background: white; }
+        .direct-chat-messages { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 8px; overflow-y: auto; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+        .direct-message-row { display: flex; max-width: 90%; align-items: flex-end; gap: 8px; }
+        .direct-message-row.mine { align-self: flex-end; flex-direction: row-reverse; }
+        .direct-message-avatar { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; object-fit: cover; background: white; }
         .direct-message { max-width: 85%; overflow-wrap: anywhere; padding: 9px 12px; border-radius: 12px; background: #e2e8f0; color: #0f172a; font-size: 12px; white-space: pre-wrap; }
         .direct-message.mine { align-self: flex-end; background: #2563eb; color: white; }
         .direct-message-sender { display: block; margin-bottom: 3px; font-size: 9px; font-weight: 900; opacity: 0.8; }
@@ -211,6 +231,12 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+        #conjunct-notice-modal .modal-box { max-width: min(760px, calc(100vw - 32px)); }
+        .conjunct-table-wrap { max-height: 55vh; overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .conjunct-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .conjunct-table th, .conjunct-table td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+        .conjunct-table th { position: sticky; top: 0; background: #eff6ff; color: #1e3a8a; font-weight: 900; }
+        .conjunct-table code { padding: 2px 5px; border-radius: 5px; background: #f1f5f9; color: #1e293b; font-weight: 800; white-space: nowrap; }
         #all-users-modal .all-users-modal-box { max-width: min(760px, calc(100vw - 32px)); }
         #preview-modal .modal-box { --profile-modal-offset: 0px; max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain; transform: translateY(var(--profile-modal-offset)); }
         .modal-box h2 { font-size: 18px; font-weight: 900; margin-bottom: 16px; text-transform: uppercase; color: #0f172a; }
@@ -270,6 +296,9 @@
             .stat-pill { font-size: 9px; padding: 4px 10px; }
             .stat-pill .num { font-size: 13px; }
             .modal-box { padding: 16px; }
+            #messages-modal .direct-messages-modal { padding: 14px; }
+            .conversation-avatar { width: 40px; height: 40px; flex-basis: 40px; }
+            .direct-chat-avatar { width: 44px; height: 44px; flex-basis: 44px; }
             .leader-img { width: 32px; height: 32px; }
             .control-select { font-size: 10px; padding: 4px 8px; }
             .banner-avatar { width: 34px; height: 34px; }
@@ -452,6 +481,7 @@
                 </select>
             </div>
             <button id="practice-fullscreen-button" type="button" onclick="togglePracticeFullscreen()" class="btn btn-outline text-[10px] whitespace-nowrap" aria-pressed="false">⛶ Full screen</button>
+            <button id="conjunct-notice-button" type="button" onclick="openConjunctNotice()" class="btn btn-outline text-[10px] whitespace-nowrap hidden">যুক্তবর্ণ টাইপের নিয়ম</button>
         </div>
 
         <!-- Display Box -->
@@ -473,6 +503,61 @@
             </div>
             <span id="score-save-status" class="text-[10px] font-bold text-slate-600" role="status" aria-live="polite"></span>
             <button id="submit-btn" onclick="submitScore()" class="hidden bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700">💾 Save</button>
+        </div>
+
+        <div id="conjunct-notice-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="conjunct-notice-title" onclick="if(event.target===this) closeConjunctNotice()">
+            <div class="modal-box">
+                <h2 id="conjunct-notice-title">Bijoy 52-এ যুক্তবর্ণ টাইপের নিয়ম</h2>
+                <p class="mb-3 text-xs font-bold leading-relaxed text-slate-700">বাংলা টাইপ করার আগে কম্পিউটারে Bijoy 52 চালু রাখুন। বড় হাতের কী লিখতে <strong>Shift</strong> চেপে ধরে অক্ষর চাপুন। সাধারণ যুক্তবর্ণে প্রথম বর্ণ + <code>g</code> (হসন্ত) + পরের বর্ণ চাপুন। <strong>ক্ষ</strong>-এর জন্য <code>J</code>, তারপর <code>Shift+N</code> চাপুন। Bijoy-এর সংস্করণ/লেআউট অনুযায়ী কী-ক্রম ভিন্ন হতে পারে।</p>
+                <div class="conjunct-table-wrap">
+                    <table class="conjunct-table">
+                        <thead><tr><th>নং</th><th>যুক্তবর্ণ</th><th>যে কী চাপবেন</th><th>গঠন</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td><strong>ক্ষ</strong></td><td><code>J</code>, তারপর <code>Shift+N</code></td><td>Bijoy shortcut</td></tr>
+                            <tr><td>2</td><td><strong>ক্ত</strong></td><td><code>j</code> + <code>g</code> + <code>k</code></td><td>ক + ্ + ত</td></tr>
+                            <tr><td>3</td><td><strong>ক্র</strong></td><td><code>j</code> + <code>z</code></td><td>ক + ্র</td></tr>
+                            <tr><td>4</td><td><strong>ক্ল</strong></td><td><code>j</code> + <code>g</code> + <code>Shift+V</code></td><td>ক + ্ + ল</td></tr>
+                            <tr><td>5</td><td><strong>গ্র</strong></td><td><code>o</code> + <code>z</code></td><td>গ + ্র</td></tr>
+                            <tr><td>6</td><td><strong>ঙ্ক</strong></td><td><code>q</code> + <code>g</code> + <code>j</code></td><td>ঙ + ্ + ক</td></tr>
+                            <tr><td>7</td><td><strong>ঙ্গ</strong></td><td><code>q</code> + <code>g</code> + <code>o</code></td><td>ঙ + ্ + গ</td></tr>
+                            <tr><td>8</td><td><strong>ঙ্ঘ</strong></td><td><code>q</code> + <code>g</code> + <code>Shift+O</code></td><td>ঙ + ্ + ঘ</td></tr>
+                            <tr><td>9</td><td><strong>চ্চ</strong></td><td><code>y</code> + <code>g</code> + <code>y</code></td><td>চ + ্ + চ</td></tr>
+                            <tr><td>10</td><td><strong>চ্ছ</strong></td><td><code>y</code> + <code>g</code> + <code>Shift+Y</code></td><td>চ + ্ + ছ</td></tr>
+                            <tr><td>11</td><td><strong>জ্জ</strong></td><td><code>u</code> + <code>g</code> + <code>u</code></td><td>জ + ্ + জ</td></tr>
+                            <tr><td>12</td><td><strong>জ্ঞ</strong></td><td><code>u</code> + <code>g</code> + <code>Shift+I</code></td><td>জ + ্ + ঞ</td></tr>
+                            <tr><td>13</td><td><strong>ঞ্চ</strong></td><td><code>Shift+I</code> + <code>g</code> + <code>y</code></td><td>ঞ + ্ + চ</td></tr>
+                            <tr><td>14</td><td><strong>ঞ্জ</strong></td><td><code>Shift+I</code> + <code>g</code> + <code>u</code></td><td>ঞ + ্ + জ</td></tr>
+                            <tr><td>15</td><td><strong>ট্ট</strong></td><td><code>t</code> + <code>g</code> + <code>t</code></td><td>ট + ্ + ট</td></tr>
+                            <tr><td>16</td><td><strong>ড্ড</strong></td><td><code>e</code> + <code>g</code> + <code>e</code></td><td>ড + ্ + ড</td></tr>
+                            <tr><td>17</td><td><strong>ণ্ঠ</strong></td><td><code>Shift+B</code> + <code>g</code> + <code>Shift+T</code></td><td>ণ + ্ + ঠ</td></tr>
+                            <tr><td>18</td><td><strong>ণ্ড</strong></td><td><code>Shift+B</code> + <code>g</code> + <code>e</code></td><td>ণ + ্ + ড</td></tr>
+                            <tr><td>19</td><td><strong>ত্ত</strong></td><td><code>k</code> + <code>g</code> + <code>k</code></td><td>ত + ্ + ত</td></tr>
+                            <tr><td>20</td><td><strong>ত্র</strong></td><td><code>k</code> + <code>z</code></td><td>ত + ্র</td></tr>
+                            <tr><td>21</td><td><strong>থ্য</strong></td><td><code>Shift+K</code> + <code>g</code> + <code>w</code></td><td>থ + ্ + য</td></tr>
+                            <tr><td>22</td><td><strong>দ্দ</strong></td><td><code>l</code> + <code>g</code> + <code>l</code></td><td>দ + ্ + দ</td></tr>
+                            <tr><td>23</td><td><strong>দ্ধ</strong></td><td><code>l</code> + <code>g</code> + <code>Shift+L</code></td><td>দ + ্ + ধ</td></tr>
+                            <tr><td>24</td><td><strong>দ্ব</strong></td><td><code>l</code> + <code>g</code> + <code>h</code></td><td>দ + ্ + ব</td></tr>
+                            <tr><td>25</td><td><strong>ন্দ</strong></td><td><code>b</code> + <code>g</code> + <code>l</code></td><td>ন + ্ + দ</td></tr>
+                            <tr><td>26</td><td><strong>ন্ধ</strong></td><td><code>b</code> + <code>g</code> + <code>Shift+L</code></td><td>ন + ্ + ধ</td></tr>
+                            <tr><td>27</td><td><strong>ন্ত</strong></td><td><code>b</code> + <code>g</code> + <code>k</code></td><td>ন + ্ + ত</td></tr>
+                            <tr><td>28</td><td><strong>প্ন</strong></td><td><code>r</code> + <code>g</code> + <code>b</code></td><td>প + ্ + ন</td></tr>
+                            <tr><td>29</td><td><strong>প্র</strong></td><td><code>r</code> + <code>z</code></td><td>প + ্র</td></tr>
+                            <tr><td>30</td><td><strong>ম্প</strong></td><td><code>m</code> + <code>g</code> + <code>r</code></td><td>ম + ্ + প</td></tr>
+                            <tr><td>31</td><td><strong>ম্ম</strong></td><td><code>m</code> + <code>g</code> + <code>m</code></td><td>ম + ্ + ম</td></tr>
+                            <tr><td>32</td><td><strong>ম্ব</strong></td><td><code>m</code> + <code>g</code> + <code>h</code></td><td>ম + ্ + ব</td></tr>
+                            <tr><td>33</td><td><strong>ল্ক</strong></td><td><code>Shift+V</code> + <code>g</code> + <code>j</code></td><td>ল + ্ + ক</td></tr>
+                            <tr><td>34</td><td><strong>ল্ট</strong></td><td><code>Shift+V</code> + <code>g</code> + <code>t</code></td><td>ল + ্ + ট</td></tr>
+                            <tr><td>35</td><td><strong>ল্ব</strong></td><td><code>Shift+V</code> + <code>g</code> + <code>h</code></td><td>ল + ্ + ব</td></tr>
+                            <tr><td>36</td><td><strong>শ্চ</strong></td><td><code>Shift+M</code> + <code>g</code> + <code>y</code></td><td>শ + ্ + চ</td></tr>
+                            <tr><td>37</td><td><strong>শ্ন</strong></td><td><code>Shift+M</code> + <code>g</code> + <code>b</code></td><td>শ + ্ + ন</td></tr>
+                            <tr><td>38</td><td><strong>ষ্ক</strong></td><td><code>Shift+N</code> + <code>g</code> + <code>j</code></td><td>ষ + ্ + ক</td></tr>
+                            <tr><td>39</td><td><strong>স্ক</strong></td><td><code>n</code> + <code>g</code> + <code>j</code></td><td>স + ্ + ক</td></tr>
+                            <tr><td>40</td><td><strong>স্ত</strong></td><td><code>n</code> + <code>g</code> + <code>k</code></td><td>স + ্ + ত</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" onclick="closeConjunctNotice()" class="mt-4 w-full rounded-xl bg-blue-600 px-5 py-2 text-sm font-black text-white hover:bg-blue-700">বুঝেছি</button>
+            </div>
         </div>
 
         <div id="time-up-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="time-up-title" aria-describedby="time-up-message">
@@ -589,7 +674,7 @@
         </div>
     </div>
 
-    <div id="messages-modal" class="modal-overlay">
+    <div id="messages-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="messages-modal-title">
         <div class="modal-box direct-messages-modal">
             <div class="flex items-center justify-between gap-3">
                 <h2 id="messages-modal-title" class="mb-0">💬 Messages</h2>
@@ -600,9 +685,12 @@
             </div>
             <p id="message-notification-status" class="mt-2 text-[10px] text-slate-500" role="status" aria-live="polite"></p>
             <div id="conversation-list" class="conversation-list mt-4" aria-label="Conversations"></div>
-            <section id="direct-chat-thread" class="hidden mt-4">
-                <button type="button" onclick="showConversationList()" class="mb-3 text-xs font-bold text-blue-700">← All conversations</button>
-                <h3 id="direct-chat-recipient" class="mb-2 text-sm font-black text-slate-800"></h3>
+            <section id="direct-chat-thread" class="direct-chat-thread hidden mt-4">
+                <button type="button" onclick="showConversationList()" class="mb-3 w-fit text-xs font-bold text-blue-700">← All conversations</button>
+                <div class="direct-chat-header">
+                    <img id="direct-chat-avatar" class="direct-chat-avatar" src="" alt="">
+                    <h3 id="direct-chat-recipient" class="min-w-0 text-sm font-black text-slate-800"></h3>
+                </div>
                 <div id="direct-chat-messages" class="direct-chat-messages" aria-live="polite"></div>
                 <label class="sr-only" for="direct-chat-input">Write a message</label>
                 <textarea id="direct-chat-input" class="slim-input mt-3 h-20 resize-none" maxlength="1000" placeholder="Write a message..."></textarea>
@@ -1472,6 +1560,21 @@
                 : normalized;
         }
 
+        function updateConjunctNoticeVisibility() {
+            document.getElementById('conjunct-notice-button').classList.toggle('hidden', typingLang !== 'bn');
+        }
+
+        function openConjunctNotice() {
+            if (typingLang !== 'bn') return;
+            document.getElementById('conjunct-notice-modal').classList.add('active');
+            document.getElementById('conjunct-notice-modal').querySelector('button').focus();
+        }
+
+        function closeConjunctNotice() {
+            document.getElementById('conjunct-notice-modal').classList.remove('active');
+            document.getElementById('conjunct-notice-button').focus();
+        }
+
         function generateDisplay() {
             const lesson = getCurrentLesson();
             let text;
@@ -1513,6 +1616,7 @@
         // ============================================
         function switchTypingLang(lang) {
             typingLang = lang;
+            updateConjunctNoticeVisibility();
             document.getElementById('practice-stage').classList.toggle('bengali-mode', lang === 'bn');
             localStorage.setItem('typingLanguage', lang);
             document.getElementById('typing-lang').value = lang;
@@ -1605,7 +1709,12 @@
                     if (typingLang === 'en') {
                         const hasPendingSessionScore = loggedInUser &&
                             readPendingTypingScores(loggedInUser.id).some(entry => entry.sessionId === timeUpNoticeSessionId);
-                        showTimeUpNotice(!hasPendingSessionScore ? 'saved' : isFirebaseConnected ? 'saving' : 'offline');
+                        const saveState = !loggedInUser
+                            ? 'login'
+                            : !hasPendingSessionScore
+                                ? 'saved'
+                                : isFirebaseConnected ? 'saving' : 'offline';
+                        showTimeUpNotice(saveState);
                     }
                 }
             }, 1000);
@@ -1621,10 +1730,14 @@
             const points = `${timeUpNoticePoints} ${timeUpNoticePoints === 1 ? 'point' : 'points'}`;
             const saveMessage = saveState === 'saved'
                 ? `${points} saved.`
+                : saveState === 'login'
+                    ? `You earned ${points} in practice. Log in, then tap Save to add your score to the leaderboard.`
                 : saveState === 'offline'
                     ? `Your score of ${points} is saved on this device. It will sync when you are back online.`
                     : `Your score of ${points} is being saved.`;
-            message.textContent = `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
+            message.textContent = saveState === 'login'
+                ? `Your time is up! ${saveMessage}`
+                : `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
         }
 
         function closeTimeUpNotice() {
@@ -2267,15 +2380,39 @@
                 button.type = 'button';
                 button.className = 'conversation-item';
                 button.addEventListener('click', () => openDirectChat(conversation.otherId));
+                const otherUser = allUsers.find(user => String(user.id).toLowerCase() === String(conversation.otherId).toLowerCase());
+                const avatar = createMessageAvatar(
+                    otherUser || { pic: conversation.otherPic },
+                    'conversation-avatar',
+                    conversation.otherName || conversation.otherId
+                );
                 const name = document.createElement('span');
                 name.className = 'conversation-item-name';
                 name.textContent = conversation.otherName || conversation.otherId;
                 const preview = document.createElement('span');
                 preview.className = 'conversation-item-preview';
                 preview.textContent = conversation.lastMessage || conversation.otherId;
-                button.append(name, preview);
+                const details = document.createElement('span');
+                details.className = 'conversation-item-details';
+                details.append(name, preview);
+                button.append(avatar, details);
                 container.appendChild(button);
             });
+        }
+
+        function createMessageAvatar(user, className, alt) {
+            const avatar = document.createElement('img');
+            avatar.className = className;
+            avatar.alt = alt || 'Player profile photo';
+            avatar.src = user && user.pic || DEFAULT_AVATAR;
+            avatar.addEventListener('error', () => {
+                if (avatar.src !== new URL(DEFAULT_AVATAR, document.baseURI).href) {
+                    avatar.src = DEFAULT_AVATAR;
+                } else {
+                    avatar.removeAttribute('src');
+                }
+            }, { once: true });
+            return avatar;
         }
 
         function openMessages() {
@@ -2340,6 +2477,13 @@
             document.getElementById('direct-chat-thread').classList.remove('hidden');
             document.getElementById('messages-modal-title').textContent = '💬 Direct message';
             document.getElementById('direct-chat-recipient').textContent = `${recipient.name || recipient.id} · ${recipient.id}`;
+            const recipientAvatar = document.getElementById('direct-chat-avatar');
+            recipientAvatar.src = recipient.pic || DEFAULT_AVATAR;
+            recipientAvatar.alt = `${recipient.name || recipient.id}'s profile photo`;
+            recipientAvatar.onerror = () => {
+                recipientAvatar.onerror = null;
+                recipientAvatar.src = DEFAULT_AVATAR;
+            };
             document.getElementById('direct-chat-status').textContent = '';
             selectedDirectRecipient = recipient;
 
@@ -2361,8 +2505,16 @@
                 .filter(message => message && typeof message === 'object')
                 .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             entries.forEach(message => {
-                const bubble = document.createElement('div');
                 const isMine = Boolean(loggedInUser && message.from === loggedInUser.id);
+                const senderUser = isMine
+                    ? loggedInUser
+                    : selectedDirectRecipient && String(selectedDirectRecipient.id) === String(message.from)
+                        ? selectedDirectRecipient
+                        : allUsers.find(user => String(user.id) === String(message.from));
+                const row = document.createElement('div');
+                row.className = `direct-message-row ${isMine ? 'mine' : ''}`;
+                row.appendChild(createMessageAvatar(senderUser, 'direct-message-avatar', isMine ? 'Your profile photo' : 'Sender profile photo'));
+                const bubble = document.createElement('div');
                 bubble.className = `direct-message ${isMine ? 'mine' : ''}`;
                 const sender = document.createElement('span');
                 sender.className = 'direct-message-sender';
@@ -2373,7 +2525,8 @@
                 time.className = 'direct-message-time';
                 time.textContent = message.timestamp ? new Date(message.timestamp).toLocaleString() : 'Sending…';
                 bubble.append(sender, text, time);
-                container.appendChild(bubble);
+                row.appendChild(bubble);
+                container.appendChild(row);
             });
             if (entries.length === 0) {
                 const empty = document.createElement('p');
@@ -2418,6 +2571,7 @@
                 [`user_conversations/${senderKey}/${conversationKey}`]: {
                     otherId: recipient.id,
                     otherName: recipientName,
+                    otherPic: recipient.pic || DEFAULT_AVATAR,
                     lastMessage: preview,
                     lastMessageAt: timestamp,
                     lastMessageId: messageRef.key,
@@ -2426,6 +2580,7 @@
                 [`user_conversations/${recipientKey}/${conversationKey}`]: {
                     otherId: loggedInUser.id,
                     otherName: senderName,
+                    otherPic: loggedInUser.pic || DEFAULT_AVATAR,
                     lastMessage: preview,
                     lastMessageAt: timestamp,
                     lastMessageId: messageRef.key,
@@ -3127,6 +3282,7 @@
             setLanguage(localStorage.getItem('preferredLanguage') || 'en');
             typingLang = localStorage.getItem('typingLanguage') || 'en';
             document.getElementById('typing-lang').value = typingLang;
+            updateConjunctNoticeVisibility();
             
             syncUsers();
             listenMonthlyEventResults();
@@ -3183,6 +3339,9 @@
             // Typing input
             document.addEventListener('keydown', event => {
                 if (event.key === 'Escape') closeImageViewer();
+                if (event.key === 'Escape' && document.getElementById('conjunct-notice-modal').classList.contains('active')) {
+                    closeConjunctNotice();
+                }
             });
 
             const typingInput = document.getElementById('typing-input');
@@ -3247,11 +3406,6 @@
                 }
             }, { passive: true });
             typingInput.addEventListener('input', function() {
-                if (!loggedInUser) {
-                    this.value = '';
-                    openAuth();
-                    return;
-                }
                 if (isTimeOver) {
                     this.value = this.value.substring(0, 0);
                     return;
