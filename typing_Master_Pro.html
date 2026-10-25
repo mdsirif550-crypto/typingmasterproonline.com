@@ -1385,6 +1385,15 @@
             return Array.from(str);
         }
 
+        function normalizeTypingText(text) {
+            const normalized = text.normalize('NFC');
+            return typingLang === 'bn'
+                ? normalized
+                    .replace(/([\u09BF\u09C7\u09C8])([\u0985-\u09B9\u09DC-\u09DF])/g, '$2$1')
+                    .replace(/([\u09BF\u09C7\u09C8])\1+/g, '$1')
+                : normalized;
+        }
+
         function generateDisplay() {
             const lesson = getCurrentLesson();
             let text;
@@ -3146,7 +3155,7 @@
                     startTimer();
                     typingSpeedSamples = [{ time: startTime, correctChars: 0 }];
                 }
-                const typed = splitGraphemes(this.value);
+                const typed = splitGraphemes(normalizeTypingText(this.value));
                 let commonPrefix = 0;
                 while (commonPrefix < previousTypedChars.length && commonPrefix < typed.length &&
                     previousTypedChars[commonPrefix] === typed[commonPrefix]) {
@@ -3163,14 +3172,14 @@
                         span.className = 'char current';
                     } else if (actual == null) {
                         span.className = 'char';
-                    } else if (actual === span.textContent) {
+                    } else if (actual === normalizeTypingText(span.textContent)) {
                         span.className = 'char correct';
                     } else {
                         span.className = 'char incorrect';
                     }
                 }
                 for (let i = 0; i < typed.length; i++) {
-                    if (typed[i] === displayChars[i]?.textContent) {
+                    if (typed[i] === normalizeTypingText(displayChars[i]?.textContent || '')) {
                         correctChars++;
                     } else {
                         sessionMistakes++;
