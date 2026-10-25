@@ -475,6 +475,14 @@
             <button id="submit-btn" onclick="submitScore()" class="hidden bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700">💾 Save</button>
         </div>
 
+        <div id="time-up-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="time-up-title" aria-describedby="time-up-message">
+            <div class="modal-box text-center">
+                <h2 id="time-up-title">Time is up!</h2>
+                <p id="time-up-message" class="mb-5 text-sm font-bold leading-relaxed text-slate-700" aria-live="polite"></p>
+                <button type="button" onclick="closeTimeUpNotice()" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-black text-white hover:bg-blue-700">Continue</button>
+            </div>
+        </div>
+
         <!-- Leaderboard -->
         <div id="leaderboard-section" class="mt-6 bg-white rounded-2xl shadow-lg p-4 border border-slate-100">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-3">
@@ -738,24 +746,90 @@
         let loggedInUser = null;
         let allUsers = [];
         let allLessons = [];
+        const supplementaryEnglishPoems = [
+            {
+                id: 'local-english-poem-morning-light',
+                title: 'Poem 1: Morning Light',
+                language: 'en',
+                text: 'The morning opens, soft and bright,\nA golden path of waking light.\nThe quiet trees begin to sway,\nAs birds compose the songs of day.\nA little breeze moves through the grass,\nWhile silver clouds above us pass.\nI greet the sun and start anew,\nWith hopeful thoughts and skies of blue.'
+            },
+            {
+                id: 'local-english-poem-river-song',
+                title: 'Poem 2: River Song',
+                language: 'en',
+                text: 'The river carries songs along,\nPast fields of green, both deep and long.\nIt turns beneath the willow tree,\nThen travels onward to the sea.\nSmall boats drift slowly in the sun,\nWhile ripples dance and shadows run.\nThe water teaches, as it flows,\nThat every journey onward goes.\nIt carries clouds beneath the light,\nAnd keeps on singing day and night.'
+            },
+            {
+                id: 'local-english-poem-after-the-rain',
+                title: 'Poem 3: After the Rain',
+                language: 'en',
+                text: 'The rain has left the rooftops bright,\nAnd washed the dusty leaves with light.\nA robin hops beside the lane,\nTo find a seed beneath the rain.\nThe clouds move on, the fields grow green,\nA rainbow arches, clear and keen.\nThe earth takes breath beneath the sky,\nAnd little streams go dancing by.'
+            },
+            {
+                id: 'local-english-poem-kindness',
+                title: 'Poem 4: A Little Kindness',
+                language: 'en',
+                text: 'A gentle word, a helping hand,\nCan make a brighter place to stand.\nA smile can warm a cloudy day,\nAnd guide a friend along the way.\nWe share our time, we learn to care,\nAnd find that hope grows when we share.\nThough small good deeds may seem to be,\nThey spread like ripples on the sea.'
+            },
+            {
+                id: 'local-english-poem-night-sky',
+                title: 'Poem 5: The Night Sky',
+                language: 'en',
+                text: 'The evening folds the hills in blue,\nAnd brings the first bright stars to view.\nThe moon climbs slowly, calm and clear,\nWhile sleepy sounds draw softly near.\nA thousand lights begin to gleam,\nLike silver boats upon a stream.\nI watch the sky and wonder why\nThe dreams of night can feel so high.'
+            },
+            {
+                id: 'local-english-poem-little-seed',
+                title: 'Poem 6: The Little Seed',
+                language: 'en',
+                text: 'A little seed beneath the ground\nWaits quietly without a sound.\nThe rain arrives, the sun shines through,\nAnd roots reach down while leaves reach blue.\nA tiny stem begins to rise,\nAnd greets the wide and open skies.\nWith time and care, it grows up tall,\nAnd makes a shady place for all.'
+            },
+            {
+                id: 'local-english-poem-the-old-tree',
+                title: 'Poem 7: The Old Tree',
+                language: 'en',
+                text: 'An old tree stands beside the road,\nThrough summer heat and winter snow.\nIt gives the birds a place to rest,\nAnd builds a home within its chest.\nIts branches stretch out wide and strong,\nIts leaves keep time with every song.\nIt asks for little, gives so much,\nA quiet friend beneath our touch.'
+            },
+            {
+                id: 'local-english-poem-paper-boat',
+                title: 'Poem 8: Paper Boat',
+                language: 'en',
+                text: 'I fold a page and shape a boat,\nThen set it free and watch it float.\nIt sails along the rainy street,\nPast dancing drops and busy feet.\nA puddle turns into a sea,\nAnd carries it away from me.\nThough small, it travels far from home,\nAnd shows how brave a dream can roam.'
+            },
+            {
+                id: 'local-english-poem-quiet-library',
+                title: 'Poem 9: The Quiet Library',
+                language: 'en',
+                text: 'Between the shelves, the stories wait,\nWith worlds beyond each paper gate.\nA mountain trail, a moonlit shore,\nA hundred lives, and many more.\nI turn a page and start to roam,\nThough seated in my quiet home.\nEach book can lend a curious mind\nA brand-new place to seek and find.'
+            },
+            {
+                id: 'local-english-poem-new-day',
+                title: 'Poem 10: A New Day',
+                language: 'en',
+                text: 'The first light climbs the eastern hill,\nThe fields awake, the air is still.\nI take one step, then one step more,\nAnd meet the day beyond my door.\nIf tasks seem hard, I will begin,\nFor patient effort helps us win.\nThe road is made by feet that try,\nBeneath the wide and open sky.'
+            }
+        ];
         const supplementaryBengaliPoems = [
             {
                 id: 'local-bengali-poem-morning',
+                title: 'কবিতা ১: ভোরের আলো',
                 language: 'bn',
                 text: 'ভোরের আলো জানলা ছুঁয়ে নতুন দিনের গান,\nশিশির ভেজা ঘাসের বুকে জাগে প্রাণের টান।\nপাখির ডাকে ঘুম ভাঙে, নীল আকাশে রং,\nদূর মাঠেতে কৃষক হাঁটে, কাঁধে কাজের ঢং।\nনদীর জলে রোদের হাসি, নৌকা চলে ধীরে,\nফুলের গন্ধ হাওয়া হয়ে ছড়িয়ে পড়ে নীড়ে।\nছোট্ট হাতে বইটি নিয়ে শিশু পথে যায়,\nস্বপ্নগুলো মনের মাঝে সাহস হয়ে রয়।\nপরিশ্রমে দিনটি গড়ি, ভালো কাজে মন,\nসত্য কথা, মিষ্টি ব্যবহার—সবার আপনজন।\nনতুন সকাল শেখায় যেন আশা রাখতে প্রাণে,\nআলো ছড়াই নিজের কাজে, ভালোবাসার টানে।'
             },
             {
                 id: 'local-bengali-poem-river',
+                title: 'কবিতা ২: নদীর গান',
                 language: 'bn',
                 text: 'নদীর বুকে পাল তুলে যায় সাদা ছোট্ট নাও,\nমাঝি গেয়ে ওঠে ভাটিয়ালি, মিষ্টি তার গাও।\nদুই ধারে সবুজ ধানের মাঠ, দোলে বাতাস পেয়ে,\nকাশফুলেরা মাথা নাড়ে মেঘের ছায়া ছেয়ে।\nমাছরাঙাটি বসে থাকে নীরব ডালের পরে,\nজলের নিচে রুপালি মাছ ছুটে চলে ঘুরে।\nবিকেল হলে গরু ফেরে পথের ধুলো মেখে,\nশিশুরা সব খেলায় মাতে, হাসি মুখে রেখে।\nচাঁদ উঠিলে নদীর জলে রুপার রেখা পড়ে,\nগ্রামটি যেন গল্প শোনায় রাতের নীরব ঘরে।\nনদী বয়ে যায় আপন মনে, জীবন শেখায় সুর,\nতারই টানে মন যে আমার যায় বহুদূর।'
             },
             {
                 id: 'local-bengali-poem-rain',
+                title: 'কবিতা ৩: বৃষ্টি',
                 language: 'bn',
                 text: 'মেঘের কোলে বৃষ্টি নামে টুপটাপ সারাদিন,\nকদম ফুলের গন্ধ মেখে ভিজে ওঠে দিন।\nটিনের চালে তালের ছন্দ, জানলা জুড়ে জল,\nছোট্ট নৌকা ভাসে পথে, হাসে শিশু দল।\nপাতার কোলে মুক্তোর মতো বিন্দু দোলে ধীরে,\nব্যাঙের ডাকে সাড়া জাগে পুকুর পাড়ের নীড়ে।\nবৃষ্টিভেজা মাটির গন্ধ মনকে কাছে টানে,\nদাদির মুখে রূপকথারা জেগে ওঠে গানে।\nবিকেল শেষে রোদ উঠিলে মেঘ সরিয়ে যায়,\nরঙধনুর সাতটি রঙে আকাশ হেসে চায়।\nজল জমলেও গাছের ডালে পাখি গায় যে গান,\nবর্ষা এসে সবুজ করে মাঠ ও অভিমান।'
             },
             {
                 id: 'local-bengali-poem-country',
+                title: 'কবিতা ৪: আমার দেশ',
                 language: 'bn',
                 text: 'সবুজ মাঠে সোনার ফসল, নদী ভরা জল,\nএই মাটিতে স্বপ্ন বুনি, কাটে সকাল বিকাল।\nশ্রমিক গড়ে পথের সেতু, কৃষক ফলায় ধান,\nশিক্ষক জ্বালে জ্ঞানের আলো, বাড়ায় সবার মান।\nশিশুরা সব বই হাতে যায় বিদ্যালয়ের পথে,\nনতুন দিনের আশা জাগে তাদের চোখের সাথে।\nভিন্ন ভাষা, ভিন্ন মতেও মিলের বন্ধন গড়ি,\nবিপদ এলে হাত বাড়িয়ে পাশাপাশি দাঁড়াই।\nসত্য বলি, ন্যায়কে মানি, রাখি সবার হক,\nভালোবাসায় শক্ত হোক যে দেশের আপন লোক।\nনদী, পাহাড়, বনকে রেখে নির্মল করি দেশ,\nপরিশ্রমে এগিয়ে যাক বাংলাদেশ প্রতিদিন বেশ।'
             }
@@ -795,6 +869,8 @@
         let isScoreSubmitting = false;
         let displayChars = [];
         let previousTypedChars = [];
+        let timeUpNoticeSessionId = null;
+        let timeUpNoticePoints = 0;
 
         // ============================================
         // LEVEL SYSTEM
@@ -1283,7 +1359,9 @@
 
         function getFilteredLessons() {
             const lessons = allLessons.filter(l => (l.language || 'en') === typingLang);
-            return typingLang === 'bn' ? [...lessons, ...supplementaryBengaliPoems] : lessons;
+            return typingLang === 'bn'
+                ? [...lessons, ...supplementaryBengaliPoems]
+                : [...lessons, ...supplementaryEnglishPoems];
         }
 
         function populateLessonDropdown() {
@@ -1298,7 +1376,7 @@
             const langLabel = typingLang === 'bn' ? 'লেসন' : 'Lesson';
             select.innerHTML = filtered.map((l, i) => {
                 const label = typingLang === 'bn' ? `${langLabel} ${i + 1}` : `${langLabel} ${i + 1}`;
-                return `<option value="${l.id}">${label}</option>`;
+                return `<option value="${l.id}">${l.title || label}</option>`;
             }).join('');
             
             if (!currentLessonId || !filtered.some(l => l.id === currentLessonId)) {
@@ -1402,9 +1480,7 @@
             } else {
                 text = typingLang === 'bn' ? 'বাংলা টাইপিং অনুশীলন করুন' : 'Practice typing in English';
             }
-            if (typingLang === 'bn') {
-                text = text.replace(/\s*\n\s*/g, ' ');
-            }
+            text = text.replace(/\s*\n\s*/g, ' ');
             
             if (isCustomMode) {
                 const select = document.getElementById('lesson-selector');
@@ -1521,9 +1597,38 @@
                     setTypingStatus(false);
                     document.getElementById('typing-input').disabled = true;
                     document.getElementById('submit-btn').classList.remove('hidden');
+                    if (typingLang === 'en') {
+                        timeUpNoticeSessionId = scoreSessionId;
+                        timeUpNoticePoints = Math.floor(correctChars / 5);
+                    }
                     saveTypingScore({ final: true, automatic: true });
+                    if (typingLang === 'en') {
+                        const hasPendingSessionScore = loggedInUser &&
+                            readPendingTypingScores(loggedInUser.id).some(entry => entry.sessionId === timeUpNoticeSessionId);
+                        showTimeUpNotice(!hasPendingSessionScore ? 'saved' : isFirebaseConnected ? 'saving' : 'offline');
+                    }
                 }
             }, 1000);
+        }
+
+        function showTimeUpNotice(saveState) {
+            updateTimeUpNotice(saveState);
+            document.getElementById('time-up-modal').classList.add('active');
+        }
+
+        function updateTimeUpNotice(saveState) {
+            const message = document.getElementById('time-up-message');
+            const points = `${timeUpNoticePoints} ${timeUpNoticePoints === 1 ? 'point' : 'points'}`;
+            const saveMessage = saveState === 'saved'
+                ? `${points} saved.`
+                : saveState === 'offline'
+                    ? `Your score of ${points} is saved on this device. It will sync when you are back online.`
+                    : `Your score of ${points} is being saved.`;
+            message.textContent = `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
+        }
+
+        function closeTimeUpNotice() {
+            document.getElementById('time-up-modal').classList.remove('active');
         }
 
         // ============================================
@@ -2917,6 +3022,7 @@
                     queue = queue.filter(entry => entry.id !== scoreEntry.id);
                     if (!writePendingTypingScores(loggedInUser.id, queue)) break;
                     if (scoreEntry.final) {
+                        if (scoreEntry.sessionId === timeUpNoticeSessionId) updateTimeUpNotice('saved');
                         try {
                             const draftKey = getTypingDraftKey(loggedInUser.id);
                             const draft = JSON.parse(localStorage.getItem(draftKey) || 'null');
