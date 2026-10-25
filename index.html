@@ -13,22 +13,28 @@
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>TypingMaster Pro Online - Free Typing Practice & Earn Money $$$</title>
+  <title>Live Typing Practice &amp; Leaderboard | English and Bangla</title>
   <meta name="google-site-verification" content="q1fo44ipDTHffmhZwriPwwfS4_ClOT5QcvfESIzFPtM" />
-  <meta name="description" content="TypingMaster Pro Online is world best free typing master. Test your speed on our global typing leaderboard, practice English typing, and improve your WPM.">
-  <meta name="keywords" content="typing leaderboard, global typing leaderboard, typing leaderboard competition, online typing leaderboard, TypingMaster Pro Online, typingmasterproonline.com, typing master pro online, typing practice, earn money typing">
+  <meta name="description" content="Practice English and Bangla typing online. Learn Bijoy 52, track your speed live, message other typists, and compete on the typing leaderboard.">
+  <meta name="keywords" content="English typing practice, Bangla typing practice, Bijoy 52 typing, online typing test, typing speed test, live typing practice, live typing leaderboard, typing competition, online typing competition, typing chat, typing messages, typing practice Bangladesh">
   <meta name="author" content="TypingMaster Pro Online">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://typingmasterproonline.com">
   
   <!-- Open Graph / Facebook এসইও মেটা ট্যাগ -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="TypingMaster Pro Online">
-  <meta property="og:title" content="TypingMaster Pro Online 💰⌨️ - Type Fast & Join Leaderboard">
-  <meta property="og:description" content="Join the global typing leaderboard and compete with typists worldwide!">
+  <meta property="og:title" content="Live Typing Practice &amp; Leaderboard | English and Bangla">
+  <meta property="og:description" content="Practice English and Bangla typing online. Learn Bijoy 52, track your speed live, message other typists, and compete on the leaderboard.">
   <meta property="og:url" content="https://typingmasterproonline.com">
   <meta property="og:image" content="https://typingmasterproonline.com/logo.png">
   <meta property="og:image:alt" content="TypingMaster Pro Online Logo">
   <meta property="og:locale" content="en_BD">
+  <meta property="og:locale:alternate" content="bn_BD">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Live Typing Practice &amp; Leaderboard | English and Bangla">
+  <meta name="twitter:description" content="Practice English and Bangla typing online. Learn Bijoy 52, track your speed live, and compete on the typing leaderboard.">
+  <meta name="twitter:image" content="https://typingmasterproonline.com/logo.png">
   
   <!-- PWA মেনিফেস্ট লিংক -->
   <link rel="manifest" href="/manifest.json">
@@ -45,7 +51,7 @@
         "@id": "https://typingmasterproonline.com#website",
         "url": "https://typingmasterproonline.com",
         "name": "TypingMaster Pro Online",
-        "description": "Free English and Bangla Bijoy 52 typing practice with live keyboard guidance.",
+        "description": "Free English and Bangla typing practice with live progress, direct messaging, and leaderboard competition.",
         "inLanguage": ["en", "bn"],
         "publisher": {
           "@type": "Organization",
@@ -62,10 +68,16 @@
         "@id": "https://typingmasterproonline.com#typing-practice",
         "name": "TypingMaster Pro Online Typing Practice",
         "url": "https://typingmasterproonline.com",
-        "description": "Free online typing practice and speed test for English and Bangla Bijoy 52, with live keyboard guidance, WPM and accuracy tracking.",
+        "description": "Free online English and Bangla typing practice. Learn Bijoy 52, track typing speed live, message other typists, and compete on a live leaderboard.",
+        "featureList": [
+          "Live typing progress and speed tracking",
+          "English and Bangla Bijoy 52 typing lessons",
+          "Direct messages between typists",
+          "Live leaderboard and typing competition"
+        ],
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
-        "browserRequirements": "A modern web browser and a physical keyboard are required for typing practice.",
+        "browserRequirements": "A modern web browser. Type with a physical keyboard or a mobile on-screen keyboard.",
         "isAccessibleForFree": true,
         "inLanguage": ["en", "bn"],
         "image": "https://typingmasterproonline.com/logo.png",
@@ -632,6 +644,21 @@
       .typing-panel { min-height: 430px; padding: 50px 10px 18px; border-radius: 17px; }
       .typing-panel .dashboard { border-radius: 12px; }
       .keyboard-container { margin-top: 14px; }
+      .typing-panel.bengali-mode:focus-within .text-display {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        min-height: 100px;
+        max-height: 32dvh;
+        overflow-y: auto;
+        background: #0b1729;
+        overscroll-behavior: contain;
+      }
+      .typing-panel.bengali-mode .text-display .char-current {
+        border-radius: 4px;
+        background: rgba(13, 148, 136, 0.35);
+        box-shadow: 0 2px 0 #2dd4bf;
+      }
     }
   </style>
 </head>
@@ -1540,7 +1567,13 @@
     function renderText() {
       const container = document.getElementById("textDisplay");
       if (currentLanguage === "bn") {
-        container.textContent = targetText;
+        container.replaceChildren();
+        Array.from(targetText).forEach((char, index) => {
+          const span = document.createElement("span");
+          span.className = index === currentIndex ? "char-current" : "";
+          span.textContent = char;
+          container.appendChild(span);
+        });
         return;
       }
       container.innerHTML = "";
@@ -1605,6 +1638,17 @@
         : "100%";
       document.getElementById("progressVal").innerText = `${currentIndex} / ${targetText.length} (${Math.round((currentIndex / targetText.length) * 100)}%)`;
       document.getElementById("summaryModal").style.display = checkedChars.length === targetChars.length ? "flex" : "none";
+      renderText();
+      const currentTarget = document.querySelector("#textDisplay .char-current");
+      if (currentTarget) {
+        const display = document.getElementById("textDisplay");
+        const targetRect = currentTarget.getBoundingClientRect();
+        const displayRect = display.getBoundingClientRect();
+        const safeTop = displayRect.top + 12;
+        const safeBottom = displayRect.bottom - 12;
+        if (targetRect.top < safeTop) display.scrollTop -= safeTop - targetRect.top;
+        else if (targetRect.bottom > safeBottom) display.scrollTop += targetRect.bottom - safeBottom;
+      }
       if (checkedChars.length === targetChars.length) {
         clearInterval(timerInterval);
         setLiveTypingPresence(false);
