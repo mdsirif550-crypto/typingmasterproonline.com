@@ -78,7 +78,7 @@
     ]
   }
   </script>
-  <meta name="theme-color" content="#041e12">
+  <meta name="theme-color" content="#07111f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -250,7 +250,10 @@
     .welcome-banner-controls .whatsapp-help-icon { font-size: 14px; }
     .mobile-notice-banner { display: block; position: relative; width: 100%; margin: 0; padding: 14px; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 14px; background: linear-gradient(135deg, rgba(66, 32, 6, 0.78), rgba(113, 63, 18, 0.7)); color: #fef3c7; text-align: left; }
     .mobile-notice-banner h2 { margin: 0 28px 8px 0; color: #fde68a; font-size: 16px; line-height: 1.5; }
-    .mobile-notice-banner p { margin: 0 0 12px; font-size: 13px; line-height: 1.7; }
+    .mobile-notice-banner p { margin: 0 0 12px; font-size: 13px; line-height: 1.7; text-align: justify; }
+    @media (min-width: 601px) {
+      .mobile-notice-banner p { text-align-last: justify; }
+    }
     .mobile-notice-banner .mobile-notice-close { position: absolute; top: 8px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.2); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
     .mobile-notice-banner .mobile-notice-cta { display: block; padding: 11px 14px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; font-size: 14px; font-weight: 900; line-height: 1.5; text-align: center; text-decoration: none; }
     .mobile-notice-banner .mobile-notice-cta:focus-visible, .mobile-notice-banner .mobile-notice-close:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
@@ -455,10 +458,214 @@
       .key.pressed, .key:active { transform: translateY(2px); }
       #key-control, #key-meta, #key-alt, #key-altright, #key-metaright, #key-controlright { min-width: 0 !important; }
     }
+
+    :root {
+      --bg-color: #07111f;
+      --panel-bg: #111d30;
+      --primary: #7c5cff;
+      --primary-hover: #6547e8;
+      --success: #34d399;
+      --bg-accent: #172b42;
+      --text-main: #f4f7ff;
+      --text-muted: #a7b4c8;
+      --key-bg: #25354b;
+      --key-active: #7c5cff;
+      --key-border: #142237;
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(14, 165, 233, 0.2), transparent 34%),
+        radial-gradient(ellipse at 92% 12%, rgba(124, 92, 255, 0.16), transparent 30%),
+        #07111f;
+      padding: 24px;
+    }
+    .container { max-width: 1160px; }
+    .welcome-banner {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      width: min(100%, 1160px);
+      margin-bottom: 22px;
+      padding: clamp(18px, 3vw, 30px);
+      border-color: rgba(148, 163, 184, 0.23);
+      border-radius: 24px;
+      background: linear-gradient(125deg, rgba(15, 32, 52, 0.98), rgba(10, 27, 42, 0.97) 58%, rgba(31, 35, 68, 0.97));
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255,255,255,0.08);
+    }
+    .welcome-banner-keyboards {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.24;
+      pointer-events: none;
+    }
+    .welcome-banner > :not(.welcome-banner-keyboards) { position: relative; z-index: 1; }
+    .welcome-banner-brand { gap: 13px; margin-bottom: 16px; }
+    .welcome-banner-topline { gap: 20px; }
+    .welcome-banner-identity { justify-content: flex-start; gap: 16px; }
+    .welcome-banner-logo {
+      width: 72px;
+      height: 72px;
+      flex-basis: 72px;
+      padding: 3px;
+      border-color: rgba(255,255,255,0.72);
+      border-radius: 20px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.28);
+    }
+    .welcome-banner-identity h1 { font-size: clamp(25px, 4vw, 42px); letter-spacing: -0.8px; }
+    .welcome-banner-tagline {
+      margin: -2px 0 0 88px;
+      color: #b8c7dc;
+      font-size: clamp(12px, 1.5vw, 15px);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    .welcome-banner-controls { gap: 10px; }
+    .welcome-banner-about, .welcome-banner-login {
+      padding: 9px 16px;
+      font-size: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+    .welcome-banner-about { background: linear-gradient(135deg, #0f766e, #0891b2); }
+    .header-secondary-row {
+      padding: 9px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 14px;
+      background: rgba(2, 10, 22, 0.28);
+    }
+    .header-compact-row .academy-tag { color: #c4b5fd; letter-spacing: 1.1px; }
+    .home-top-three {
+      width: 100%;
+      margin-bottom: 18px;
+      padding: 15px;
+      border-color: rgba(148, 163, 184, 0.22);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(17, 29, 48, 0.96), rgba(12, 23, 39, 0.96));
+      box-shadow: 0 16px 36px rgba(0,0,0,0.2);
+    }
+    .home-top-three-header { margin-bottom: 12px; }
+    .home-top-three-title { color: #f4f7ff; font-size: 15px; }
+    .home-top-three-subtitle { font-size: 10px; }
+    .home-top-three-join {
+      padding: 8px 13px;
+      border: 1px solid rgba(252, 246, 186, 0.65);
+      background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+      color: #111;
+      font-size: 11px;
+      box-shadow: 0 6px 16px rgba(184, 134, 11, 0.3);
+    }
+    .home-top-three-list { gap: 12px; }
+    .home-top-player {
+      gap: 6px;
+      padding: 12px;
+      border-color: rgba(148, 163, 184, 0.18);
+      border-radius: 15px;
+      background: linear-gradient(160deg, rgba(35, 51, 75, 0.85), rgba(17, 29, 48, 0.92));
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .home-top-player:hover { transform: translateY(-3px); border-color: rgba(125, 211, 252, 0.55); box-shadow: 0 10px 24px rgba(0,0,0,0.2); }
+    .home-top-player[data-rank="1"] { border-color: rgba(250, 204, 21, 0.45); background: linear-gradient(160deg, rgba(105, 77, 25, 0.42), rgba(17, 29, 48, 0.92)); }
+    .home-top-player-name { font-size: 12px; }
+    .home-top-player-points { font-size: 10px; }
+    .mode-container { gap: 12px; margin: 0 0 16px; }
+    .lang-btn {
+      min-width: 150px;
+      min-height: 44px;
+      padding: 10px 22px;
+      border-color: rgba(148, 163, 184, 0.24);
+      background: #16243a;
+      font-size: 13px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    }
+    .lang-btn.active { background: linear-gradient(135deg, #7c5cff, #5146d8); border-color: rgba(196,181,253,0.55); }
+    #langBnBtn { background: linear-gradient(135deg, #0f766e, #0e7490); }
+    #langBnBtn.active { background: linear-gradient(135deg, #0d9488, #0891b2); }
+    .typing-panel {
+      width: 100%;
+      min-height: 460px;
+      padding: 22px clamp(16px, 3vw, 34px) 30px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(17, 29, 48, 0.98), rgba(12, 23, 39, 0.98));
+      box-shadow: 0 22px 48px rgba(0,0,0,0.28), inset 0 1px rgba(255,255,255,0.04);
+    }
+    .typing-panel .dashboard {
+      gap: 10px;
+      margin-bottom: 22px;
+      padding: 13px;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 16px;
+      background: rgba(5, 14, 27, 0.52);
+    }
+    .typing-panel .dashboard .stat-label { color: #91a4bf; letter-spacing: 0.5px; }
+    .typing-panel .dashboard .stat-val { color: #f4f7ff; }
+    .typing-panel .dashboard .stat-val.highlight { color: #6ee7b7; }
+    .typing-panel .controls select, .typing-panel .controls .btn-reset {
+      border-radius: 9px;
+      min-height: 34px;
+    }
+    .typing-panel .controls .btn-reset { box-shadow: 0 5px 12px rgba(0,0,0,0.16); }
+    .status-feedback { border-color: rgba(148, 163, 184, 0.14); background: rgba(5, 14, 27, 0.58); }
+    .typing-panel .text-display { line-height: 1.85; }
+    .typing-panel.bengali-mode .text-display, .typing-panel.bengali-mode .bengali-typing-box {
+      border-color: rgba(148, 163, 184, 0.2);
+      border-radius: 14px;
+      background: rgba(5, 14, 27, 0.5);
+    }
+    .keyboard-container {
+      margin-top: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: linear-gradient(145deg, rgba(17, 29, 48, 0.98), rgba(12, 23, 39, 0.98));
+    }
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      .welcome-banner { padding: 13px; border-radius: 18px; }
+      .welcome-banner-keyboards { opacity: 0.16; }
+      .welcome-banner-identity { justify-content: center; }
+      .welcome-banner-tagline { margin: 0; text-align: center; }
+      .header-secondary-row { padding: 7px; }
+      .home-top-three { padding: 10px; border-radius: 16px; }
+      .home-top-three-list { gap: 5px; }
+      .home-top-player { padding: 8px 4px; }
+      .typing-panel { min-height: 430px; padding: 50px 10px 18px; border-radius: 17px; }
+      .typing-panel .dashboard { border-radius: 12px; }
+      .keyboard-container { margin-top: 14px; }
+    }
   </style>
 </head>
 <body>
   <section class="welcome-banner" aria-label="TypingMaster Pro introduction and mobile typing help">
+    <svg class="welcome-banner-keyboards" viewBox="0 0 1160 440" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="welcomeKeyboardKeys" width="30" height="24" patternUnits="userSpaceOnUse">
+          <rect x="3" y="3" width="24" height="17" rx="3" fill="#9bd8ff" fill-opacity="0.16" stroke="#a5dfff" stroke-opacity="0.42" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <g fill="#091629" fill-opacity="0.5" stroke="#a5dfff" stroke-opacity="0.52" stroke-width="2">
+        <g transform="translate(12 34) rotate(-9 180 85) scale(.78)">
+          <rect width="360" height="170" rx="18"/>
+          <rect x="14" y="14" width="332" height="126" rx="8" fill="url(#welcomeKeyboardKeys)" stroke="none"/>
+          <rect x="104" y="148" width="152" height="10" rx="5" fill="#a5dfff" fill-opacity="0.22" stroke="none"/>
+        </g>
+        <g transform="translate(358 198) rotate(-7 180 85) scale(.82)">
+          <rect width="360" height="170" rx="18"/>
+          <rect x="14" y="14" width="332" height="126" rx="8" fill="url(#welcomeKeyboardKeys)" stroke="none"/>
+          <rect x="104" y="148" width="152" height="10" rx="5" fill="#a5dfff" fill-opacity="0.22" stroke="none"/>
+        </g>
+        <g transform="translate(752 35) rotate(8 180 85) scale(.82)">
+          <rect width="360" height="170" rx="18"/>
+          <rect x="14" y="14" width="332" height="126" rx="8" fill="url(#welcomeKeyboardKeys)" stroke="none"/>
+          <rect x="104" y="148" width="152" height="10" rx="5" fill="#a5dfff" fill-opacity="0.22" stroke="none"/>
+        </g>
+        <g transform="translate(850 247) rotate(8 180 85) scale(.72)">
+          <rect width="360" height="170" rx="18"/>
+          <rect x="14" y="14" width="332" height="126" rx="8" fill="url(#welcomeKeyboardKeys)" stroke="none"/>
+          <rect x="104" y="148" width="152" height="10" rx="5" fill="#a5dfff" fill-opacity="0.22" stroke="none"/>
+        </g>
+      </g>
+    </svg>
     <div class="welcome-banner-brand">
       <div class="welcome-banner-topline">
         <div class="welcome-banner-identity">
@@ -473,6 +680,7 @@
           </a>
         </div>
       </div>
+      <p class="welcome-banner-tagline">Build typing speed, sharpen accuracy, and climb the leaderboard.</p>
       <div class="welcome-banner-profile-details" id="welcomeBannerProfileDetails" hidden>
         <img id="welcomeBannerDetailsAvatar" src="logo.png" alt="">
         <div class="welcome-banner-profile-copy">
@@ -1263,7 +1471,7 @@
         bn: {
           close: "নোটিশ বন্ধ করুন",
           title: "⚠️ এই অনুশীলনের প্রথম পেজে মোবাইল স্ক্রিনে সরাসরি টাইপ করা যাবে না।",
-          notice: "মোবাইল দিয়ে প্রথম পেজে টাইপ করতে ফোনের সাথে Bluetooth কিবোর্ড অথবা OTG অ্যাডাপ্টারের মাধ্যমে USB কিবোর্ড সংযুক্ত করুন। বিকল্পভাবে, লিডারবোর্ড পেজের টাইপিং বক্সে ট্যাপ করে ফোনের অন-স্ক্রিন কিবোর্ড ব্যবহার করুন।",
+          notice: "মোবাইল দিয়ে প্রথম পেজে টাইপ করতে ফোনের সাথে Bluetooth কিবোর্ড অথবা OTG অ্যাডাপ্টারের মাধ্যমে USB কিবোর্ড সংযুক্ত করুন। বিকল্পভাবে, লিডারবোর্ড পেজের টাইপিং বক্সে ট্যাপ করে ফোনের অন-স্ক্রিন কিবোর্ড ব্যবহার করুন। কিবোর্ড যুক্ত করার পর অনুশীলন শুরু করে টাইপিংয়ের গতি ও নির্ভুলতা বাড়ান।",
           bannerCta: "🏆 মোবাইলে টাইপ করুন — লিডারবোর্ডে যোগ দিন",
           mobileCta: "Start Typing ➔ Mobile Typing",
           keyboardCta: "Start Typing ➔ Keyboard Typing"
@@ -1271,7 +1479,7 @@
         en: {
           close: "Close notice",
           title: "⚠️ This practice page cannot be typed on directly using a mobile screen.",
-          notice: "To type on this first page with a phone, connect a Bluetooth keyboard or a USB keyboard using an OTG adapter. Or open the leaderboard typing box, tap it, and type with your phone's on-screen keyboard.",
+          notice: "To type on this first page with a phone, connect a Bluetooth keyboard or a USB keyboard using an OTG adapter. Or open the leaderboard typing box, tap it, and type with your phone's on-screen keyboard. Start practicing to improve your typing speed and accuracy.",
           bannerCta: "🏆 Type on mobile — join the leaderboard",
           mobileCta: "Start Typing ➔ Mobile Typing",
           keyboardCta: "Start Typing ➔ Keyboard Typing"
