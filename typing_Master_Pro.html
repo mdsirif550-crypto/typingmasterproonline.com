@@ -118,13 +118,16 @@
         @keyframes bounce { 0%, 100% { top: -8px; } 50% { top: -14px; } }
         
         .char { color: #94a3b8; font-size: 1.45rem; font-family: 'Noto Sans Bengali', monospace; }
+        #practice-stage.bengali-mode .char { color: #64748b; font-size: 1.55rem; font-weight: 700; }
         .correct { color: #10b981; font-weight: 700; }
         .incorrect { background: #ef4444; color: white; border-radius: 3px; padding: 0 2px; }
         .current { border-bottom: 3px solid #2563eb; background: #dbeafe; }
+        .practice-text-flow { white-space: pre-wrap; }
         
         #practice-stage { display: flex; flex-direction: column; position: relative; }
         #display-box { height: 360px; overflow-y: auto; padding: 24px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.45rem; line-height: 1.9; }
         #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 220px; resize: none; overflow-y: auto; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
+        #practice-stage.bengali-mode #typing-input { font-weight: 600; }
         #typing-input:disabled { background: #f1f5f9; cursor: not-allowed; }
         #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; background: #f1f5f9; }
         #practice-fullscreen-shell:fullscreen > .marquee, #practice-fullscreen-shell:-webkit-full-screen > .marquee { display: none; }
@@ -468,6 +471,7 @@
                 <span class="stat-pill">🎯 <span id="live-accuracy" class="num text-rose-600">0</span>%</span>
                 <span class="stat-pill">⚡ <span id="live-wpm" class="num text-orange-600">0</span> WPM</span>
             </div>
+            <span id="score-save-status" class="text-[10px] font-bold text-slate-600" role="status" aria-live="polite"></span>
             <button id="submit-btn" onclick="submitScore()" class="hidden bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700">💾 Save</button>
         </div>
 
@@ -711,12 +715,18 @@
         const viewerSessionId = db.ref('online_viewers').push().key;
         let serverTimeOffset = 0;
         let serverTimeOffsetReady = false;
+        let isFirebaseConnected = false;
+        let isScoreQueueProcessing = false;
+        let scoreSessionId = null;
+        let scoreSessionSequence = 0;
+        let scoreCheckpoint = { typedChars: 0, correctChars: 0, mistakes: 0 };
         db.ref('.info/serverTimeOffset').on('value', snap => {
             const offset = snap.val();
             if (typeof offset !== 'number') return;
             serverTimeOffset = offset;
             serverTimeOffsetReady = true;
             updateMonthlyCountdown();
+            processPendingTypingScores();
         }, err => console.error('Server time offset listener failed:', err));
 
         const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -728,6 +738,28 @@
         let loggedInUser = null;
         let allUsers = [];
         let allLessons = [];
+        const supplementaryBengaliPoems = [
+            {
+                id: 'local-bengali-poem-morning',
+                language: 'bn',
+                text: 'ভোরের আলো জানলা ছুঁয়ে নতুন দিনের গান,\nশিশির ভেজা ঘাসের বুকে জাগে প্রাণের টান।\nপাখির ডাকে ঘুম ভাঙে, নীল আকাশে রং,\nদূর মাঠেতে কৃষক হাঁটে, কাঁধে কাজের ঢং।\nনদীর জলে রোদের হাসি, নৌকা চলে ধীরে,\nফুলের গন্ধ হাওয়া হয়ে ছড়িয়ে পড়ে নীড়ে।\nছোট্ট হাতে বইটি নিয়ে শিশু পথে যায়,\nস্বপ্নগুলো মনের মাঝে সাহস হয়ে রয়।\nপরিশ্রমে দিনটি গড়ি, ভালো কাজে মন,\nসত্য কথা, মিষ্টি ব্যবহার—সবার আপনজন।\nনতুন সকাল শেখায় যেন আশা রাখতে প্রাণে,\nআলো ছড়াই নিজের কাজে, ভালোবাসার টানে।'
+            },
+            {
+                id: 'local-bengali-poem-river',
+                language: 'bn',
+                text: 'নদীর বুকে পাল তুলে যায় সাদা ছোট্ট নাও,\nমাঝি গেয়ে ওঠে ভাটিয়ালি, মিষ্টি তার গাও।\nদুই ধারে সবুজ ধানের মাঠ, দোলে বাতাস পেয়ে,\nকাশফুলেরা মাথা নাড়ে মেঘের ছায়া ছেয়ে।\nমাছরাঙাটি বসে থাকে নীরব ডালের পরে,\nজলের নিচে রুপালি মাছ ছুটে চলে ঘুরে।\nবিকেল হলে গরু ফেরে পথের ধুলো মেখে,\nশিশুরা সব খেলায় মাতে, হাসি মুখে রেখে।\nচাঁদ উঠিলে নদীর জলে রুপার রেখা পড়ে,\nগ্রামটি যেন গল্প শোনায় রাতের নীরব ঘরে।\nনদী বয়ে যায় আপন মনে, জীবন শেখায় সুর,\nতারই টানে মন যে আমার যায় বহুদূর।'
+            },
+            {
+                id: 'local-bengali-poem-rain',
+                language: 'bn',
+                text: 'মেঘের কোলে বৃষ্টি নামে টুপটাপ সারাদিন,\nকদম ফুলের গন্ধ মেখে ভিজে ওঠে দিন।\nটিনের চালে তালের ছন্দ, জানলা জুড়ে জল,\nছোট্ট নৌকা ভাসে পথে, হাসে শিশু দল।\nপাতার কোলে মুক্তোর মতো বিন্দু দোলে ধীরে,\nব্যাঙের ডাকে সাড়া জাগে পুকুর পাড়ের নীড়ে।\nবৃষ্টিভেজা মাটির গন্ধ মনকে কাছে টানে,\nদাদির মুখে রূপকথারা জেগে ওঠে গানে।\nবিকেল শেষে রোদ উঠিলে মেঘ সরিয়ে যায়,\nরঙধনুর সাতটি রঙে আকাশ হেসে চায়।\nজল জমলেও গাছের ডালে পাখি গায় যে গান,\nবর্ষা এসে সবুজ করে মাঠ ও অভিমান।'
+            },
+            {
+                id: 'local-bengali-poem-country',
+                language: 'bn',
+                text: 'সবুজ মাঠে সোনার ফসল, নদী ভরা জল,\nএই মাটিতে স্বপ্ন বুনি, কাটে সকাল বিকাল।\nশ্রমিক গড়ে পথের সেতু, কৃষক ফলায় ধান,\nশিক্ষক জ্বালে জ্ঞানের আলো, বাড়ায় সবার মান।\nশিশুরা সব বই হাতে যায় বিদ্যালয়ের পথে,\nনতুন দিনের আশা জাগে তাদের চোখের সাথে।\nভিন্ন ভাষা, ভিন্ন মতেও মিলের বন্ধন গড়ি,\nবিপদ এলে হাত বাড়িয়ে পাশাপাশি দাঁড়াই।\nসত্য বলি, ন্যায়কে মানি, রাখি সবার হক,\nভালোবাসায় শক্ত হোক যে দেশের আপন লোক।\nনদী, পাহাড়, বনকে রেখে নির্মল করি দেশ,\nপরিশ্রমে এগিয়ে যাক বাংলাদেশ প্রতিদিন বেশ।'
+            }
+        ];
         let currentLessonId = null;
         let typingLang = 'en';
         let currentLanguage = 'en';
@@ -1250,7 +1282,8 @@
         }
 
         function getFilteredLessons() {
-            return allLessons.filter(l => (l.language || 'en') === typingLang);
+            const lessons = allLessons.filter(l => (l.language || 'en') === typingLang);
+            return typingLang === 'bn' ? [...lessons, ...supplementaryBengaliPoems] : lessons;
         }
 
         function populateLessonDropdown() {
@@ -1360,6 +1393,9 @@
             } else {
                 text = typingLang === 'bn' ? 'বাংলা টাইপিং অনুশীলন করুন' : 'Practice typing in English';
             }
+            if (typingLang === 'bn') {
+                text = text.replace(/\s*\n\s*/g, ' ');
+            }
             
             if (isCustomMode) {
                 const select = document.getElementById('lesson-selector');
@@ -1392,6 +1428,7 @@
         // ============================================
         function switchTypingLang(lang) {
             typingLang = lang;
+            document.getElementById('practice-stage').classList.toggle('bengali-mode', lang === 'bn');
             localStorage.setItem('typingLanguage', lang);
             document.getElementById('typing-lang').value = lang;
             isCustomMode = false;
@@ -1413,9 +1450,19 @@
             resetTyping();
         }
 
-        function resetTyping() {
+        function resetTyping(options = {}) {
             setTypingStatus(false);
             const input = document.getElementById('typing-input');
+            if (loggedInUser && !options.preserveDraft) {
+                try {
+                    localStorage.removeItem(getTypingDraftKey(loggedInUser.id));
+                } catch (error) {
+                    console.error('Could not clear the saved typing draft:', error);
+                }
+            }
+            scoreSessionId = createTypingScoreSessionId();
+            scoreSessionSequence = 0;
+            scoreCheckpoint = { typedChars: 0, correctChars: 0, mistakes: 0 };
             if (!isCustomMode) {
                 const nextLessonId = getNextLessonId();
                 if (nextLessonId) {
@@ -1441,6 +1488,7 @@
             document.getElementById('live-mistakes').textContent = '0';
             document.getElementById('live-accuracy').textContent = '0';
             document.getElementById('live-wpm').textContent = '0';
+            document.getElementById('score-save-status').textContent = '';
             document.getElementById('submit-btn').classList.add('hidden');
             generateDisplay();
             document.getElementById('display-box').scrollTop = 0;
@@ -1464,7 +1512,7 @@
                     setTypingStatus(false);
                     document.getElementById('typing-input').disabled = true;
                     document.getElementById('submit-btn').classList.remove('hidden');
-                    alert('⏰ Time is up! Save your result.');
+                    saveTypingScore({ final: true, automatic: true });
                 }
             }, 1000);
         }
@@ -1528,7 +1576,9 @@
             closeAuth();
             updateNav();
             trackOnline();
-            resetTyping();
+            resetTyping({ preserveDraft: true });
+            recoverSavedTypingDraft();
+            processPendingTypingScores();
             listenHelp();
             listenConversations();
             if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
@@ -1820,14 +1870,15 @@
 
         function renderVerifiedBadge(user) {
             if (user.verifiedBadge !== true) return '';
-            const type = ['profile_star', 'gold_check', 'winged_check', 'blue_seal'].includes(user.verifiedBadgeType)
+            const type = ['profile_star', 'gold_check', 'winged_check', 'blue_seal', 'red_seal'].includes(user.verifiedBadgeType)
                 ? user.verifiedBadgeType
                 : 'profile_star';
             const icons = {
                 profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
                 gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
                 winged_check: '<path d="M38 31 12 16q-8-3-8 5l2 16 19 12-17-4q-7-2-4 6l8 13 18 4-13 2q-6 1-2 7l10 9 15-2zM62 31l26-15q8-3 8 5l-2 16-19 12 17-4q7-2 4 6l-8 13-18 4 13 2q6 1 2 7l-10 9-15-2z" fill="#14a8f5"/><circle cx="50" cy="44" r="31" fill="#08264b" stroke="#168ef5" stroke-width="7"/><path d="m37 43 10 10 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 67 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>',
-                blue_seal: '<path d="M0 23h29v12H0zM0 42h24v9H0zM0 58h29v8H0z" fill="#8bd3ff"/><path d="M50 3 60 8l11-2 6 10 11 4-1 12 7 9-6 10 2 11-10 7-3 11-12 1-8 9-10-7-12 3-7-9-12-3-2-12-9-8 4-11-4-11 9-8 3-12 12-2z" fill="#0868ee" stroke="#74c7ff" stroke-width="5" stroke-linejoin="round"/><path d="m32 51 12 12 25-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+                blue_seal: '<path d="M0 23h29v12H0zM0 42h24v9H0zM0 58h29v8H0z" fill="#8bd3ff"/><path d="M50 3 60 8l11-2 6 10 11 4-1 12 7 9-6 10 2 11-10 7-3 11-12 1-8 9-10-7-12 3-7-9-12-3-2-12-9-8 4-11-4-11 9-8 3-12 12-2z" fill="#0868ee" stroke="#74c7ff" stroke-width="5" stroke-linejoin="round"/><path d="m32 51 12 12 25-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
+                red_seal: '<path d="M50 3 63 11 78 9 84 23 96 31 93 46 100 59 91 70 90 85 76 91 69 104 54 100 40 106 30 95 15 92 12 77 1 67 5 52 0 39 11 28 14 13 29 11Z" fill="#080808" stroke="#444" stroke-width="3" stroke-linejoin="round"/><path d="M50 11 61 18 74 16 80 28 91 35 88 48 94 59 86 69 85 82 73 87 67 98 54 94 42 100 33 90 20 87 18 74 8 65 12 52 8 41 18 32 21 20 34 18Z" fill="#ed1018" stroke="#b90009" stroke-width="3" stroke-linejoin="round"/><path d="m29 52 13 13 30-34" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff"><path d="m50 12 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m15 55 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m84 57 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m50 83 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>'
             };
             return `<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Admin verified" title="Admin verified">${icons[type]}</svg>`;
         }
@@ -2644,52 +2695,269 @@
         // ============================================
         // SCORE SUBMIT
         // ============================================
-        function submitScore() {
-            if (isScoreSubmitting) return;
+        function createTypingScoreSessionId() {
+            return typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function getTypingDraftKey(userId) {
+            return `typingScoreDraft:${userId}`;
+        }
+
+        function getTypingScoreQueueKey(userId) {
+            return `typingScoreQueue:${userId}`;
+        }
+
+        function setScoreSaveStatus(message, isError = false) {
+            const status = document.getElementById('score-save-status');
+            status.textContent = message;
+            status.classList.toggle('text-red-600', isError);
+            status.classList.toggle('text-slate-600', !isError);
+        }
+
+        function getTypingSessionSnapshot() {
+            return {
+                sessionId: scoreSessionId || (scoreSessionId = createTypingScoreSessionId()),
+                sequence: scoreSessionSequence,
+                typedChars: Number(document.getElementById('live-chars').textContent) || 0,
+                correctChars,
+                mistakes: sessionMistakes,
+                wpm: parseInt(document.getElementById('live-wpm').textContent) || 0,
+                checkpoint: { ...scoreCheckpoint }
+            };
+        }
+
+        function saveTypingDraft() {
+            if (!loggedInUser || !isStarted) return;
+            try {
+                localStorage.setItem(getTypingDraftKey(loggedInUser.id), JSON.stringify(getTypingSessionSnapshot()));
+            } catch (error) {
+                console.error('Could not save the typing progress locally:', error);
+                setScoreSaveStatus('স্থানীয়ভাবে সেভ করা যায়নি', true);
+            }
+        }
+
+        function readPendingTypingScores(userId) {
+            try {
+                const queue = JSON.parse(localStorage.getItem(getTypingScoreQueueKey(userId)) || '[]');
+                if (!Array.isArray(queue)) throw new Error('Saved score queue is invalid.');
+                return queue;
+            } catch (error) {
+                console.error('Could not read pending typing scores:', error);
+                setScoreSaveStatus('অপেক্ষমাণ স্কোর পড়া যায়নি', true);
+                return [];
+            }
+        }
+
+        function writePendingTypingScores(userId, queue) {
+            try {
+                localStorage.setItem(getTypingScoreQueueKey(userId), JSON.stringify(queue));
+                return true;
+            } catch (error) {
+                console.error('Could not store a pending typing score:', error);
+                setScoreSaveStatus('স্কোর স্থানীয়ভাবে সেভ করা যায়নি', true);
+                return false;
+            }
+        }
+
+        function saveTypingScore({ final = false, automatic = false, snapshot = null } = {}) {
             if (!loggedInUser) {
-                openAuth();
+                if (!automatic) openAuth();
                 return;
             }
-            if (!serverTimeOffsetReady) return alert('সার্ভারের সময় নিশ্চিত না হওয়া পর্যন্ত স্কোর সেভ করা যাবে না।');
-            const submitButton = document.getElementById('submit-btn');
-            const wpm = parseInt(document.getElementById('live-wpm').textContent) || 0;
-            const typedLength = parseInt(document.getElementById('live-chars').textContent) || 0;
-            const earned = Math.floor(correctChars / 5);
-            if (earned === 0 && wpm === 0 && typedLength === 0) return alert('প্রথমে টাইপ করুন, তারপর সেভ করুন।');
+            const score = snapshot || getTypingSessionSnapshot();
+            const typedDelta = Math.max(0, score.typedChars - score.checkpoint.typedChars);
+            const earned = Math.max(0, Math.floor(score.correctChars / 5) - Math.floor(score.checkpoint.correctChars / 5));
+            const mistakes = Math.max(0, score.mistakes - score.checkpoint.mistakes);
+            if (typedDelta === 0 && earned === 0 && mistakes === 0) {
+                const queue = readPendingTypingScores(loggedInUser.id);
+                if (final && queue.length) {
+                    queue[queue.length - 1].final = true;
+                    if (!writePendingTypingScores(loggedInUser.id, queue)) return;
+                    processPendingTypingScores();
+                } else if (!automatic) {
+                    alert('প্রথমে টাইপ করুন, তারপর সেভ করুন।');
+                }
+                return;
+            }
 
-            const currentMonth = getCurrentMonthKey();
-            const hasKnownPreviousMonth = /^\d{4}-\d{2}$/.test(loggedInUser.monthlyPointsMonth || '') &&
-                loggedInUser.monthlyPointsMonth < currentMonth;
-            const monthlyPoints = hasKnownPreviousMonth
-                ? 0
-                : (loggedInUser.monthlyPoints || 0);
-            const scoreUpdate = {
-                points: (loggedInUser.points || 0) + earned,
-                monthlyPoints: monthlyPoints + earned,
-                monthlyPointsMonth: currentMonth,
-                mistakes: (loggedInUser.mistakes || 0) + sessionMistakes,
-                bestWpm: Math.max(loggedInUser.bestWpm || 0, wpm)
+            const queue = readPendingTypingScores(loggedInUser.id);
+            const scoreEntry = {
+                id: `${score.sessionId}-${score.sequence}`,
+                sessionId: score.sessionId,
+                userId: loggedInUser.id,
+                earned,
+                mistakes,
+                wpm: score.wpm,
+                final,
+                createdAt: Date.now()
             };
+            const existingEntry = queue.find(entry => entry.id === scoreEntry.id);
+            if (existingEntry) {
+                if (final) {
+                    existingEntry.final = true;
+                    if (writePendingTypingScores(loggedInUser.id, queue)) processPendingTypingScores();
+                }
+                return;
+            }
+            queue.push(scoreEntry);
+            if (!writePendingTypingScores(loggedInUser.id, queue)) return;
 
-            isScoreSubmitting = true;
-            submitButton.disabled = true;
-            submitButton.textContent = 'Saving...';
-            db.ref('users/' + loggedInUser.id).update(scoreUpdate
-            ).then(() => {
-                Object.assign(loggedInUser, scoreUpdate);
-                isScoreSubmitting = false;
-                submitButton.disabled = false;
-                submitButton.textContent = '💾 Save';
+            if (score.sessionId === scoreSessionId) {
+                scoreCheckpoint = { typedChars: score.typedChars, correctChars: score.correctChars, mistakes: score.mistakes };
+                scoreSessionSequence = score.sequence + 1;
+                saveTypingDraft();
+            }
+            if (final && score.sessionId === scoreSessionId) {
+                document.getElementById('typing-input').disabled = true;
+                document.getElementById('submit-btn').disabled = true;
+                setScoreSaveStatus('স্কোর সেভ হচ্ছে…');
+            }
+            if (isFirebaseConnected) {
+                setScoreSaveStatus(final ? 'স্কোর সেভ হচ্ছে…' : 'টাইপিং অগ্রগতি সেভ হচ্ছে…');
+                processPendingTypingScores();
+            } else {
+                setScoreSaveStatus('নেট ফিরলে স্কোর অটো-সেভ হবে');
+            }
+        }
+
+        function recoverSavedTypingDraft() {
+            if (!loggedInUser) return;
+            let draft;
+            try {
+                const serializedDraft = localStorage.getItem(getTypingDraftKey(loggedInUser.id));
+                if (!serializedDraft) return;
+                draft = JSON.parse(serializedDraft);
+            } catch (error) {
+                console.error('Could not restore the saved typing draft:', error);
+                setScoreSaveStatus('আগের টাইপিং অগ্রগতি পড়া যায়নি', true);
+                return;
+            }
+            if (!draft || !draft.sessionId || !draft.checkpoint) return;
+            saveTypingScore({ final: true, automatic: true, snapshot: draft });
+        }
+
+        function applySavedTypingProfile(snapshot) {
+            if (!loggedInUser || !snapshot) return;
+            Object.assign(loggedInUser, snapshot);
+            try {
                 localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
-                submitButton.classList.add('hidden');
-                resetTyping();
-                alert('🎉 অভিনন্দন! সেভ সম্পন্ন হয়েছে। +' + earned + ' পয়েন্ট, WPM: ' + wpm);
-            }).catch(err => {
-                console.error('Save failed:', err);
+            } catch (error) {
+                console.error('Could not update the locally saved user profile:', error);
+            }
+            const userIndex = allUsers.findIndex(user => String(user.id) === String(loggedInUser.id));
+            if (userIndex >= 0) allUsers[userIndex] = { ...allUsers[userIndex], ...snapshot };
+            updateNav();
+            renderLeaderboard(allUsers);
+        }
+
+        function commitTypingScore(scoreEntry) {
+            const userRef = db.ref('users/' + scoreEntry.userId);
+            return new Promise((resolve, reject) => {
+                userRef.transaction(user => {
+                    if (!user) return;
+                    const receipts = user.typingScoreReceipts || {};
+                    if (receipts[scoreEntry.id]) return user;
+
+                    const currentMonth = getCurrentMonthKey();
+                    const previousMonth = /^\d{4}-\d{2}$/.test(user.monthlyPointsMonth || '') &&
+                        user.monthlyPointsMonth < currentMonth;
+                    const nextReceipts = { ...receipts, [scoreEntry.id]: scoreEntry.createdAt };
+                    const receiptIds = Object.keys(nextReceipts);
+                    if (receiptIds.length > 200) {
+                        receiptIds.sort((a, b) => nextReceipts[a] - nextReceipts[b]);
+                        receiptIds.slice(0, receiptIds.length - 200).forEach(id => delete nextReceipts[id]);
+                    }
+
+                    return {
+                        ...user,
+                        points: (Number(user.points) || 0) + scoreEntry.earned,
+                        monthlyPoints: (previousMonth ? 0 : Number(user.monthlyPoints) || 0) + scoreEntry.earned,
+                        monthlyPointsMonth: currentMonth,
+                        mistakes: (Number(user.mistakes) || 0) + scoreEntry.mistakes,
+                        bestWpm: Math.max(Number(user.bestWpm) || 0, scoreEntry.wpm),
+                        typingScoreReceipts: nextReceipts
+                    };
+                }, (error, committed, snapshot) => {
+                    if (error) {
+                        reject(error);
+                    } else if (!committed && !(snapshot.val() && snapshot.val().typingScoreReceipts && snapshot.val().typingScoreReceipts[scoreEntry.id])) {
+                        reject(new Error('The score transaction was not committed.'));
+                    } else {
+                        resolve(snapshot.val());
+                    }
+                }, false);
+            });
+        }
+
+        async function processPendingTypingScores() {
+            if (isScoreQueueProcessing || !isFirebaseConnected || !serverTimeOffsetReady || !loggedInUser) return;
+            isScoreQueueProcessing = true;
+            try {
+                let queue = readPendingTypingScores(loggedInUser.id);
+                while (queue.length && isFirebaseConnected && loggedInUser) {
+                    const scoreEntry = queue[0];
+                    if (scoreEntry.userId !== loggedInUser.id) break;
+                    isScoreSubmitting = true;
+                    document.getElementById('submit-btn').disabled = true;
+                    document.getElementById('submit-btn').textContent = 'Saving...';
+                    const savedUser = await commitTypingScore(scoreEntry);
+                    applySavedTypingProfile(savedUser);
+                    queue = readPendingTypingScores(loggedInUser.id);
+                    queue = queue.filter(entry => entry.id !== scoreEntry.id);
+                    if (!writePendingTypingScores(loggedInUser.id, queue)) break;
+                    if (scoreEntry.final) {
+                        try {
+                            const draftKey = getTypingDraftKey(loggedInUser.id);
+                            const draft = JSON.parse(localStorage.getItem(draftKey) || 'null');
+                            if (draft && draft.sessionId === scoreEntry.sessionId) localStorage.removeItem(draftKey);
+                        } catch (error) {
+                            console.error('Could not clear the completed typing draft:', error);
+                        }
+                        if (scoreEntry.sessionId === scoreSessionId) {
+                            document.getElementById('submit-btn').classList.add('hidden');
+                            resetTyping();
+                        }
+                        setScoreSaveStatus('স্কোর অটো-সেভ হয়েছে');
+                    } else {
+                        setScoreSaveStatus('টাইপিং অগ্রগতি অটো-সেভ হয়েছে');
+                    }
+                }
+            } catch (error) {
+                console.error('Automatic typing score save failed:', error);
+                setScoreSaveStatus(isFirebaseConnected ? 'স্কোর সেভ হয়নি—আবার চেষ্টা হবে' : 'নেট ফিরলে স্কোর অটো-সেভ হবে', true);
+            } finally {
                 isScoreSubmitting = false;
-                submitButton.disabled = false;
-                submitButton.textContent = '💾 Save';
-                alert('❌ সেভ করতে পারিনি, আবার চেষ্টা করুন।');
+                document.getElementById('submit-btn').disabled = false;
+                document.getElementById('submit-btn').textContent = '💾 Save';
+                isScoreQueueProcessing = false;
+            }
+        }
+
+        function submitScore() {
+            saveTypingScore({ final: true });
+        }
+
+        function listenForTypingScoreConnection() {
+            db.ref('.info/connected').on('value', snapshot => {
+                isFirebaseConnected = snapshot.val() === true;
+                if (!isFirebaseConnected) {
+                    if (isStarted) saveTypingDraft();
+                    if (loggedInUser && readPendingTypingScores(loggedInUser.id).length) {
+                        setScoreSaveStatus('নেট ফিরলে স্কোর অটো-সেভ হবে');
+                    }
+                    return;
+                }
+                if (loggedInUser) {
+                    if (!isStarted) recoverSavedTypingDraft();
+                    if (isStarted) saveTypingScore({ automatic: true });
+                    processPendingTypingScores();
+                }
+            }, error => {
+                console.error('Score save connection listener failed:', error);
+                isFirebaseConnected = false;
+                setScoreSaveStatus('নেট ফিরলে স্কোর অটো-সেভ হবে', true);
             });
         }
 
@@ -2738,6 +3006,7 @@
                 history.replaceState(null, '', cleanUrl);
             }
             console.log('🚀 App starting...');
+            listenForTypingScoreConnection();
             setupMessageNotifications();
             document.addEventListener('fullscreenchange', updatePracticeFullscreenButton);
             setLanguage(localStorage.getItem('preferredLanguage') || 'en');
@@ -2781,7 +3050,11 @@
                             loggedInUser = null;
                             updateNav();
                         }
-                    }).catch(err => console.error('Session restore failed:', err));
+                    }).catch(err => {
+                        console.error('Session restore failed:', err);
+                        recoverSavedTypingDraft();
+                        processPendingTypingScores();
+                    });
                 } catch(e) {
                     localStorage.removeItem('currentUser');
                     loggedInUser = null;
@@ -2884,7 +3157,9 @@
                 for (let i = commonPrefix; i < Math.min(displayChars.length, Math.max(previousTypedChars.length, typed.length) + 1); i++) {
                     const span = displayChars[i];
                     const actual = typed[i];
-                    if (i === typed.length) {
+                    if (typingLang === 'bn') {
+                        span.className = 'char';
+                    } else if (i === typed.length) {
                         span.className = 'char current';
                     } else if (actual == null) {
                         span.className = 'char';
@@ -2923,6 +3198,7 @@
                 if (typed.length > 0 && typed.length === displayChars.length) {
                     document.getElementById('submit-btn').classList.remove('hidden');
                 }
+                saveTypingDraft();
                 const currentChar = displayChars[typed.length];
                 if (currentChar) {
                     const displayBox = document.getElementById('display-box');
