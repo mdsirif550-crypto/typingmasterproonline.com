@@ -552,9 +552,28 @@
 
         <div id="time-up-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="time-up-title" aria-describedby="time-up-message">
             <div class="modal-box text-center">
-                <h2 id="time-up-title">Time is up!</h2>
-                <p id="time-up-message" class="mb-5 text-sm font-bold leading-relaxed text-slate-700" aria-live="polite"></p>
-                <button type="button" onclick="closeTimeUpNotice()" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-black text-white hover:bg-blue-700">Continue</button>
+                <h2 id="time-up-title">সময় শেষ!</h2>
+                <div class="mb-4 grid grid-cols-3 gap-2" aria-label="এই অনুশীলনের ফলাফল">
+                    <div class="rounded-xl bg-emerald-50 p-3">
+                        <p id="time-up-characters" class="text-xl font-black text-emerald-700">0</p>
+                        <p class="text-[10px] font-bold text-slate-600">অক্ষর</p>
+                    </div>
+                    <div class="rounded-xl bg-blue-50 p-3">
+                        <p id="time-up-wpm" class="text-xl font-black text-blue-700">0</p>
+                        <p class="text-[10px] font-bold text-slate-600">WPM</p>
+                    </div>
+                    <div class="rounded-xl bg-red-50 p-3">
+                        <p id="time-up-mistakes" class="text-xl font-black text-red-600">0</p>
+                        <p class="text-[10px] font-bold text-slate-600">ভুল</p>
+                    </div>
+                    <div class="rounded-xl bg-amber-50 p-3">
+                        <p id="time-up-points" class="text-xl font-black text-amber-700">0</p>
+                        <p class="text-[10px] font-bold text-slate-600">পয়েন্ট</p>
+                    </div>
+                </div>
+                <p id="time-up-message" class="mb-2 text-sm font-bold leading-relaxed text-slate-700" aria-live="polite"></p>
+                <p id="time-up-rank-message" class="mb-5 text-sm font-black leading-relaxed text-emerald-700" aria-live="polite"></p>
+                <button type="button" onclick="closeTimeUpNotice()" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-black text-white hover:bg-blue-700">আবার টাইপ করুন · Continue</button>
             </div>
         </div>
 
@@ -949,6 +968,9 @@
         let previousTypedChars = [];
         let timeUpNoticeSessionId = null;
         let timeUpNoticePoints = 0;
+        let timeUpNoticeWpm = 0;
+        let timeUpNoticeMistakes = 0;
+        let timeUpNoticeCharacters = 0;
 
         // ============================================
         // LEVEL SYSTEM
@@ -1694,6 +1716,9 @@
                     if (typingLang === 'en') {
                         timeUpNoticeSessionId = scoreSessionId;
                         timeUpNoticePoints = Math.floor(correctChars / 5);
+                        timeUpNoticeWpm = Number(document.getElementById('live-wpm').textContent) || 0;
+                        timeUpNoticeMistakes = sessionMistakes;
+                        timeUpNoticeCharacters = Number(document.getElementById('live-chars').textContent) || 0;
                     }
                     saveTypingScore({ final: true, automatic: true });
                     if (typingLang === 'en') {
@@ -1712,17 +1737,33 @@
 
         function updateTimeUpNotice(saveState) {
             const message = document.getElementById('time-up-message');
-            const points = `${timeUpNoticePoints} ${timeUpNoticePoints === 1 ? 'point' : 'points'}`;
+            const rankMessage = document.getElementById('time-up-rank-message');
+            document.getElementById('time-up-characters').textContent = timeUpNoticeCharacters;
+            document.getElementById('time-up-wpm').textContent = timeUpNoticeWpm;
+            document.getElementById('time-up-mistakes').textContent = timeUpNoticeMistakes;
+            document.getElementById('time-up-points').textContent = timeUpNoticePoints;
             const saveMessage = saveState === 'saved'
-                ? `${points} saved.`
+                ? 'আপনার পয়েন্ট সেভ হয়েছে।'
                 : saveState === 'offline'
-                    ? `Your score of ${points} is saved on this device. It will sync when you are back online.`
-                    : `Your score of ${points} is being saved.`;
-            message.textContent = `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
+                    ? 'ইন্টারনেট এলে আপনার স্কোর সিঙ্ক হবে।'
+                    : 'আপনার স্কোর সেভ হচ্ছে…';
+            message.textContent = saveMessage;
+            if (saveState === 'saved' && loggedInUser) {
+                const rank = getRank(loggedInUser.id);
+                rankMessage.textContent = rank && rank <= 10
+                    ? `অভিনন্দন! আপনি লিডারবোর্ডের Top 10-এ আছেন (#${rank})।`
+                    : 'Top 10-এ জায়গা করতে আবার টাইপ করুন!';
+            } else if (saveState === 'offline') {
+                rankMessage.textContent = 'স্কোর সিঙ্ক হলে আপনার Top 10 অবস্থান দেখা যাবে।';
+            } else {
+                rankMessage.textContent = 'Top 10-এ জায়গা করতে আবার টাইপ করুন!';
+            }
         }
 
         function closeTimeUpNotice() {
             document.getElementById('time-up-modal').classList.remove('active');
+            resetTyping({ preserveDraft: true });
+            document.getElementById('typing-input').focus();
         }
 
         // ============================================
@@ -3168,7 +3209,8 @@
                         } catch (error) {
                             console.error('Could not clear the completed typing draft:', error);
                         }
-                        if (scoreEntry.sessionId === scoreSessionId) {
+                        if (scoreEntry.sessionId === scoreSessionId &&
+                            !document.getElementById('time-up-modal').classList.contains('active')) {
                             document.getElementById('submit-btn').classList.add('hidden');
                             resetTyping();
                         }
