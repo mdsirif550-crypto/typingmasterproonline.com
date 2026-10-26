@@ -221,6 +221,25 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+        #time-up-modal .time-up-result-box { max-width: 560px; padding: 28px; border: 2px solid #c4b5fd; background: linear-gradient(145deg, #ffffff, #f5f3ff 55%, #eff6ff); box-shadow: 0 28px 80px rgba(30, 27, 75, 0.38); }
+        #time-up-modal .time-up-result-title { margin-bottom: 5px; color: #312e81; font-size: 22px; letter-spacing: 0.02em; }
+        #time-up-modal .time-up-result-subtitle { margin-bottom: 20px; color: #64748b; font-size: 12px; font-weight: 800; }
+        #time-up-modal .time-up-result-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+        #time-up-modal .time-up-metric { min-width: 0; padding: 14px 8px 12px; border: 1px solid transparent; border-radius: 16px; box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08); }
+        #time-up-modal .time-up-metric-value { margin: 0; font-size: clamp(20px, 5vw, 28px); font-weight: 1000; line-height: 1.1; font-variant-numeric: tabular-nums; }
+        #time-up-modal .time-up-metric-label { margin: 5px 0 0; font-size: 10px; font-weight: 900; letter-spacing: 0.04em; }
+        #time-up-modal .time-up-metric-characters { border-color: #a7f3d0; background: linear-gradient(145deg, #ecfdf5, #d1fae5); color: #047857; }
+        #time-up-modal .time-up-metric-wpm { border-color: #bfdbfe; background: linear-gradient(145deg, #eff6ff, #dbeafe); color: #1d4ed8; }
+        #time-up-modal .time-up-metric-mistakes { border-color: #fecaca; background: linear-gradient(145deg, #fff1f2, #ffe4e6); color: #dc2626; }
+        #time-up-modal .time-up-metric-points { border-color: #fde68a; background: linear-gradient(145deg, #fffbeb, #fef3c7); color: #b45309; }
+        #time-up-modal .time-up-save-message { min-height: 24px; color: #334155; font-size: 13px; font-weight: 900; }
+        #time-up-modal .time-up-rank-message { min-height: 24px; margin: 7px 0 17px; color: #047857; font-size: 13px; font-weight: 1000; }
+        #time-up-modal .time-up-continue-button { min-width: 180px; padding: 11px 22px; border: 0; border-radius: 12px; background: linear-gradient(100deg, #4f46e5, #2563eb); color: white; font: inherit; font-size: 13px; font-weight: 1000; box-shadow: 0 7px 18px rgba(37, 99, 235, 0.3); cursor: pointer; }
+        #time-up-modal .time-up-continue-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+        @media (max-width: 480px) {
+            #time-up-modal .time-up-result-box { padding: 22px 16px; }
+            #time-up-modal .time-up-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        }
         #conjunct-notice-modal .modal-box { max-width: min(760px, calc(100vw - 32px)); }
         .conjunct-table-wrap { max-height: 55vh; overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; }
         .conjunct-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
@@ -551,29 +570,30 @@
         </div>
 
         <div id="time-up-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="time-up-title" aria-describedby="time-up-message">
-            <div class="modal-box text-center">
-                <h2 id="time-up-title">সময় শেষ!</h2>
-                <div class="mb-4 grid grid-cols-3 gap-2" aria-label="এই অনুশীলনের ফলাফল">
-                    <div class="rounded-xl bg-emerald-50 p-3">
-                        <p id="time-up-characters" class="text-xl font-black text-emerald-700">0</p>
-                        <p class="text-[10px] font-bold text-slate-600">অক্ষর</p>
+            <div class="modal-box time-up-result-box text-center">
+                <h2 id="time-up-title" class="time-up-result-title">🏁 অনুশীলন শেষ!</h2>
+                <p class="time-up-result-subtitle">আপনার টাইপিং ফলাফল</p>
+                <div class="time-up-result-grid" aria-label="এই অনুশীলনের ফলাফল">
+                    <div class="time-up-metric time-up-metric-characters">
+                        <p id="time-up-characters" class="time-up-metric-value">0</p>
+                        <p class="time-up-metric-label">অক্ষর</p>
                     </div>
-                    <div class="rounded-xl bg-blue-50 p-3">
-                        <p id="time-up-wpm" class="text-xl font-black text-blue-700">0</p>
-                        <p class="text-[10px] font-bold text-slate-600">WPM</p>
+                    <div class="time-up-metric time-up-metric-wpm">
+                        <p id="time-up-wpm" class="time-up-metric-value">0</p>
+                        <p class="time-up-metric-label">WPM</p>
                     </div>
-                    <div class="rounded-xl bg-red-50 p-3">
-                        <p id="time-up-mistakes" class="text-xl font-black text-red-600">0</p>
-                        <p class="text-[10px] font-bold text-slate-600">ভুল</p>
+                    <div class="time-up-metric time-up-metric-mistakes">
+                        <p id="time-up-mistakes" class="time-up-metric-value">0</p>
+                        <p class="time-up-metric-label">ভুল</p>
                     </div>
-                    <div class="rounded-xl bg-amber-50 p-3">
-                        <p id="time-up-points" class="text-xl font-black text-amber-700">0</p>
-                        <p class="text-[10px] font-bold text-slate-600">পয়েন্ট</p>
+                    <div class="time-up-metric time-up-metric-points">
+                        <p id="time-up-points" class="time-up-metric-value">0</p>
+                        <p class="time-up-metric-label">পয়েন্ট</p>
                     </div>
                 </div>
-                <p id="time-up-message" class="mb-2 text-sm font-bold leading-relaxed text-slate-700" aria-live="polite"></p>
-                <p id="time-up-rank-message" class="mb-5 text-sm font-black leading-relaxed text-emerald-700" aria-live="polite"></p>
-                <button type="button" onclick="closeTimeUpNotice()" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-black text-white hover:bg-blue-700">আবার টাইপ করুন · Continue</button>
+                <p id="time-up-message" class="time-up-save-message" aria-live="polite"></p>
+                <p id="time-up-rank-message" class="time-up-rank-message" aria-live="polite"></p>
+                <button type="button" onclick="closeTimeUpNotice()" class="time-up-continue-button">আবার টাইপ করুন · Continue</button>
             </div>
         </div>
 
@@ -935,7 +955,6 @@
         let typingLang = 'en';
         let currentLanguage = 'en';
         let isStarted = false, startTime = null, sessionMistakes = 0, correctChars = 0;
-        let typingSpeedSamples = [];
         let timeLeft = 300, timerInterval = null, isTimeOver = false;
         let helpListener = null;
         let helpListenerCallback = null;
@@ -1678,7 +1697,6 @@
             isStarted = false;
             isTimeOver = false;
             startTime = null;
-            typingSpeedSamples = [];
             timeLeft = 300;
             sessionMistakes = 0;
             correctChars = 0;
@@ -3443,7 +3461,6 @@
                 if (!isStarted) {
                     isStarted = true;
                     startTimer();
-                    typingSpeedSamples = [{ time: startTime, correctChars: 0 }];
                 }
                 const typed = splitGraphemes(normalizeTypingText(this.value));
                 let commonPrefix = 0;
@@ -3477,16 +3494,9 @@
                 }
                 previousTypedChars = typed;
                 const now = Date.now();
-                typingSpeedSamples.push({ time: now, correctChars });
-                while (typingSpeedSamples.length > 1 &&
-                    typingSpeedSamples[1].time <= now - 10000) {
-                    typingSpeedSamples.shift();
-                }
-                const firstSample = typingSpeedSamples[0];
-                const elapsedMs = now - firstSample.time;
-                const correctCharsInWindow = Math.max(0, correctChars - firstSample.correctChars);
-                const wpm = elapsedMs >= 1000
-                    ? Math.round((correctCharsInWindow / 5) / (elapsedMs / 60000))
+                const elapsedMs = now - startTime;
+                const wpm = elapsedMs >= 5000
+                    ? Math.round((correctChars / 5) / (elapsedMs / 60000))
                     : 0;
                 setTypingStatus(true, wpm);
                 const accuracy = typed.length > 0 ? Math.max(0, Math.round((correctChars / typed.length) * 100)) : 0;
