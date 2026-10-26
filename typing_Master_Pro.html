@@ -1,38 +1,28 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bng">
 <head>
       <!-- Google tag (gtag.js) - ট্র্যাকিং সচল রাখার জন্য -->
   <script async src="https://googletagmanager.com"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag()){dataLayer.push(arguments);}
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-0LGMNWJX19');
   </script>
 
   <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Live Typing Leaderboard &amp; Chat | English and Bangla</title>
-  <meta name="description" content="Take a free English or Bangla typing test. Practice Bijoy 52, track live speed and accuracy, message typists, and join leaderboard competitions.">
-  <meta name="keywords" content="live typing leaderboard, online typing competition, live typing test, English typing test, Bangla typing test, Bijoy 52 practice, typing speed test, typing chat, message other typists, typing contest, typing leaderboard Bangladesh, free typing practice">
+  <title>TypingMaster Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
+  <meta name="description" content="Start your premium typing practice on TypingMaster Pro Board. Improve your typing speed in English &amp; Bangla Bijoy 52 without any distraction.">
+  <meta name="keywords" content="typing master pro board, online typing board, bangla typing practice, english typing master pro, wpm booster, typing pro version">
   <meta name="author" content="TypingMaster Pro Online">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <link rel="canonical" href="https://typingmasterproonline.com/typing_Master_Pro.html">
+  <link rel="canonical" href="https://typingmasterproonline.com">
   
   <!-- সোশ্যাল মিডিয়া ও গুগলে আসল লোগো (logo.png) দেখানোর লিংকসমূহ -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="TypingMaster Pro Online">
-  <meta property="og:title" content="Live Typing Leaderboard &amp; Chat | English and Bangla">
-  <meta property="og:description" content="Take a free English or Bangla typing test. Practice Bijoy 52, track live speed, message typists, and join leaderboard competitions.">
-  <meta property="og:url" content="https://typingmasterproonline.com/typing_Master_Pro.html">
-  <meta property="og:image" content="https://typingmasterproonline.com/logo.png">
-  <meta property="og:image:alt" content="TypingMaster Pro Online Logo">
-  <meta property="og:locale" content="en_BD">
-  <meta property="og:locale:alternate" content="bn_BD">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Live Typing Leaderboard &amp; Chat | English and Bangla">
-  <meta name="twitter:description" content="Take a free English or Bangla typing test. Practice Bijoy 52, track live speed, and compete on the leaderboard.">
-  <meta name="twitter:image" content="https://typingmasterproonline.com/logo.png">
+  <meta property="og:title" content="TypingMaster Pro Board ⌨️🔥 - Test Your Speed">
+  <meta property="og:description" content="Advance Typing Practice Mode - Live WPM &amp; Accuracy Tracker">
+  <meta property="og:url" content="https://typingmasterproonline.com">
+  <meta property="og:image" content="https://typingmasterproonline.com">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
@@ -1709,12 +1699,7 @@
                     if (typingLang === 'en') {
                         const hasPendingSessionScore = loggedInUser &&
                             readPendingTypingScores(loggedInUser.id).some(entry => entry.sessionId === timeUpNoticeSessionId);
-                        const saveState = !loggedInUser
-                            ? 'login'
-                            : !hasPendingSessionScore
-                                ? 'saved'
-                                : isFirebaseConnected ? 'saving' : 'offline';
-                        showTimeUpNotice(saveState);
+                        showTimeUpNotice(!hasPendingSessionScore ? 'saved' : isFirebaseConnected ? 'saving' : 'offline');
                     }
                 }
             }, 1000);
@@ -1730,14 +1715,10 @@
             const points = `${timeUpNoticePoints} ${timeUpNoticePoints === 1 ? 'point' : 'points'}`;
             const saveMessage = saveState === 'saved'
                 ? `${points} saved.`
-                : saveState === 'login'
-                    ? `You earned ${points} in practice. Log in, then tap Save to add your score to the leaderboard.`
                 : saveState === 'offline'
                     ? `Your score of ${points} is saved on this device. It will sync when you are back online.`
                     : `Your score of ${points} is being saved.`;
-            message.textContent = saveState === 'login'
-                ? `Your time is up! ${saveMessage}`
-                : `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
+            message.textContent = `Your time is up! ${saveMessage} Type again to stay in the leaderboard Top 10!`;
         }
 
         function closeTimeUpNotice() {
@@ -1819,16 +1800,18 @@
 
         function logout() {
             stopMessagingListeners();
+            closeMessages();
+            closeAuth();
             if (loggedInUser) {
                 const presenceRef = db.ref('online_users/' + loggedInUser.id + '/connections/' + presenceSessionId);
                 localStorage.removeItem('currentUser');
                 loggedInUser = null;
                 updateNav();
-                presenceRef.remove().finally(() => location.reload());
-                return;
+                presenceRef.remove().catch(error => console.error('Could not clear user presence during logout:', error));
+            } else {
+                localStorage.removeItem('currentUser');
+                updateNav();
             }
-            localStorage.removeItem('currentUser');
-            location.reload();
         }
 
         function updateNav() {
@@ -3406,6 +3389,11 @@
                 }
             }, { passive: true });
             typingInput.addEventListener('input', function() {
+                if (!loggedInUser) {
+                    this.value = '';
+                    openAuth();
+                    return;
+                }
                 if (isTimeOver) {
                     this.value = this.value.substring(0, 0);
                     return;
