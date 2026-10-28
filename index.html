@@ -217,6 +217,8 @@
     .home-top-three-countdown { color: #e2e8f0; font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .home-top-three-join { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(255,255,255,0.28); border-radius: 999px; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); box-shadow: 0 2px 7px rgba(184, 134, 11, 0.28); color: #111; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
     .home-top-three-join:hover { filter: brightness(1.08); }
+    .home-top-three-sky { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(125,211,252,0.45); border-radius: 999px; background: linear-gradient(135deg, #0369a1, #0e7490); color: #fff; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
+    .home-top-three-sky:hover { filter: brightness(1.12); }
     .home-top-three-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 7px; }
     .home-top-player { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 3px; padding: 6px; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: linear-gradient(160deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.8)); color: #fff; text-align: center; text-decoration: none; }
     .home-top-player[data-rank="1"] { order: 2; border-color: rgba(250, 204, 21, 0.55); background: linear-gradient(160deg, rgba(120, 83, 17, 0.42), rgba(30, 41, 59, 0.88)); }
@@ -383,6 +385,7 @@
       .home-top-three-subtitle { font-size: 8px; }
       .home-top-three-countdown { font-size: 9px; }
       .home-top-three-join { padding: 5px 6px; font-size: 9px; }
+      .home-top-three-sky { padding: 5px 6px; font-size: 9px; }
       .home-top-three-header .home-top-three-title { flex: 0 0 100%; }
       .home-top-three-list { gap: 5px; }
       .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -521,6 +524,8 @@
       </div>
       <div class="welcome-banner-controls">
         <a class="welcome-banner-about" href="/about.html">About Us</a>
+        <a class="home-top-three-join" href="typing_Master_Pro.html"><span aria-hidden="true">👑</span>Join Leaderboard - Click Here</a>
+        <a class="home-top-three-sky" href="typing_sky_game.html"><span aria-hidden="true">✈️</span>Typing Sky Game</a>
         <div class="adu-office-app-widget" id="aduOfficeAppWidget">
           <a class="adu-office-app-link" href="https://play.google.com/store/apps/details?id=com.smart.aduoffice" target="_blank" rel="noopener noreferrer" aria-label="Google Play-এ Adu Office অ্যাপ ডাউনলোড করুন">
             <img src="adu-office-logo.png" alt="Adu Office logo">
@@ -615,7 +620,6 @@
     <section class="home-top-three" aria-labelledby="home-top-three-title">
       <div class="home-top-three-header">
         <h2 class="home-top-three-title" id="home-top-three-title">🏆 Leaderboard Top 3</h2>
-        <a class="home-top-three-join" href="typing_Master_Pro.html"><span aria-hidden="true">👑</span>Join Leaderboard - Click Here</a>
         <div class="home-top-three-subtitle"><span>Monthly points</span><time class="home-top-three-countdown" id="homeTopThreeCountdown" aria-label="Monthly event time remaining"></time></div>
       </div>
       <div class="home-top-three-status" id="homeTopThreeStatus" role="status" aria-live="polite">Loading leaderboard...</div>
@@ -790,9 +794,12 @@
 
     function renderHomeVerifiedBadge(user) {
       if (user.verifiedBadge !== true) return "";
-      const type = ["profile_star", "gold_check", "winged_check", "blue_seal", "red_seal"].includes(user.verifiedBadgeType)
+      const type = ["profile_star", "gold_check", "winged_check", "blue_seal", "red_seal", "blue_tick_mark"].includes(user.verifiedBadgeType)
         ? user.verifiedBadgeType
         : "profile_star";
+      if (type === "blue_tick_mark") {
+        return '<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Blue Tick Mark" title="Blue Tick Mark"><image href="blue-tick-mark-transparent.png" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></svg>';
+      }
       const icons = {
         profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
         gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
