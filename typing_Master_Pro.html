@@ -399,6 +399,7 @@
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
                 <a href="index.html" class="bg-slate-800 text-white px-3 py-1 rounded-lg font-bold text-[9px] uppercase hover:bg-slate-900">Home</a>
+                <a href="typing_sky_game.html" class="bg-sky-600 text-white px-3 py-1 rounded-lg font-bold text-[9px] uppercase hover:bg-sky-700 whitespace-nowrap" aria-label="Open Typing Sky Game">✈️ Sky Game</a>
                 <h1 class="text-sm font-black italic uppercase text-slate-800">typing<span class="text-blue-600">Leaderboard🏆</span></h1>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
@@ -2139,9 +2140,12 @@
 
         function renderVerifiedBadge(user) {
             if (user.verifiedBadge !== true) return '';
-            const type = ['profile_star', 'gold_check', 'winged_check', 'blue_seal', 'red_seal'].includes(user.verifiedBadgeType)
+            const type = ['profile_star', 'gold_check', 'winged_check', 'blue_seal', 'red_seal', 'blue_tick_mark'].includes(user.verifiedBadgeType)
                 ? user.verifiedBadgeType
                 : 'profile_star';
+            if (type === 'blue_tick_mark') {
+                return '<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Blue Tick Mark" title="Blue Tick Mark"><image href="blue-tick-mark-transparent.png" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></svg>';
+            }
             const icons = {
                 profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
                 gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
