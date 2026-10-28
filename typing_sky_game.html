@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Sky Game — Learn & Fly</title>
+<style>
+:root{--blue:#1677ef;--navy:#12345a;--sky:#dff3ff;--green:#16a765;--red:#e94f70;--gold:#ffbf24}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(180deg,#dff4ff,#f5fbff);color:#17365d;min-height:100vh}
+.wrap{max-width:1150px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#1687ff,#70d6ff);display:grid;place-items:center;font-size:29px;box-shadow:0 8px 20px #1687ff33}
+h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font-size:14px}
+.pill{display:flex;align-items:center;gap:12px;border:1px solid #c9e5fa;border-radius:999px;padding:9px 14px;background:#ffffffbd;font-weight:700;font-size:13px}
+.leaderboard-sync{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;padding:9px 12px;border:1px solid #cfe7f9;border-radius:14px;background:#ffffffc9;color:#526b83;font-size:13px}
+.leaderboard-sync a{color:#1454a0;font-weight:800;text-decoration:underline}
+.leaderboard-sync .sync-error{color:#bb273c}
+.sky-leaderboard{margin:-5px 0 14px;padding:8px 10px;border:1px solid #cfe7f9;border-radius:14px;background:#ffffffc9}
+.sky-leaderboard-heading{margin:0 0 6px;color:#164d8b;font-size:12px;font-weight:850}
+.sky-leaderboard-status{margin:0;color:#6a819a;font-size:11px;text-align:center}
+.sky-leaderboard-status[hidden],.sky-leaderboard-list[hidden]{display:none}
+.sky-leaderboard-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sky-top-player{display:flex;min-width:0;align-items:center;gap:6px;padding:5px 7px;border:1px solid #d7eaf9;border-radius:10px;background:linear-gradient(135deg,#fff,#f2f8ff);color:#17365d;text-decoration:none}
+.sky-top-player[data-rank="1"]{border-color:#edc846;background:linear-gradient(135deg,#fff9dc,#fff)}
+.sky-top-player-avatar{width:28px;height:28px;flex:0 0 28px;border:1px solid #cfe4f6;border-radius:50%;object-fit:cover;background:#fff}
+.sky-top-player-info{display:grid;min-width:0;gap:1px}
+.sky-top-player-rank{color:#9a6b00;font-size:9px;font-weight:900}
+.sky-top-player-name{overflow:hidden;font-size:10px;font-weight:850;text-overflow:ellipsis;white-space:nowrap}
+.sky-top-player-points{color:#18714c;font-size:9px;font-weight:750}
+.sky-current-player{display:flex;align-items:center;gap:8px;margin-top:6px;padding:6px 8px;border:1px solid #8fc9fa;border-radius:10px;background:linear-gradient(100deg,#e8f5ff,#f7fbff);color:#17365d}
+.sky-current-player[hidden]{display:none}
+.sky-current-player-avatar{width:32px;height:32px;flex:0 0 32px;border:2px solid #3b91e8;border-radius:50%;object-fit:cover;background:#fff}
+.sky-current-player-info{display:flex;min-width:0;flex:1;align-items:center;gap:8px}
+.sky-current-player-label{color:#165b9e;font-size:10px;font-weight:900;white-space:nowrap}
+.sky-current-player-name{overflow:hidden;font-size:10px;font-weight:850;text-overflow:ellipsis;white-space:nowrap}
+.sky-current-player-rank{margin-left:auto;color:#124d8b;font-size:11px;font-weight:900;white-space:nowrap}
+.sky-current-player-points{color:#18714c;font-size:9px;font-weight:750;white-space:nowrap}
+.countdown{position:absolute;top:12px;left:12px;z-index:6;min-width:58px;padding:7px 11px;border:1px solid #ffffff99;border-radius:10px;background:#101c35ed;color:#fff;text-align:center;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;box-shadow:0 4px 14px #0008}
+.countdown.running{background:#1677ef}.countdown.urgent{background:#d9364f;animation:countdown-pulse .8s ease-in-out infinite alternate}
+@keyframes countdown-pulse{to{box-shadow:0 0 16px #ff4f68}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.stat{background:#fff;border:1px solid #d7eaf9;border-radius:17px;padding:15px;text-align:center;box-shadow:0 5px 18px #2c75a30b}
+.stat .label{font-size:12px;color:#6a819a;font-weight:700}.stat .value{font-size:clamp(22px,3vw,30px);font-weight:850;color:#154d8c;margin-top:3px}.stat small{color:#7288a0}
+.game{background:#fff;border:1px solid #cfe7f9;border-radius:24px;overflow:hidden;box-shadow:0 12px 35px #1e679015}
+.sky{height:285px;position:relative;overflow:hidden;background-color:#020611;background-image:radial-gradient(1.5px 1.5px at 12% 21%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 28% 73%,#cbe8ff 50%,transparent 100%),radial-gradient(1.5px 1.5px at 44% 34%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 63% 14%,#dcecff 50%,transparent 100%),radial-gradient(1.5px 1.5px at 79% 63%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 92% 39%,#cbe8ff 50%,transparent 100%),linear-gradient(180deg,#020611 0%,#07142e 72%,#101b38 100%);border-bottom:4px solid #35415a;transition:box-shadow .45s ease}
+.sky::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.72;transition:background .45s ease,opacity .45s ease}
+.sky.speed-low::before{background:radial-gradient(ellipse at 50% 70%,#ff41414a,transparent 72%)}
+.sky.speed-medium::before{background:radial-gradient(ellipse at 50% 70%,#ffd6334a,transparent 72%)}
+.sky.speed-high::before{background:radial-gradient(ellipse at 50% 70%,#35ef8450,transparent 72%)}
+.sky.speed-low{box-shadow:inset 0 0 70px #ff35352b}.sky.speed-medium{box-shadow:inset 0 0 70px #ffd6332b}.sky.speed-high{box-shadow:inset 0 0 80px #35ef8433}
+.sun{position:absolute;right:9%;top:23px;width:58px;height:58px;border-radius:50%;background:#e5f4ff;box-shadow:0 0 0 12px #a8d7ff22,0 0 42px #a8d7ff88}
+.cloud{position:absolute;color:#fff;font-size:58px;opacity:.88;filter:drop-shadow(0 3px 1px #8cccf522);animation:cloudmove 22s linear infinite}
+.c1{top:35px;left:8%}.c2{top:104px;left:52%;animation-duration:30s}.c3{top:13px;left:78%;animation-duration:25s}
+@keyframes cloudmove{0%{transform:translateX(-15px)}50%{transform:translateX(30px)}100%{transform:translateX(-15px)}}
+.flight-path{position:absolute;left:5%;right:5%;top:50%;height:2px;border-top:2px dashed #ffffff66}
+.plane{position:absolute;left:8%;top:60%;font-size:52px;transform:rotate(-8deg);filter:drop-shadow(0 8px 8px #000b);transition:left .35s ease,top .35s ease,transform .35s ease;z-index:3}
+.plane.crashed{z-index:7;animation:plane-explosion .95s ease-in forwards}
+.plane.crashed::before,.plane.crashed::after{position:absolute;pointer-events:none}
+.plane.crashed::before{content:"🔥";left:8px;top:-25px;font-size:38px;animation:flame-flicker .18s ease-in-out infinite alternate}
+.plane.crashed::after{content:"💥";left:10px;top:-16px;font-size:34px;animation:blast-pop .55s ease-out both}
+@keyframes plane-explosion{0%{transform:scale(1) rotate(0);filter:drop-shadow(0 0 0 #ff4b00)}35%{transform:scale(1.35) rotate(22deg);filter:drop-shadow(0 0 24px #ff4b00)}100%{transform:scale(.3) rotate(100deg);filter:drop-shadow(0 0 36px #ff1717);opacity:.2}}
+@keyframes flame-flicker{to{transform:scale(1.25) rotate(12deg);filter:brightness(1.5)}}
+@keyframes blast-pop{0%{transform:scale(.1);opacity:0}35%{transform:scale(1.5);opacity:1}100%{transform:scale(1);opacity:.75}}
+.multiplier-callout{position:absolute;left:17%;top:58%;z-index:4;max-width:34%;padding:7px 10px;border:1px solid #ffffff99;border-radius:12px;background:#101c35ed;color:#e5f4ff;font-size:12px;font-weight:800;line-height:1.35;box-shadow:0 4px 12px #0008;transition:left .35s ease,top .35s ease}
+.trail{position:absolute;left:0;top:51%;height:3px;width:8%;background:linear-gradient(90deg,transparent,#fff);border-radius:4px;transition:width .35s}
+.hazards{position:absolute;left:0;right:0;bottom:0;height:24px;display:flex;align-items:flex-end;z-index:2;filter:drop-shadow(0 0 6px #ff315566)}
+.spike{flex:1;height:18px;background:linear-gradient(180deg,#ff8795,#b51e43);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.spike:nth-child(3n){height:22px}.spike:nth-child(3n + 1){height:14px}
+.typing-light-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}
+.typing-light{position:absolute;bottom:20px;width:7px;height:7px;border-radius:50%;background:#c9f5ff;box-shadow:0 0 8px 3px #8be5ff,0 0 18px 5px #4ccaff88;animation:light-rise .95s ease-out forwards}
+@keyframes light-rise{0%{opacity:0;transform:translate3d(0,0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate3d(var(--drift),-125px,0) scale(0)}}
+.hud{position:absolute;left:16px;bottom:42px;z-index:5;background:#101c35e8;border:1px solid #ffffff66;border-radius:12px;padding:8px 12px;color:#f5faff;font-size:13px;font-weight:800}
+.ground{height:25px;background:repeating-linear-gradient(120deg,#72ce6a 0 35px,#8cdb73 35px 70px)}
+.playarea{padding:22px;min-width:0}
+.prompt{min-width:0;overflow-wrap:anywhere;white-space:normal;font-size:clamp(18px,2.6vw,24px);line-height:1.9;background:#f4faff;border:1px solid #d6eafb;border-radius:16px;padding:16px 18px;min-height:95px;letter-spacing:.2px}
+.prompt span.done{color:#16a765}.prompt span.current{background:#ffdf75;color:#17365d;border-radius:4px;box-shadow:0 0 0 2px #ffdf75}.prompt span.missed{color:#e94f70;text-decoration:underline}
+.duration-control{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:14px;font-weight:750}
+.duration-control select{border:1px solid #cfe4f6;background:#fff;color:#17365d}
+.controls{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:14px}
+textarea{width:100%;min-width:0;resize:vertical;min-height:58px;border:2px solid #cfe4f6;border-radius:13px;padding:14px;font:17px system-ui;outline:none;color:#17365d;background:#fff}
+textarea:focus{border-color:#3999f5;box-shadow:0 0 0 3px #3999f51c}
+button,select{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:14px;cursor:pointer}
+.primary{background:linear-gradient(135deg,#1680f5,#3ca8ff);color:#fff;box-shadow:0 5px 14px #1680f533}.secondary{background:#eaf5ff;color:#17528a;border:1px solid #d2e8fa}.danger{background:#ffe9ed;color:#c73554;border:1px solid #ffd0d9}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}
+.hint{font-size:13px;color:#69819a}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{background:#eff8ff;border:1px solid #d8edfc;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:750}
+.result-overlay{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px;background:#020611d9;backdrop-filter:blur(9px)}
+.result{position:relative;isolation:isolate;width:min(920px,100%);max-height:calc(100vh - 40px);overflow:auto;background:linear-gradient(135deg,#fff,#eaf8ff);border:2px solid #bfe5ff;border-radius:24px;padding:clamp(18px,4vw,32px);text-align:center;box-shadow:0 0 0 5px #8bd5ff35,0 0 42px #67c8ffb3,0 18px 60px #082a4e66;animation:celebrate-in .55s cubic-bezier(.2,.8,.2,1) both,card-glow 2.2s ease-in-out infinite alternate}
+.result h2{position:relative;z-index:1;margin:0 0 7px;color:#e7334b;font-size:clamp(24px,5vw,36px);text-shadow:0 0 18px #ff8aa577;animation:title-shine 1.8s ease-in-out infinite alternate}
+.result>p{position:relative;z-index:1;margin:0;color:#174e83;font-size:16px;font-weight:650}
+.result .leaderboard-result-status{margin:8px 0 0;color:#18714c;font-size:13px;font-weight:750}
+.result .leaderboard-result-status.sync-error{color:#bb273c}
+.celebration-confetti{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.celebration-confetti span{position:absolute;top:-16px;left:var(--x);width:9px;height:14px;border-radius:3px;background:var(--color);opacity:0;animation:confetti-fall var(--duration) var(--delay) ease-in infinite}
+.celebration-confetti span:nth-child(1){--x:7%;--color:#ff6584;--duration:2.8s;--delay:.1s}
+.celebration-confetti span:nth-child(2){--x:16%;--color:#ffcb45;--duration:3.3s;--delay:.8s}
+.celebration-confetti span:nth-child(3){--x:27%;--color:#52c7ff;--duration:2.6s;--delay:.4s}
+.celebration-confetti span:nth-child(4){--x:38%;--color:#9c7cff;--duration:3.1s;--delay:1.2s}
+.celebration-confetti span:nth-child(5){--x:51%;--color:#43d6a0;--duration:2.9s;--delay:.2s}
+.celebration-confetti span:nth-child(6){--x:62%;--color:#ff6584;--duration:3.4s;--delay:1s}
+.celebration-confetti span:nth-child(7){--x:73%;--color:#ffcb45;--duration:2.7s;--delay:.6s}
+.celebration-confetti span:nth-child(8){--x:84%;--color:#52c7ff;--duration:3.2s;--delay:1.4s}
+.celebration-confetti span:nth-child(9){--x:94%;--color:#9c7cff;--duration:2.9s;--delay:.9s}
+@keyframes celebrate-in{from{opacity:0;transform:translateY(28px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes card-glow{from{box-shadow:0 0 0 4px #8bd5ff2b,0 0 28px #67c8ff85,0 18px 60px #082a4e66}to{box-shadow:0 0 0 7px #8bd5ff55,0 0 54px #67c8ffd9,0 18px 60px #082a4e66}}
+@keyframes title-shine{from{text-shadow:0 0 5px #ff8aa533}to{text-shadow:0 0 22px #ff8aa5cc}}
+@keyframes confetti-fall{0%{opacity:0;transform:translateY(-10px) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translateY(720px) rotate(680deg)}}
+.result-content{position:relative;z-index:1}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:17px 0}.result-item{padding:12px 7px;border-radius:13px;background:#ffffffed;border:1px solid #d6eafa}.result-item b{display:block;font-size:22px;color:#164d8b}.result-item span{font-size:12px;color:#68819a}
+.rules{margin-top:20px;background:#ffffffbd;border:1px solid #d7eaf9;border-radius:18px;padding:17px}.rules h3{margin:0 0 8px}.rules p{margin:6px 0;color:#536f8b;font-size:14px}
+footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
+@media(max-width:700px){.wrap{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.sky{height:225px}.controls{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(2,1fr)}.plane{font-size:43px}.multiplier-callout{max-width:42%;font-size:11px}.result-overlay{padding:10px}.result{max-height:calc(100vh - 20px);border-radius:18px}}
+@media(max-width:460px){.sky-leaderboard-list{gap:4px}.sky-top-player{gap:4px;padding:4px}.sky-top-player-avatar{width:24px;height:24px;flex-basis:24px}.sky-top-player-name{font-size:9px}.sky-top-player-points{font-size:8px}.sky-current-player{gap:5px;padding:5px}.sky-current-player-avatar{width:27px;height:27px;flex-basis:27px}.sky-current-player-info{gap:5px}.sky-current-player-label,.sky-current-player-name,.sky-current-player-points{font-size:9px}.sky-current-player-rank{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.result,.result h2,.celebration-confetti span,.countdown.urgent,.plane.crashed,.plane.crashed::before,.plane.crashed::after{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><div class="logo">✈️</div><div><h1>Typing Sky Game</h1><div class="sub">Type faster. Fly higher. Learn every day!</div></div></div>
+  <div class="pill">🌤️ Beginner Flight School</div>
+</header>
+<div class="leaderboard-sync" role="status" aria-live="polite">
+  <span id="leaderboardSyncMessage">লিডারবোর্ড অ্যাকাউন্ট যাচাই হচ্ছে…</span>
+  <a id="leaderboardLoginLink" href="typing_Master_Pro.html?openLogin=1" target="_blank" rel="noopener noreferrer" hidden>লগইন / রেজিস্টার</a>
+  <a href="index.html">লিডারবোর্ড দেখুন</a>
+</div>
+<section class="sky-leaderboard" aria-labelledby="skyLeaderboardTitle">
+  <h2 class="sky-leaderboard-heading" id="skyLeaderboardTitle">🏆 মাসিক লিডারবোর্ড — সেরা ৩</h2>
+  <p class="sky-leaderboard-status" id="skyLeaderboardStatus" role="status" aria-live="polite">লিডারবোর্ড লোড হচ্ছে…</p>
+  <div class="sky-leaderboard-list" id="skyLeaderboardList" hidden></div>
+  <div class="sky-current-player" id="skyCurrentPlayer" aria-live="polite" hidden>
+    <img class="sky-current-player-avatar" id="skyCurrentPlayerAvatar" alt="">
+    <div class="sky-current-player-info">
+      <span class="sky-current-player-label">আপনার অবস্থান</span>
+      <span class="sky-current-player-name" id="skyCurrentPlayerName"></span>
+      <span class="sky-current-player-points" id="skyCurrentPlayerPoints"></span>
+      <span class="sky-current-player-rank" id="skyCurrentPlayerRank"></span>
+    </div>
+  </div>
+</section>
+
+<section class="stats" aria-label="Live typing statistics">
+  <div class="stat"><div class="label">✈️ LIVE TYPING SPEED</div><div class="value" id="wpm">0</div><small>WPM</small></div>
+  <div class="stat"><div class="label">⌨️ CHARACTERS TYPED</div><div class="value" id="typed">0</div><small>characters</small></div>
+  <div class="stat"><div class="label">🎯 ACCURACY</div><div class="value" id="accuracy">100%</div><small>correctness</small></div>
+  <div class="stat"><div class="label">🏆 POINTS</div><div class="value" id="points">0</div><small>earned points</small></div>
+</section>
+
+<section class="game">
+  <div class="sky" id="sky">
+    <span class="countdown" id="countdown" aria-live="polite">১:০০</span>
+    <div class="sun"></div><div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">☁</div>
+    <div class="flight-path"></div><div class="trail" id="trail"></div>
+    <div class="hazards" id="hazards" aria-label="Flight path spikes" aria-hidden="true"><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span></div>
+    <div class="typing-light-layer" id="typingLights" aria-hidden="true"></div>
+    <div class="multiplier-callout" id="multiplierCallout" aria-live="polite">×1 · ৩০ WPM পর্যন্ত</div>
+    <div class="plane" id="plane">✈️</div>
+    <div class="hud" id="flightStatus">🛫 Ready for takeoff!</div>
+  </div>
+  <div class="ground"></div>
+  <div class="playarea">
+    <div class="prompt" id="prompt" aria-label="Text to type"></div>
+    <label class="duration-control" for="duration">
+      অনুশীলনের সময়:
+      <select id="duration" aria-label="অনুশীলনের সময়">
+        <option value="1">১ মিনিট</option><option value="2">২ মিনিট</option>
+        <option value="3">৩ মিনিট</option><option value="4">৪ মিনিট</option>
+        <option value="5">৫ মিনিট</option><option value="6">৬ মিনিট</option>
+        <option value="7">৭ মিনিট</option><option value="8">৮ মিনিট</option>
+        <option value="9">৯ মিনিট</option><option value="10">১০ মিনিট</option>
+      </select>
+      <span>বেশি সময় নিলে বেশি বাক্য অনুশীলন হবে।</span>
+    </label>
+    <div class="controls">
+      <textarea id="typing" placeholder="এখানে উপরের বাক্যটি টাইপ করুন… ✍️" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-content:start">
+        <button class="primary" id="startBtn">▶ গেম শুরু</button>
+        <button class="secondary" id="nextBtn">নতুন বাক্য ↻</button>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="hint" id="message">গেম শুরু করুন, টাইপ করতে থাকুন—বিমান আকাশে উড়বে!</div>
+      <div class="badges">
+        <span class="badge">⭐ প্রতি ২ অক্ষরে ১ বেস পয়েন্ট</span>
+        <span class="badge">🚀 WPM অনুযায়ী বোনাস</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result" id="result" role="dialog" aria-modal="true" aria-labelledby="resultTitle" aria-describedby="resultMessage">
+    <div class="celebration-confetti" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="result-content">
+      <h2 id="resultTitle">🎉 অভিনন্দন! অনুশীলন সম্পন্ন!</h2>
+      <p id="resultMessage">নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!</p>
+      <p class="leaderboard-result-status" id="resultLeaderboardStatus" role="status" aria-live="polite"></p>
+      <div class="result-grid">
+        <div class="result-item"><span>Average Typing Speed</span><b id="rWpm">0</b><span>WPM</span></div>
+        <div class="result-item"><span>Characters Typed</span><b id="rTyped">0</b></div>
+        <div class="result-item"><span>Accuracy</span><b id="rAccuracy">100%</b></div>
+        <div class="result-item"><span>Points Earned</span><b id="rPoints">0</b></div>
+        <div class="result-item"><span>Correct Characters</span><b id="rCorrect">0</b></div>
+        <div class="result-item"><span>Wrong Characters</span><b id="rWrong">0</b></div>
+        <div class="result-item"><span>Flight Level</span><b id="rLevel">Beginner</b></div>
+        <div class="result-item"><span>Practice Time</span><b id="rTime">0:00</b></div>
+      </div>
+      <button class="primary" id="againBtn">✈ আবার খেলুন</button>
+    </div>
+  </div>
+</div>
+
+<section class="rules">
+  <h3>🎮 কীভাবে খেলবেন?</h3>
+  <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
+  <p>২. সাম্প্রতিক ৫ সেকেন্ডের টাইপিং গতির সঙ্গে লাইভ WPM বাড়বে বা কমবে; বিমানও সেই অনুযায়ী উঠবে বা নামবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে। নিচের কাঁটায় লাগলে বিমান আগুন ধরে ফ্লাইট শেষ হবে।</p>
+  <p>৩. প্রতি ২টি সঠিক অক্ষরে ১ বেস পয়েন্ট। ৩০ WPM পর্যন্ত ×১, ৩১–৪০ WPM-এ ×২ এবং ৪১+ WPM-এ ×৩ গুণক; কারণটি বিমানের সামনে দেখা যাবে।</p>
+  <p>৪. নির্ভুলভাবে টাইপ করুন, নিজের স্পিড ও Accuracy বাড়ান। সময় শেষ হলে ফলাফল দেখানো হবে।</p>
+</section>
+<footer>Typing Sky Game • Practice makes progress • আপনার ফলাফল এই ব্রাউজারেই হিসাব করা হয়</footer>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const passages=[
+"The quick brown fox jumps over the lazy dog. Practice typing every day to improve your speed and accuracy.",
+"Learning to type is a useful skill. Keep your fingers relaxed and look at the screen while you type.",
+"Small steps every day can help you become faster. Stay focused, keep practicing, and enjoy the journey.",
+"Typing well takes time and patience. Make fewer mistakes first, then gradually increase your speed.",
+"Welcome to Typing Sky Game. Type each word carefully and watch your airplane fly higher into the sky.",
+"Good habits make learning easier. Sit comfortably, use both hands, and practice a little every day.",
+"Every expert was once a beginner. Keep learning, keep typing, and celebrate every small improvement.",
+"Accuracy is important when you type. Slow down when needed, then build speed with regular practice."
+];
+let target="",startedAt=0,timer=null,crashRevealTimer=null,finished=false,hasLiftedOff=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
+const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyLeaderboardUsers=[];
+const $=id=>document.getElementById(id);
+function setLeaderboardStatus(message,isError=false,showLogin=false){const status=$("leaderboardSyncMessage"),resultStatus=$("resultLeaderboardStatus");status.textContent=message;status.classList.toggle("sync-error",isError);resultStatus.textContent=message;resultStatus.classList.toggle("sync-error",isError);$("leaderboardLoginLink").hidden=!showLogin}
+function getGameMonthKey(){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit"}).formatToParts(new Date());return `${parts.find(part=>part.type==="year").value}-${parts.find(part=>part.type==="month").value}`}
+function renderSkyTopThree(users){
+ skyLeaderboardUsers=users;
+ const list=$("skyLeaderboardList"),status=$("skyLeaderboardStatus"),month=getGameMonthKey();
+ const ranked=[...users].sort((a,b)=>{
+  const pointsA=a.monthlyPointsMonth===month?Number(a.monthlyPoints)||0:0;
+  const pointsB=b.monthlyPointsMonth===month?Number(b.monthlyPoints)||0:0;
+  return pointsB-pointsA||(Number(b.points)||0)-(Number(a.points)||0);
+ }).slice(0,3);
+ list.replaceChildren();
+ if(!ranked.length){status.textContent="এখনো কোনো লিডারবোর্ড প্রোফাইল নেই।";status.hidden=false;list.hidden=true;renderSkyCurrentPlayer(users);return}
+ ranked.forEach((user,index)=>{
+  const rank=index+1,monthlyPoints=user.monthlyPointsMonth===month?Number(user.monthlyPoints)||0:0;
+  const card=document.createElement("a");
+  card.className="sky-top-player";card.dataset.rank=String(rank);card.href="typing_Master_Pro.html";
+  card.setAttribute("aria-label",`Rank ${rank}: ${user.name||user.id}, ${monthlyPoints} monthly points`);
+  const avatar=document.createElement("img");
+  avatar.className="sky-top-player-avatar";avatar.src=user.pic||"logo.png";avatar.alt="";avatar.loading="lazy";
+  avatar.onerror=()=>{avatar.onerror=null;avatar.src="logo.png"};
+  const info=document.createElement("span");info.className="sky-top-player-info";
+  const rankLabel=document.createElement("span");rankLabel.className="sky-top-player-rank";rankLabel.textContent=rank===1?"🥇 #1":rank===2?"🥈 #2":"🥉 #3";
+  const name=document.createElement("span");name.className="sky-top-player-name";name.textContent=String(user.name||user.id||"Player");
+  const points=document.createElement("span");points.className="sky-top-player-points";points.textContent=`${monthlyPoints} পয়েন্ট`;
+  info.append(rankLabel,name,points);card.append(avatar,info);list.append(card);
+ });
+ status.hidden=true;list.hidden=false;renderSkyCurrentPlayer(users);
+}
+function renderSkyCurrentPlayer(users=skyLeaderboardUsers){
+ const currentPlayer=$("skyCurrentPlayer");
+ if(!gameUser){currentPlayer.hidden=true;return}
+ const month=getGameMonthKey();
+ const ranked=[...users].sort((a,b)=>{
+  const pointsA=a.monthlyPointsMonth===month?Number(a.monthlyPoints)||0:0;
+  const pointsB=b.monthlyPointsMonth===month?Number(b.monthlyPoints)||0:0;
+  return pointsB-pointsA||(Number(b.points)||0)-(Number(a.points)||0);
+ });
+ const userIndex=ranked.findIndex(user=>String(user.id).toLowerCase()===String(gameUser.id).toLowerCase());
+ if(userIndex<0){currentPlayer.hidden=true;return}
+ const user=ranked[userIndex],monthlyPoints=user.monthlyPointsMonth===month?Number(user.monthlyPoints)||0:0;
+ const avatar=$("skyCurrentPlayerAvatar");
+ avatar.src=user.pic||"logo.png";avatar.onerror=()=>{avatar.onerror=null;avatar.src="logo.png"};
+ $("skyCurrentPlayerName").textContent=String(user.name||user.id||"Player");
+ $("skyCurrentPlayerPoints").textContent=`${monthlyPoints} পয়েন্ট`;
+ $("skyCurrentPlayerRank").textContent=`#${userIndex+1}`;
+ currentPlayer.hidden=false;
+}
+function listenForSkyTopThree(){
+ if(!gameDatabase)return;
+ try{
+  gameDatabase.ref("users").on("value",snapshot=>{
+   const data=snapshot.val()||{};
+   renderSkyTopThree(Object.entries(data).map(([id,user])=>({...user,id})));
+  },error=>{
+   console.error("Sky game top-three leaderboard listener failed:",error);
+   $("skyLeaderboardStatus").textContent="লিডারবোর্ড লোড করা যায়নি। সংযোগ পরীক্ষা করুন।";$("skyLeaderboardStatus").hidden=false;$("skyLeaderboardList").hidden=true;
+  });
+ }catch(error){
+  console.error("Could not start the sky game top-three leaderboard:",error);
+  $("skyLeaderboardStatus").textContent="লিডারবোর্ড চালু করা যায়নি।";$("skyLeaderboardStatus").hidden=false;$("skyLeaderboardList").hidden=true;
+ }
+}
+function getSkyScoreQueueKey(userId){return `typingSkyScoreQueue:${userId}`}
+function readSkyScoreQueue(userId){try{const queue=JSON.parse(localStorage.getItem(getSkyScoreQueueKey(userId))||"[]");if(!Array.isArray(queue))throw new Error("Saved sky score queue is invalid.");return queue}catch(error){console.error("Could not read pending sky game scores:",error);setLeaderboardStatus("অপেক্ষমাণ গেম পয়েন্ট পড়া যায়নি।",true);return null}}
+function writeSkyScoreQueue(userId,queue){try{localStorage.setItem(getSkyScoreQueueKey(userId),JSON.stringify(queue));return true}catch(error){console.error("Could not save pending sky game scores:",error);setLeaderboardStatus("গেম পয়েন্ট স্থানীয়ভাবে সেভ করা যায়নি।",true);return false}}
+function updateGameUser(account,id){gameUser={...account,id};renderSkyCurrentPlayer();try{localStorage.setItem("currentUser",JSON.stringify(gameUser))}catch(error){console.error("Could not refresh the signed-in leaderboard account:",error)}}
+function listenForGameAccount(){
+ if(!gameDatabase){setLeaderboardStatus("লিডারবোর্ড ডাটাবেজে সংযোগ করা যায়নি।",true);return}
+ let savedUser;
+ try{savedUser=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(error){console.error("Could not read the shared leaderboard account:",error);if(gameUserRef){gameUserRef.off("value");gameUserRef=null}gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("লিডারবোর্ড অ্যাকাউন্ট পড়া যায়নি।",true,true);return}
+ const userId=String(savedUser&&savedUser.id||"").trim();
+ if(!userId){if(gameUserRef){gameUserRef.off("value");gameUserRef=null}gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("পয়েন্ট লিডারবোর্ডে যোগ করতে একই অ্যাকাউন্টে লগইন করুন।",false,true);return}
+ try{
+  const userRef=gameDatabase.ref("users").child(userId);
+  if(gameUserRef&&gameUserRef.toString()!==userRef.toString())gameUserRef.off("value");
+  gameUserRef=userRef;
+  gameUserRef.off("value");
+  gameUserRef.on("value",snapshot=>{
+   const account=snapshot.val();
+   if(!account){gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("অ্যাকাউন্টটি ডাটাবেজে পাওয়া যায়নি। আবার লগইন করুন।",true,true);return}
+   updateGameUser(account,userId);
+   const month=getGameMonthKey(),monthly=account.monthlyPointsMonth===month?Number(account.monthlyPoints)||0:0;
+   setLeaderboardStatus(`${account.name||userId} হিসেবে লগইন • মাসিক লিডারবোর্ডে ${monthly} পয়েন্ট`,false);
+   processPendingSkyScores();
+  },error=>{console.error("Leaderboard account listener failed:",error);setLeaderboardStatus("অ্যাকাউন্ট যাচাই করা যায়নি। সংযোগ পরীক্ষা করুন।",true,true)})
+ }catch(error){console.error("Could not connect the game to the leaderboard account:",error);gameUser=null;setLeaderboardStatus("লিডারবোর্ড অ্যাকাউন্টে সংযোগ করা যায়নি।",true,true)}
+}
+function initializeSkyLeaderboard(){
+ if(typeof firebase==="undefined"||!firebase.database){setLeaderboardStatus("Firebase ডাটাবেজ লোড হয়নি; লিডারবোর্ড পয়েন্ট সেভ করা যাবে না।",true);return}
+ try{
+  const app=firebase.apps.find(existing=>existing.name==="[DEFAULT]")||firebase.initializeApp(gameFirebaseConfig);
+  gameDatabase=app.database();
+  listenForSkyTopThree();
+  gameDatabase.ref(".info/connected").on("value",snapshot=>{gameScoreConnected=snapshot.val()===true;if(gameScoreConnected)processPendingSkyScores();else if(gameUser)setLeaderboardStatus("ডাটাবেজে সংযোগ হচ্ছে; পয়েন্ট অপেক্ষমাণ থাকবে।")},error=>{console.error("Leaderboard connection listener failed:",error);setLeaderboardStatus("লিডারবোর্ড সংযোগ যাচাই করা যায়নি।",true)});
+  listenForGameAccount();
+ }catch(error){console.error("Could not initialize the shared leaderboard database:",error);setLeaderboardStatus("লিডারবোর্ড ডাটাবেজ চালু করা যায়নি।",true)}
+}
+function queueSkyGameScore(reason){
+ if(!gameUser){setLeaderboardStatus("এই খেলায় পাওয়া পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",true,true);return}
+ if(points<=0){setLeaderboardStatus("এই খেলায় যোগ করার মতো পয়েন্ট পাওয়া যায়নি।");return}
+ if(!gameRunId)return;
+ const queue=readSkyScoreQueue(gameUser.id);if(!queue)return;
+ if(!queue.some(entry=>entry.id===gameRunId)){
+  queue.push({id:gameRunId,userId:gameUser.id,earned:points,wpm:calcAverageWpm(),createdAt:Date.now(),reason});
+  if(!writeSkyScoreQueue(gameUser.id,queue))return
+ }
+ setLeaderboardStatus("গেমের পয়েন্ট লিডারবোর্ডে যোগ হচ্ছে…");
+ processPendingSkyScores()
+}
+async function processPendingSkyScores(){
+ if(gameScoreQueueProcessing||!gameScoreConnected||!gameUser||!gameDatabase)return;
+ gameScoreQueueProcessing=true;
+ try{
+  let queue=readSkyScoreQueue(gameUser.id);if(!queue)return;
+  while(queue.length&&gameScoreConnected&&gameUser){
+   const entry=queue[0];if(entry.userId!==gameUser.id)break;
+   const userRef=gameDatabase.ref("users").child(entry.userId);
+   const result=await new Promise((resolve,reject)=>userRef.transaction(user=>{
+    if(!user)return;
+    const receipts={...(user.typingSkyScoreReceipts||{})};
+    if(receipts[entry.id])return user;
+    const currentMonth=getGameMonthKey(),validMonth=/^\d{4}-\d{2}$/.test(user.monthlyPointsMonth||"");
+    receipts[entry.id]=entry.createdAt;
+    const receiptIds=Object.keys(receipts);
+    if(receiptIds.length>200){receiptIds.sort((a,b)=>receipts[a]-receipts[b]);receiptIds.slice(0,receiptIds.length-200).forEach(id=>delete receipts[id])}
+    return {...user,points:(Number(user.points)||0)+entry.earned,monthlyPoints:(validMonth&&user.monthlyPointsMonth===currentMonth?Number(user.monthlyPoints)||0:0)+entry.earned,monthlyPointsMonth:currentMonth,bestWpm:Math.max(Number(user.bestWpm)||0,entry.wpm),typingSkyScoreReceipts:receipts}
+   },(error,committed,snapshot)=>{if(error)reject(error);else if(!committed&&!(snapshot.val()&&snapshot.val().typingSkyScoreReceipts&&snapshot.val().typingSkyScoreReceipts[entry.id]))reject(new Error("Leaderboard score transaction was not committed."));else resolve(snapshot.val())},false));
+   updateGameUser(result,entry.userId);
+   queue=queue.filter(item=>item.id!==entry.id);
+   if(!writeSkyScoreQueue(entry.userId,queue))return;
+   const month=getGameMonthKey(),monthly=result.monthlyPointsMonth===month?Number(result.monthlyPoints)||0:0;
+   setLeaderboardStatus(`${entry.earned} পয়েন্ট লিডারবোর্ডে যোগ হয়েছে • মাসিক মোট ${monthly}`,false)
+  }
+ }catch(error){console.error("Could not add sky game points to the leaderboard:",error);setLeaderboardStatus("পয়েন্ট লিডারবোর্ডে সেভ হয়নি; সংযোগ ফিরলে আবার চেষ্টা হবে।",true)}
+ finally{gameScoreQueueProcessing=false}
+}
+function pickPassage(){let p=passages[Math.floor(Math.random()*passages.length)];if(p===target)p=passages[(passages.indexOf(p)+1)%passages.length];return p}
+function multiplier(wpm){return wpm>40?3:wpm>30?2:wpm>20?1:1}
+function multiplierLabel(wpm){return wpm>40?"×3 · ৪১+ WPM":wpm>30?"×2 · ৩১–৪০ WPM":"×1 · ৩০ WPM পর্যন্ত"}
+function calcWpm(){if(!startedAt)return 0;const now=Date.now(),windowStart=now-5000;speedSamples=speedSamples.filter(sample=>sample.time>=windowStart);const recentCorrect=speedSamples.reduce((sum,sample)=>sum+sample.count,0),windowMs=Math.min(5000,Math.max(2000,now-startedAt));return Math.round(recentCorrect/5/(windowMs/60000))}
+function calcAverageWpm(){if(!startedAt)return 0;const mins=Math.max((Date.now()-startedAt)/60000,1/60);return Math.round((completedCorrect+correct)/5/mins)}
+function recordTypingSpeed(){const value=$("typing").value;let commonPrefix=0;while(commonPrefix<lastInputValue.length&&commonPrefix<value.length&&lastInputValue[commonPrefix]===value[commonPrefix])commonPrefix++;let correctAdded=0;for(let i=commonPrefix;i<value.length;i++)if(value[i]===target[i])correctAdded++;if(correctAdded)speedSamples.push({time:Date.now(),count:correctAdded});lastInputValue=value;return correctAdded}
+function spawnTypingLights(count){const layer=$("typingLights"),plane=$("plane");for(let i=0;i<Math.min(count,3)&&layer.childElementCount<24;i++){const light=document.createElement("span");light.className="typing-light";light.style.left=(plane.offsetLeft+plane.offsetWidth/2+Math.random()*44-22)+"px";light.style.setProperty("--drift",(Math.random()*44-22)+"px");layer.append(light);light.addEventListener("animationend",()=>light.remove(),{once:true})}}
+function elapsedSeconds(){return startedAt?Math.min(Math.floor((Date.now()-startedAt)/1000),Math.floor(durationMs/1000)):0}
+function timeText(){let s=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function elapsedText(){let s=elapsedSeconds();return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function renderPrompt(){
+ const v=$("typing").value;let out="";
+ for(let i=0;i<target.length;i++){
+   let cls=i<v.length?(v[i]===target[i]?"done":"missed"):(i===v.length?"current":"");
+   out+=`<span class="${cls}">${target[i]===" "?"&nbsp;":target[i]==="&"?"&amp;":target[i]==="<"?"&lt;":target[i]}</span>`;
+ }
+ $("prompt").innerHTML=out;
+}
+function setSkySpeed(wpm){const sky=$("sky");sky.classList.remove("speed-low","speed-medium","speed-high");sky.classList.add(wpm<10?"speed-low":wpm<=15?"speed-medium":"speed-high")}
+function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());countdown.textContent=Math.floor(remaining/60)+":"+String(remaining%60).padStart(2,"0");countdown.classList.toggle("running",Boolean(startedAt&&!finished));countdown.classList.toggle("urgent",Boolean(startedAt&&!finished&&remaining<=10))}
+function setPassage(){target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
+function positionMultiplierCallout(left,top){const sky=$("sky"),plane=$("plane"),callout=$("multiplierCallout");callout.style.left=Math.min(sky.clientWidth*left/100+plane.offsetWidth+8,sky.clientWidth-callout.offsetWidth-8)+"px";callout.style.top=Math.max(5,top-3)+"%"}
+function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="8%";$("plane").style.top="60%";$("plane").style.transform="rotate(-8deg)";$("trail").style.width="8%";$("multiplierCallout").textContent=multiplierLabel(0);positionMultiplierCallout(8,60);$("flightStatus").textContent="🛫 Ready for takeoff!"}
+function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
+function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;$("typing").focus();$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function updateStats(){
+ if(!startedAt)return;
+ const timeUp=Date.now()-startedAt>=durationMs;
+ let v=$("typing").value;const currentTyped=v.length;let currentCorrect=0,currentWrong=0;
+ for(let i=0;i<v.length;i++){if(v[i]===target[i])currentCorrect++;else currentWrong++}
+ typed=completedTyped+currentTyped;correct=completedCorrect+currentCorrect;wrong=completedWrong+currentWrong;
+ lastWpm=calcWpm();
+ setSkySpeed(lastWpm);updateCountdown();
+ // Award a base point for each pair of correctly typed characters, multiplied by current speed tier.
+ points=Math.floor(correct/2)*multiplier(lastWpm);
+ const accuracy=typed?Math.round(correct/typed*100):100;
+ $("wpm").textContent=lastWpm;$("typed").textContent=typed;$("accuracy").textContent=accuracy+"%";$("points").textContent=points;
+ renderPrompt();
+ const progress=Math.min(currentTyped/target.length,1);
+ const left=Math.min(78,8+progress*66+Math.min(lastWpm,60)*.12);
+ if(lastWpm>=10)hasLiftedOff=true;
+ const top=hasLiftedOff?Math.max(12,69-Math.min(lastWpm,60)*.88):60;
+ $("plane").style.left=left+"%";$("plane").style.top=top+"%";
+ $("plane").style.transform=`rotate(${-8-Math.min(lastWpm,40)*.25}deg)`;
+ $("trail").style.width=left+"%";
+ $("multiplierCallout").textContent=multiplierLabel(lastWpm);positionMultiplierCallout(left,top);
+ $("flightStatus").textContent=lastWpm>40?"🚀 Turbo flight! "+lastWpm+" WPM":lastWpm>30?"✈️ Fast flight! "+lastWpm+" WPM":lastWpm>20?"🌤️ Climbing! "+lastWpm+" WPM":"🛫 Keep typing! "+lastWpm+" WPM";
+ $("message").textContent=`পয়েন্ট গুণক ${multiplierLabel(lastWpm)} • সঠিক ${correct} • ভুল ${wrong} • সময় ${timeText()}`;
+ if(timeUp){finishGame("time");return}
+ const skyBounds=$("sky").getBoundingClientRect(),spikesBounds=$("hazards").getBoundingClientRect();
+ const plannedPlaneBottom=skyBounds.top+$("sky").clientHeight*top/100+$("plane").offsetHeight;
+ if(hasLiftedOff&&plannedPlaneBottom>=spikesBounds.top){finishGame("crash");return}
+ if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
+}
+function finishGame(reason="time"){
+ if(finished)return;finished=true;clearInterval(timer);$("typing").disabled=true;
+ $("duration").disabled=false;
+ updateCountdown();
+ if(reason==="crash"){$("flightStatus").textContent="💥 কাঁটায় লেগে বিমান আউট!";$("againBtn").textContent="🔁 আবার শুরু করুন";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
+ else{$("flightStatus").textContent="⏱️ সময় শেষ!";$("againBtn").textContent="✈ আবার খেলুন";updateFinal(reason);$("againBtn").focus()}
+}
+function updateFinal(reason){
+ const wpm=calcAverageWpm(),acc=typed?Math.round(correct/typed*100):100;
+ $("rWpm").textContent=wpm;$("rTyped").textContent=typed;$("rAccuracy").textContent=acc+"%";$("rPoints").textContent=points;$("rCorrect").textContent=correct;$("rWrong").textContent=wrong;$("rLevel").textContent=wpm>40?"Expert":wpm>30?"Advanced":wpm>20?"Intermediate":"Beginner";$("rTime").textContent=elapsedText();
+ $("resultTitle").textContent=reason==="crash"?"💥 বিমান কাঁটায় লেগেছে!":"🎉 অভিনন্দন! সময় শেষ!";
+ $("resultMessage").textContent=reason==="crash"?"আপনি আউট হয়ে গেছেন। আবার শুরু করে আরও দ্রুত টাইপ করুন!":"নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!";
+ $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"কাঁটায় লেগে গেম শেষ! আবার শুরু করুন।":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";queueSkyGameScore(reason);
+}
+$("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats()});
+$("startBtn").addEventListener("click",()=>{setPassage();startGame()});
+$("duration").addEventListener("change",()=>{durationMs=Number($("duration").value)*60000;updateCountdown()});
+$("nextBtn").addEventListener("click",()=>{if(startedAt&&!finished){clearInterval(timer);startedAt=0;finished=false;$("typing").disabled=true;$("duration").disabled=false;$("startBtn").textContent="▶ গেম শুরু";correct=0;wrong=0;typed=0;points=0;completedCorrect=0;completedWrong=0;completedTyped=0;speedSamples=[]}setPassage()});
+$("againBtn").addEventListener("click",()=>{setPassage();startGame()});
+window.addEventListener("storage",event=>{if(event.key==="currentUser")listenForGameAccount()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){listenForGameAccount();processPendingSkyScores()}});
+window.addEventListener("online",processPendingSkyScores);
+setPassage();
+initializeSkyLeaderboard();
+</script>
+</body>
+</html>
