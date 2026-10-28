@@ -232,6 +232,12 @@
     .home-top-player-points { color: #6ee7b7; font-size: 9px; font-weight: 800; }
     .home-top-three-status { padding: 7px 6px; color: var(--text-muted); font-size: 11px; text-align: center; }
     .home-top-three-status[hidden], .home-top-three-list[hidden] { display: none; }
+    .welcome-image-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+    .welcome-image-action { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: #082f49; box-shadow: 0 5px 14px rgba(0,0,0,0.24); color: #fff; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+    .welcome-image-action:hover { transform: translateY(-3px); border-color: #7dd3fc; box-shadow: 0 9px 20px rgba(0,0,0,0.32); }
+    .welcome-image-action:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
+    .welcome-image-action img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .welcome-image-action span { display: block; padding: 7px 8px; background: linear-gradient(135deg, #075985, #12345a); font-size: 12px; font-weight: 900; line-height: 1.3; text-align: center; }
     .welcome-banner-controls .adu-office-app-widget { position: static; flex: 0 0 auto; max-width: none; padding: 3px 22px 3px 4px; border-color: rgba(255,255,255,0.25); border-radius: 999px; }
     .welcome-banner-controls .adu-office-app-link { gap: 4px; font-size: 10px; }
     .welcome-banner-controls .adu-office-app-link img { width: 24px; height: 24px; }
@@ -388,6 +394,9 @@
       .home-top-three-sky { padding: 5px 6px; font-size: 9px; }
       .home-top-three-header .home-top-three-title { flex: 0 0 100%; }
       .home-top-three-list { gap: 5px; }
+      .welcome-image-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 9px; }
+      .welcome-image-action { border-radius: 9px; }
+      .welcome-image-action span { padding: 6px 5px; font-size: 10px; }
       .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) .controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
       .typing-panel.bengali-mode #lessonSelect { grid-column: 1 / -1; }
@@ -547,6 +556,20 @@
       <p id="mobile-notice-copy">To type on this first page with a phone, connect a Bluetooth keyboard or a USB keyboard using an OTG adapter. Or open the leaderboard typing box, tap it, and type with your phone's on-screen keyboard.</p>
       <a id="mobile-notice-cta" class="mobile-notice-cta" href="typing_Master_Pro.html#typing-input">🏆 Type on mobile — join the leaderboard</a>
     </aside>
+    <nav class="welcome-image-actions" aria-label="Typing practice and game shortcuts">
+      <a class="welcome-image-action" href="typing_sky_game.html" aria-label="Open Typing Sky Game">
+        <img src="home-action-sky-game.jpg" alt="" loading="lazy" decoding="async">
+        <span>✈️ Typing Sky Game</span>
+      </a>
+      <a class="welcome-image-action" href="#typingPanel" aria-label="Start typing practice on this first screen">
+        <img src="home-action-typing-practice.jpg" alt="" loading="lazy" decoding="async">
+        <span>⌨️ Start Typing Practice</span>
+      </a>
+      <a class="welcome-image-action" href="typing_Master_Pro.html" aria-label="Open the typing leaderboard">
+        <img src="home-action-leaderboard.jpg" alt="" loading="lazy" decoding="async">
+        <span>🏆 Open Leaderboard</span>
+      </a>
+    </nav>
   </section>
   <div id="homeAuthModal" role="dialog" aria-modal="true" aria-labelledby="homeAuthTitle">
     <form class="home-auth-card" onsubmit="handleHomeAuth(event)">
