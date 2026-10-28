@@ -43,18 +43,18 @@ h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font
 .stat{background:#fff;border:1px solid #d7eaf9;border-radius:17px;padding:15px;text-align:center;box-shadow:0 5px 18px #2c75a30b}
 .stat .label{font-size:12px;color:#6a819a;font-weight:700}.stat .value{font-size:clamp(22px,3vw,30px);font-weight:850;color:#154d8c;margin-top:3px}.stat small{color:#7288a0}
 .game{background:#fff;border:1px solid #cfe7f9;border-radius:24px;overflow:hidden;box-shadow:0 12px 35px #1e679015}
-.sky{height:285px;position:relative;overflow:hidden;background-color:#020611;background-image:radial-gradient(1.5px 1.5px at 12% 21%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 28% 73%,#cbe8ff 50%,transparent 100%),radial-gradient(1.5px 1.5px at 44% 34%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 63% 14%,#dcecff 50%,transparent 100%),radial-gradient(1.5px 1.5px at 79% 63%,#fff 50%,transparent 100%),radial-gradient(1px 1px at 92% 39%,#cbe8ff 50%,transparent 100%),linear-gradient(180deg,#020611 0%,#07142e 72%,#101b38 100%);border-bottom:4px solid #35415a;transition:box-shadow .45s ease}
+.sky{height:285px;position:relative;overflow:hidden;background-color:#020611;background-image:linear-gradient(180deg,#02061122,#07142e33),url("typing-sky-background.png");background-position:center 55%;background-size:cover;border-bottom:4px solid #35415a;transition:box-shadow .45s ease}
 .sky::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.72;transition:background .45s ease,opacity .45s ease}
 .sky.speed-low::before{background:radial-gradient(ellipse at 50% 70%,#ff41414a,transparent 72%)}
 .sky.speed-medium::before{background:radial-gradient(ellipse at 50% 70%,#ffd6334a,transparent 72%)}
 .sky.speed-high::before{background:radial-gradient(ellipse at 50% 70%,#35ef8450,transparent 72%)}
 .sky.speed-low{box-shadow:inset 0 0 70px #ff35352b}.sky.speed-medium{box-shadow:inset 0 0 70px #ffd6332b}.sky.speed-high{box-shadow:inset 0 0 80px #35ef8433}
-.sun{position:absolute;right:9%;top:23px;width:58px;height:58px;border-radius:50%;background:#e5f4ff;box-shadow:0 0 0 12px #a8d7ff22,0 0 42px #a8d7ff88}
-.cloud{position:absolute;color:#fff;font-size:58px;opacity:.88;filter:drop-shadow(0 3px 1px #8cccf522);animation:cloudmove 22s linear infinite}
+.sun,.cloud{display:none}
 .c1{top:35px;left:8%}.c2{top:104px;left:52%;animation-duration:30s}.c3{top:13px;left:78%;animation-duration:25s}
 @keyframes cloudmove{0%{transform:translateX(-15px)}50%{transform:translateX(30px)}100%{transform:translateX(-15px)}}
 .flight-path{position:absolute;left:5%;right:5%;top:50%;height:2px;border-top:2px dashed #ffffff66}
-.plane{position:absolute;left:8%;top:60%;font-size:52px;transform:rotate(-8deg);filter:drop-shadow(0 8px 8px #000b);transition:left .35s ease,top .35s ease,transform .35s ease;z-index:3}
+.plane{position:absolute;left:2%;top:50%;width:clamp(150px,22%,240px);aspect-ratio:380/210;transform:translateY(-50%) rotate(-8deg);filter:drop-shadow(0 8px 8px #000b);transition:left .35s ease,top .35s ease,transform .35s ease;z-index:6}
+.plane img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 .plane.crashed{z-index:7;animation:plane-explosion .95s ease-in forwards}
 .plane.crashed::before,.plane.crashed::after{position:absolute;pointer-events:none}
 .plane.crashed::before{content:"🔥";left:8px;top:-25px;font-size:38px;animation:flame-flicker .18s ease-in-out infinite alternate}
@@ -62,15 +62,15 @@ h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font
 @keyframes plane-explosion{0%{transform:scale(1) rotate(0);filter:drop-shadow(0 0 0 #ff4b00)}35%{transform:scale(1.35) rotate(22deg);filter:drop-shadow(0 0 24px #ff4b00)}100%{transform:scale(.3) rotate(100deg);filter:drop-shadow(0 0 36px #ff1717);opacity:.2}}
 @keyframes flame-flicker{to{transform:scale(1.25) rotate(12deg);filter:brightness(1.5)}}
 @keyframes blast-pop{0%{transform:scale(.1);opacity:0}35%{transform:scale(1.5);opacity:1}100%{transform:scale(1);opacity:.75}}
-.multiplier-callout{position:absolute;left:17%;top:58%;z-index:4;max-width:34%;padding:7px 10px;border:1px solid #ffffff99;border-radius:12px;background:#101c35ed;color:#e5f4ff;font-size:12px;font-weight:800;line-height:1.35;box-shadow:0 4px 12px #0008;transition:left .35s ease,top .35s ease}
 .trail{position:absolute;left:0;top:51%;height:3px;width:8%;background:linear-gradient(90deg,transparent,#fff);border-radius:4px;transition:width .35s}
-.hazards{position:absolute;left:0;right:0;bottom:0;height:24px;display:flex;align-items:flex-end;z-index:2;filter:drop-shadow(0 0 6px #ff315566)}
+.hazards{position:absolute;left:0;bottom:0;width:200%;height:24px;display:flex;align-items:flex-end;z-index:2;filter:drop-shadow(0 0 6px #ff315566);animation:spikes-scroll 16s linear infinite}
 .spike{flex:1;height:18px;background:linear-gradient(180deg,#ff8795,#b51e43);clip-path:polygon(50% 0,100% 100%,0 100%)}
-.spike:nth-child(3n){height:22px}.spike:nth-child(3n + 1){height:14px}
+.spike:nth-child(20n + 3){height:22px}.spike:nth-child(20n + 1){height:14px}
+@keyframes spikes-scroll{to{transform:translateX(-50%)}}
 .typing-light-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}
 .typing-light{position:absolute;bottom:20px;width:7px;height:7px;border-radius:50%;background:#c9f5ff;box-shadow:0 0 8px 3px #8be5ff,0 0 18px 5px #4ccaff88;animation:light-rise .95s ease-out forwards}
 @keyframes light-rise{0%{opacity:0;transform:translate3d(0,0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate3d(var(--drift),-125px,0) scale(0)}}
-.hud{position:absolute;left:16px;bottom:42px;z-index:5;background:#101c35e8;border:1px solid #ffffff66;border-radius:12px;padding:8px 12px;color:#f5faff;font-size:13px;font-weight:800}
+.hud{position:absolute;right:12px;bottom:10px;left:auto;z-index:5;background:#101c35e8;border:1px solid #ffffff66;border-radius:12px;padding:8px 12px;color:#f5faff;font-size:13px;font-weight:800}
 .ground{height:25px;background:repeating-linear-gradient(120deg,#72ce6a 0 35px,#8cdb73 35px 70px)}
 .playarea{padding:22px;min-width:0}
 .prompt{min-width:0;overflow-wrap:anywhere;white-space:normal;font-size:clamp(18px,2.6vw,24px);line-height:1.9;background:#f4faff;border:1px solid #d6eafb;border-radius:16px;padding:16px 18px;min-height:95px;letter-spacing:.2px}
@@ -153,10 +153,9 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
     <span class="countdown" id="countdown" aria-live="polite">১:০০</span>
     <div class="sun"></div><div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">☁</div>
     <div class="flight-path"></div><div class="trail" id="trail"></div>
-    <div class="hazards" id="hazards" aria-label="Flight path spikes" aria-hidden="true"><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span></div>
+    <div class="hazards" id="hazards" aria-label="Flight path spikes" aria-hidden="true"><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span></div>
     <div class="typing-light-layer" id="typingLights" aria-hidden="true"></div>
-    <div class="multiplier-callout" id="multiplierCallout" aria-live="polite">×1 · ৩০ WPM পর্যন্ত</div>
-    <div class="plane" id="plane">✈️</div>
+    <div class="plane" id="plane"><img src="typing-sky-plane.png" alt="" draggable="false"></div>
     <div class="hud" id="flightStatus">🛫 Ready for takeoff!</div>
   </div>
   <div class="ground"></div>
@@ -183,8 +182,8 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
     <div class="bottom">
       <div class="hint" id="message">গেম শুরু করুন, টাইপ করতে থাকুন—বিমান আকাশে উড়বে!</div>
       <div class="badges">
-        <span class="badge">⭐ প্রতি ২ অক্ষরে ১ বেস পয়েন্ট</span>
-        <span class="badge">🚀 WPM অনুযায়ী বোনাস</span>
+        <span class="badge">⭐ প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট</span>
+        <span class="badge">🔄 পয়েন্ট লিডারবোর্ডে লাইভ যোগ হয়</span>
       </div>
     </div>
   </div>
@@ -215,8 +214,8 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
 <section class="rules">
   <h3>🎮 কীভাবে খেলবেন?</h3>
   <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
-  <p>২. সাম্প্রতিক ৫ সেকেন্ডের টাইপিং গতির সঙ্গে লাইভ WPM বাড়বে বা কমবে; বিমানও সেই অনুযায়ী উঠবে বা নামবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে। নিচের কাঁটায় লাগলে বিমান আগুন ধরে ফ্লাইট শেষ হবে।</p>
-  <p>৩. প্রতি ২টি সঠিক অক্ষরে ১ বেস পয়েন্ট। ৩০ WPM পর্যন্ত ×১, ৩১–৪০ WPM-এ ×২ এবং ৪১+ WPM-এ ×৩ গুণক; কারণটি বিমানের সামনে দেখা যাবে।</p>
+  <p>২. বিমানটি ব্যানারের বাঁ দিকের শুরু থেকে, উচ্চতার ঠিক মাঝখানে শুরু হবে। সাম্প্রতিক ৫ সেকেন্ডের WPM যত বাড়বে, বিমান তত সামনে এগোবে ও উপরে উঠবে; গতি কমলে পিছিয়ে নিচে নামবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে। নিচের কাঁটায় লাগলে বিমান আগুন ধরে ফ্লাইট শেষ হবে।</p>
+  <p>৩. মূল টাইপিং লিডারবোর্ডের নিয়মেই প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট পাবেন। গেম চলার সময় পয়েন্ট লিডারবোর্ডে যোগ হবে; WPM বিমানের সামনে এগোনো ও উচ্চতা নিয়ন্ত্রণ করে।</p>
   <p>৪. নির্ভুলভাবে টাইপ করুন, নিজের স্পিড ও Accuracy বাড়ান। সময় শেষ হলে ফলাফল দেখানো হবে।</p>
 </section>
 <footer>Typing Sky Game • Practice makes progress • আপনার ফলাফল এই ব্রাউজারেই হিসাব করা হয়</footer>
@@ -236,7 +235,7 @@ const passages=[
 ];
 let target="",startedAt=0,timer=null,crashRevealTimer=null,finished=false,hasLiftedOff=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyLeaderboardUsers=[];
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[];
 const $=id=>document.getElementById(id);
 function setLeaderboardStatus(message,isError=false,showLogin=false){const status=$("leaderboardSyncMessage"),resultStatus=$("resultLeaderboardStatus");status.textContent=message;status.classList.toggle("sync-error",isError);resultStatus.textContent=message;resultStatus.classList.toggle("sync-error",isError);$("leaderboardLoginLink").hidden=!showLogin}
 function getGameMonthKey(){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit"}).formatToParts(new Date());return `${parts.find(part=>part.type==="year").value}-${parts.find(part=>part.type==="month").value}`}
@@ -337,14 +336,14 @@ function initializeSkyLeaderboard(){
 }
 function queueSkyGameScore(reason){
  if(!gameUser){setLeaderboardStatus("এই খেলায় পাওয়া পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",true,true);return}
- if(points<=0){setLeaderboardStatus("এই খেলায় যোগ করার মতো পয়েন্ট পাওয়া যায়নি।");return}
  if(!gameRunId)return;
+ const earned=points-skyQueuedPointTotal;
+ if(earned<=0)return;
  const queue=readSkyScoreQueue(gameUser.id);if(!queue)return;
- if(!queue.some(entry=>entry.id===gameRunId)){
-  queue.push({id:gameRunId,userId:gameUser.id,earned:points,wpm:calcAverageWpm(),createdAt:Date.now(),reason});
-  if(!writeSkyScoreQueue(gameUser.id,queue))return
- }
- setLeaderboardStatus("গেমের পয়েন্ট লিডারবোর্ডে যোগ হচ্ছে…");
+ queue.push({id:`${gameRunId}-${points}`,userId:gameUser.id,earned,wpm:calcAverageWpm(),createdAt:Date.now(),reason});
+ if(!writeSkyScoreQueue(gameUser.id,queue))return;
+ skyQueuedPointTotal=points;
+ setLeaderboardStatus("গেমের পয়েন্ট লিডারবোর্ডে লাইভ যোগ হচ্ছে…");
  processPendingSkyScores()
 }
 async function processPendingSkyScores(){
@@ -366,6 +365,7 @@ async function processPendingSkyScores(){
     return {...user,points:(Number(user.points)||0)+entry.earned,monthlyPoints:(validMonth&&user.monthlyPointsMonth===currentMonth?Number(user.monthlyPoints)||0:0)+entry.earned,monthlyPointsMonth:currentMonth,bestWpm:Math.max(Number(user.bestWpm)||0,entry.wpm),typingSkyScoreReceipts:receipts}
    },(error,committed,snapshot)=>{if(error)reject(error);else if(!committed&&!(snapshot.val()&&snapshot.val().typingSkyScoreReceipts&&snapshot.val().typingSkyScoreReceipts[entry.id]))reject(new Error("Leaderboard score transaction was not committed."));else resolve(snapshot.val())},false));
    updateGameUser(result,entry.userId);
+   queue=readSkyScoreQueue(entry.userId);if(!queue)return;
    queue=queue.filter(item=>item.id!==entry.id);
    if(!writeSkyScoreQueue(entry.userId,queue))return;
    const month=getGameMonthKey(),monthly=result.monthlyPointsMonth===month?Number(result.monthlyPoints)||0:0;
@@ -375,8 +375,6 @@ async function processPendingSkyScores(){
  finally{gameScoreQueueProcessing=false}
 }
 function pickPassage(){let p=passages[Math.floor(Math.random()*passages.length)];if(p===target)p=passages[(passages.indexOf(p)+1)%passages.length];return p}
-function multiplier(wpm){return wpm>40?3:wpm>30?2:wpm>20?1:1}
-function multiplierLabel(wpm){return wpm>40?"×3 · ৪১+ WPM":wpm>30?"×2 · ৩১–৪০ WPM":"×1 · ৩০ WPM পর্যন্ত"}
 function calcWpm(){if(!startedAt)return 0;const now=Date.now(),windowStart=now-5000;speedSamples=speedSamples.filter(sample=>sample.time>=windowStart);const recentCorrect=speedSamples.reduce((sum,sample)=>sum+sample.count,0),windowMs=Math.min(5000,Math.max(2000,now-startedAt));return Math.round(recentCorrect/5/(windowMs/60000))}
 function calcAverageWpm(){if(!startedAt)return 0;const mins=Math.max((Date.now()-startedAt)/60000,1/60);return Math.round((completedCorrect+correct)/5/mins)}
 function recordTypingSpeed(){const value=$("typing").value;let commonPrefix=0;while(commonPrefix<lastInputValue.length&&commonPrefix<value.length&&lastInputValue[commonPrefix]===value[commonPrefix])commonPrefix++;let correctAdded=0;for(let i=commonPrefix;i<value.length;i++)if(value[i]===target[i])correctAdded++;if(correctAdded)speedSamples.push({time:Date.now(),count:correctAdded});lastInputValue=value;return correctAdded}
@@ -395,10 +393,9 @@ function renderPrompt(){
 function setSkySpeed(wpm){const sky=$("sky");sky.classList.remove("speed-low","speed-medium","speed-high");sky.classList.add(wpm<10?"speed-low":wpm<=15?"speed-medium":"speed-high")}
 function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());countdown.textContent=Math.floor(remaining/60)+":"+String(remaining%60).padStart(2,"0");countdown.classList.toggle("running",Boolean(startedAt&&!finished));countdown.classList.toggle("urgent",Boolean(startedAt&&!finished&&remaining<=10))}
 function setPassage(){target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
-function positionMultiplierCallout(left,top){const sky=$("sky"),plane=$("plane"),callout=$("multiplierCallout");callout.style.left=Math.min(sky.clientWidth*left/100+plane.offsetWidth+8,sky.clientWidth-callout.offsetWidth-8)+"px";callout.style.top=Math.max(5,top-3)+"%"}
-function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="8%";$("plane").style.top="60%";$("plane").style.transform="rotate(-8deg)";$("trail").style.width="8%";$("multiplierCallout").textContent=multiplierLabel(0);positionMultiplierCallout(8,60);$("flightStatus").textContent="🛫 Ready for takeoff!"}
+function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="2%";$("plane").style.top="50%";$("plane").style.transform="translateY(-50%) rotate(-8deg)";$("trail").style.width="2%";$("flightStatus").textContent="🛫 Ready for takeoff!"}
 function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
-function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;$("typing").focus();$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;$("typing").focus();$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -407,24 +404,25 @@ function updateStats(){
  typed=completedTyped+currentTyped;correct=completedCorrect+currentCorrect;wrong=completedWrong+currentWrong;
  lastWpm=calcWpm();
  setSkySpeed(lastWpm);updateCountdown();
- // Award a base point for each pair of correctly typed characters, multiplied by current speed tier.
- points=Math.floor(correct/2)*multiplier(lastWpm);
+ // Match the leaderboard: one point per five correctly typed characters.
+ points=Math.floor(correct/5);
  const accuracy=typed?Math.round(correct/typed*100):100;
  $("wpm").textContent=lastWpm;$("typed").textContent=typed;$("accuracy").textContent=accuracy+"%";$("points").textContent=points;
  renderPrompt();
- const progress=Math.min(currentTyped/target.length,1);
- const left=Math.min(78,8+progress*66+Math.min(lastWpm,60)*.12);
+ const skyWidth=$("sky").clientWidth,planeWidth=$("plane").offsetWidth;
+ const maxLeft=(skyWidth-planeWidth)/skyWidth*100;
+ const left=2+(maxLeft-2)*Math.min(lastWpm,60)/60;
  if(lastWpm>=10)hasLiftedOff=true;
- const top=hasLiftedOff?Math.max(12,69-Math.min(lastWpm,60)*.88):60;
+ const top=hasLiftedOff?Math.max(31,69-Math.min(lastWpm,60)*.5):50;
  $("plane").style.left=left+"%";$("plane").style.top=top+"%";
- $("plane").style.transform=`rotate(${-8-Math.min(lastWpm,40)*.25}deg)`;
+ $("plane").style.transform=`translateY(-50%) rotate(${-8-Math.min(lastWpm,40)*.25}deg)`;
  $("trail").style.width=left+"%";
- $("multiplierCallout").textContent=multiplierLabel(lastWpm);positionMultiplierCallout(left,top);
  $("flightStatus").textContent=lastWpm>40?"🚀 Turbo flight! "+lastWpm+" WPM":lastWpm>30?"✈️ Fast flight! "+lastWpm+" WPM":lastWpm>20?"🌤️ Climbing! "+lastWpm+" WPM":"🛫 Keep typing! "+lastWpm+" WPM";
- $("message").textContent=`পয়েন্ট গুণক ${multiplierLabel(lastWpm)} • সঠিক ${correct} • ভুল ${wrong} • সময় ${timeText()}`;
+ $("message").textContent=`প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট • সঠিক ${correct} • ভুল ${wrong} • সময় ${timeText()}`;
+ queueSkyGameScore("live");
  if(timeUp){finishGame("time");return}
  const skyBounds=$("sky").getBoundingClientRect(),spikesBounds=$("hazards").getBoundingClientRect();
- const plannedPlaneBottom=skyBounds.top+$("sky").clientHeight*top/100+$("plane").offsetHeight;
+ const plannedPlaneBottom=skyBounds.top+$("sky").clientHeight*top/100+$("plane").offsetHeight/2;
  if(hasLiftedOff&&plannedPlaneBottom>=spikesBounds.top){finishGame("crash");return}
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
 }
