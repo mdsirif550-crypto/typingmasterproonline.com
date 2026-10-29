@@ -3,7 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typing Sky Game — Learn & Fly</title>
+<title>Free Typing Game Online | Typing Sky Game</title>
+<meta name="description" content="Play a free online typing game and improve your typing speed, accuracy, and WPM. Fly through the sky as you type. মোবাইল ও কম্পিউটারে খেলুন।">
+<meta name="keywords" content="typing game, typing games, free typing game, online typing game, typing speed game, typing practice game, টাইপিং গেম">
+<meta name="author" content="TypingMaster Pro Online">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#1677ef">
+<link rel="canonical" href="https://typingmasterproonline.com/typing_sky_game.html">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/app-icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TypingMaster Pro Online">
+<meta property="og:title" content="Free Typing Game Online | Typing Sky Game">
+<meta property="og:description" content="Play a free online typing game, improve your WPM, and fly through the sky as you type.">
+<meta property="og:url" content="https://typingmasterproonline.com/typing_sky_game.html">
+<meta property="og:image" content="https://typingmasterproonline.com/logo.png">
+<meta property="og:image:alt" content="TypingMaster Pro Online logo">
+<meta property="og:locale" content="en_BD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Typing Game Online | Typing Sky Game">
+<meta name="twitter:description" content="Improve your typing speed and accuracy in this free online typing game.">
+<meta name="twitter:image" content="https://typingmasterproonline.com/logo.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Typing Sky Game",
+  "url": "https://typingmasterproonline.com/typing_sky_game.html",
+  "description": "A free online typing game for practicing typing speed, accuracy, and WPM while flying through the sky.",
+  "applicationCategory": "GameApplication",
+  "genre": "Educational game",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires a modern HTML5-compatible browser",
+  "inLanguage": ["en", "bn"],
+  "image": "https://typingmasterproonline.com/logo.png",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TypingMaster Pro Online",
+    "url": "https://typingmasterproonline.com"
+  }
+}
+</script>
 <style>
 :root{--blue:#1677ef;--navy:#12345a;--sky:#dff3ff;--green:#16a765;--red:#e94f70;--gold:#ffbf24}
 *{box-sizing:border-box}
@@ -71,6 +116,9 @@ h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font
 .typing-light{position:absolute;bottom:20px;width:7px;height:7px;border-radius:50%;background:#c9f5ff;box-shadow:0 0 8px 3px #8be5ff,0 0 18px 5px #4ccaff88;animation:light-rise .95s ease-out forwards}
 @keyframes light-rise{0%{opacity:0;transform:translate3d(0,0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate3d(var(--drift),-125px,0) scale(0)}}
 .hud{position:absolute;right:12px;bottom:10px;left:auto;z-index:5;background:#101c35e8;border:1px solid #ffffff66;border-radius:12px;padding:8px 12px;color:#f5faff;font-size:13px;font-weight:800}
+.mobile-start-btn{display:none;position:absolute;top:50%;left:50%;z-index:8;transform:translate(-50%,-50%);white-space:nowrap;border:1px solid #ffffffa8;border-radius:999px;padding:13px 22px;background:#10294de8;color:#fff;font-size:16px;box-shadow:0 6px 24px #0008,0 0 0 5px #ffffff26}
+.mobile-start-btn:active{transform:translate(-50%,-50%) scale(.96)}
+.sky.game-running .mobile-start-btn{display:none}
 .ground{height:25px;background:repeating-linear-gradient(120deg,#72ce6a 0 35px,#8cdb73 35px 70px)}
 .playarea{padding:22px;min-width:0}
 .prompt{min-width:0;overflow-wrap:anywhere;white-space:normal;font-size:clamp(18px,2.6vw,24px);line-height:1.9;background:#f4faff;border:1px solid #d6eafb;border-radius:16px;padding:16px 18px;min-height:95px;letter-spacing:.2px}
@@ -108,9 +156,10 @@ button,select{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font
 @keyframes confetti-fall{0%{opacity:0;transform:translateY(-10px) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translateY(720px) rotate(680deg)}}
 .result-content{position:relative;z-index:1}
 .result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:17px 0}.result-item{padding:12px 7px;border-radius:13px;background:#ffffffed;border:1px solid #d6eafa}.result-item b{display:block;font-size:22px;color:#164d8b}.result-item span{font-size:12px;color:#68819a}
+.result-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
 .rules{margin-top:20px;background:#ffffffbd;border:1px solid #d7eaf9;border-radius:18px;padding:17px}.rules h3{margin:0 0 8px}.rules p{margin:6px 0;color:#536f8b;font-size:14px}
 footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
-@media(max-width:700px){.wrap{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.sky{height:225px}.controls{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(2,1fr)}.plane{font-size:43px}.multiplier-callout{max-width:42%;font-size:11px}.result-overlay{padding:10px}.result{max-height:calc(100vh - 20px);border-radius:18px}}
+@media(max-width:700px){.wrap{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.sky{height:225px}.controls{grid-template-columns:1fr}.desktop-start-btn{display:none}.mobile-start-btn{display:inline-flex;align-items:center;justify-content:center}.result-grid{grid-template-columns:repeat(2,1fr)}.plane{font-size:43px}.multiplier-callout{max-width:42%;font-size:11px}.result-overlay{padding:10px}.result{max-height:calc(100vh - 20px);border-radius:18px}.typing-active header,.typing-active .leaderboard-sync,.typing-active .sky-leaderboard,.typing-active .stats{display:none}.typing-active .wrap{padding-top:8px}.typing-active .playarea{padding:10px}.typing-active .prompt{max-height:76px;min-height:0;overflow:auto;padding:8px 10px;font-size:15px;line-height:1.5}.typing-active .duration-control,.typing-active #nextBtn,.typing-active .badges{display:none}.typing-active .controls{margin-top:8px}.typing-active textarea{min-height:100px;resize:none;font-size:16px;scroll-margin:12px}}
 @media(max-width:460px){.sky-leaderboard-list{gap:4px}.sky-top-player{gap:4px;padding:4px}.sky-top-player-avatar{width:24px;height:24px;flex-basis:24px}.sky-top-player-name{font-size:9px}.sky-top-player-points{font-size:8px}.sky-current-player{gap:5px;padding:5px}.sky-current-player-avatar{width:27px;height:27px;flex-basis:27px}.sky-current-player-info{gap:5px}.sky-current-player-label,.sky-current-player-name,.sky-current-player-points{font-size:9px}.sky-current-player-rank{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.result,.result h2,.celebration-confetti span,.countdown.urgent,.plane.crashed,.plane.crashed::before,.plane.crashed::after{animation:none}}
 </style>
@@ -151,6 +200,7 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
 <section class="game">
   <div class="sky" id="sky">
     <span class="countdown" id="countdown" aria-live="polite">১:০০</span>
+    <button class="mobile-start-btn" id="mobileStartBtn" type="button">▶ গেম শুরু</button>
     <div class="sun"></div><div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">☁</div>
     <div class="flight-path"></div><div class="trail" id="trail"></div>
     <div class="hazards" id="hazards" aria-label="Flight path spikes" aria-hidden="true"><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span></div>
@@ -175,7 +225,7 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
     <div class="controls">
       <textarea id="typing" placeholder="এখানে উপরের বাক্যটি টাইপ করুন… ✍️" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></textarea>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-content:start">
-        <button class="primary" id="startBtn">▶ গেম শুরু</button>
+        <button class="primary desktop-start-btn" id="startBtn">▶ গেম শুরু</button>
         <button class="secondary" id="nextBtn">নতুন বাক্য ↻</button>
       </div>
     </div>
@@ -206,14 +256,17 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
         <div class="result-item"><span>Flight Level</span><b id="rLevel">Beginner</b></div>
         <div class="result-item"><span>Practice Time</span><b id="rTime">0:00</b></div>
       </div>
-      <button class="primary" id="againBtn">✈ আবার খেলুন</button>
+      <div class="result-actions">
+        <button class="primary" id="againBtn">✈ আবার খেলুন</button>
+        <button class="secondary" id="closeResultBtn">🏁 গেম ওভার</button>
+      </div>
     </div>
   </div>
 </div>
 
 <section class="rules">
   <h3>🎮 কীভাবে খেলবেন?</h3>
-  <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
+  <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন—মোবাইলে ব্যানারের ওপরের বাটন থেকেও শুরু করা যাবে। গেম চলার সময় মিউজিক বাজবে। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
   <p>২. বিমানটি ব্যানারের বাঁ দিকের শুরু থেকে, উচ্চতার ঠিক মাঝখানে শুরু হবে। সাম্প্রতিক ৫ সেকেন্ডের WPM যত বাড়বে, বিমান তত সামনে এগোবে ও উপরে উঠবে; গতি কমলে পিছিয়ে নিচে নামবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে। নিচের কাঁটায় লাগলে বিমান আগুন ধরে ফ্লাইট শেষ হবে।</p>
   <p>৩. মূল টাইপিং লিডারবোর্ডের নিয়মেই প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট পাবেন। গেম চলার সময় পয়েন্ট লিডারবোর্ডে যোগ হবে; WPM বিমানের সামনে এগোনো ও উচ্চতা নিয়ন্ত্রণ করে।</p>
   <p>৪. নির্ভুলভাবে টাইপ করুন, নিজের স্পিড ও Accuracy বাড়ান। সময় শেষ হলে ফলাফল দেখানো হবে।</p>
@@ -235,8 +288,65 @@ const passages=[
 ];
 let target="",startedAt=0,timer=null,crashRevealTimer=null,finished=false,hasLiftedOff=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[];
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
 const $=id=>document.getElementById(id);
+function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
+ const oscillator=context.createOscillator(),gain=context.createGain();
+ oscillator.type=type;oscillator.frequency.setValueAtTime(frequency,startAt);
+ gain.gain.setValueAtTime(.0001,startAt);gain.gain.linearRampToValueAtTime(volume,startAt+.035);gain.gain.exponentialRampToValueAtTime(.0001,startAt+duration);
+ oscillator.connect(gain);gain.connect(context.destination);oscillator.start(startAt);oscillator.stop(startAt+duration+.02)
+}
+function playGameMusicStep(){
+ const context=gameAudioContext;if(!context||context.state!=="running")return;
+ const melody=[523.25,659.25,783.99,659.25,587.33,698.46,783.99,698.46],startAt=context.currentTime+.03;
+ playGameTone(context,melody[gameAudioStep%melody.length],startAt,.31,.11,"triangle");
+ if(gameAudioStep%4===0)playGameTone(context,gameAudioStep%8===0?261.63:349.23,startAt,.95,.07);
+ gameAudioStep++
+}
+function startGameMusic(){
+ const AudioContextConstructor=window.AudioContext;
+ if(!AudioContextConstructor){console.error("Web Audio API is not supported; game music cannot play.");return false}
+ try{
+  gameAudioContext=new AudioContextConstructor();gameAudioStep=0;
+  const context=gameAudioContext;
+  const beginMusic=()=>{if(gameAudioContext!==context||context.state!=="running")return;playGameMusicStep();gameAudioTimer=window.setInterval(playGameMusicStep,360)};
+  if(context.state==="running")beginMusic();
+  else context.resume().then(beginMusic).catch(error=>console.error("Could not start game music:",error));
+  return true
+ }catch(error){console.error("Could not initialize game music:",error);return false}
+}
+function stopGameMusic(){
+ if(gameAudioTimer!==null){clearInterval(gameAudioTimer);gameAudioTimer=null}
+ const context=gameAudioContext;gameAudioContext=null;
+ if(context&&context.state!=="closed")context.close().catch(error=>console.error("Could not stop game music:",error))
+}
+function scheduleCrashSound(context){
+ try{
+  const startAt=context.currentTime,noiseDuration=.8,noise=context.createBuffer(1,Math.floor(context.sampleRate*noiseDuration),context.sampleRate),samples=noise.getChannelData(0);
+  for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
+  const noiseSource=context.createBufferSource(),filter=context.createBiquadFilter(),noiseGain=context.createGain();
+  noiseSource.buffer=noise;filter.type="lowpass";filter.frequency.setValueAtTime(900,startAt);filter.frequency.exponentialRampToValueAtTime(90,startAt+noiseDuration);
+  noiseGain.gain.setValueAtTime(.55,startAt);noiseGain.gain.exponentialRampToValueAtTime(.0001,startAt+noiseDuration);
+  noiseSource.connect(filter);filter.connect(noiseGain);noiseGain.connect(context.destination);noiseSource.start(startAt);noiseSource.stop(startAt+noiseDuration);
+  const boom=context.createOscillator(),boomGain=context.createGain();
+  boom.type="sine";boom.frequency.setValueAtTime(105,startAt);boom.frequency.exponentialRampToValueAtTime(38,startAt+.65);
+  boomGain.gain.setValueAtTime(.6,startAt);boomGain.gain.exponentialRampToValueAtTime(.0001,startAt+.7);
+  boom.connect(boomGain);boomGain.connect(context.destination);boom.start(startAt);boom.stop(startAt+.72);
+  window.setTimeout(()=>{if(context.state!=="closed")context.close().catch(error=>console.error("Could not close crash sound audio:",error))},900)
+ }catch(error){console.error("Could not play the crash sound:",error);if(context.state!=="closed")context.close().catch(closeError=>console.error("Could not close crash sound audio:",closeError))}
+}
+function playCrashSound(){
+ if(gameAudioTimer!==null){clearInterval(gameAudioTimer);gameAudioTimer=null}
+ const AudioContextConstructor=window.AudioContext||window.webkitAudioContext;
+ if(!AudioContextConstructor){console.error("Web Audio API is not supported; crash sound cannot play.");return}
+ try{
+  const context=gameAudioContext&&gameAudioContext.state!=="closed"?gameAudioContext:new AudioContextConstructor();
+  gameAudioContext=context;
+  const play=()=>{if(gameAudioContext!==context)return;gameAudioContext=null;scheduleCrashSound(context)};
+  if(context.state==="running")play();
+  else context.resume().then(play).catch(error=>{console.error("Could not resume audio for the crash sound:",error);if(gameAudioContext===context)gameAudioContext=null})
+ }catch(error){console.error("Could not initialize the crash sound:",error)}
+}
 function setLeaderboardStatus(message,isError=false,showLogin=false){const status=$("leaderboardSyncMessage"),resultStatus=$("resultLeaderboardStatus");status.textContent=message;status.classList.toggle("sync-error",isError);resultStatus.textContent=message;resultStatus.classList.toggle("sync-error",isError);$("leaderboardLoginLink").hidden=!showLogin}
 function getGameMonthKey(){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit"}).formatToParts(new Date());return `${parts.find(part=>part.type==="year").value}-${parts.find(part=>part.type==="month").value}`}
 function renderSkyTopThree(users){
@@ -392,10 +502,10 @@ function renderPrompt(){
 }
 function setSkySpeed(wpm){const sky=$("sky");sky.classList.remove("speed-low","speed-medium","speed-high");sky.classList.add(wpm<10?"speed-low":wpm<=15?"speed-medium":"speed-high")}
 function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());countdown.textContent=Math.floor(remaining/60)+":"+String(remaining%60).padStart(2,"0");countdown.classList.toggle("running",Boolean(startedAt&&!finished));countdown.classList.toggle("urgent",Boolean(startedAt&&!finished&&remaining<=10))}
-function setPassage(){target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
+function setPassage(){stopGameMusic();document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
 function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="2%";$("plane").style.top="50%";$("plane").style.transform="translateY(-50%) rotate(-8deg)";$("trail").style.width="2%";$("flightStatus").textContent="🛫 Ready for takeoff!"}
 function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
-function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;$("typing").focus();$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -421,30 +531,32 @@ function updateStats(){
  $("message").textContent=`প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট • সঠিক ${correct} • ভুল ${wrong} • সময় ${timeText()}`;
  queueSkyGameScore("live");
  if(timeUp){finishGame("time");return}
- const skyBounds=$("sky").getBoundingClientRect(),spikesBounds=$("hazards").getBoundingClientRect();
- const plannedPlaneBottom=skyBounds.top+$("sky").clientHeight*top/100+$("plane").offsetHeight/2;
- if(hasLiftedOff&&plannedPlaneBottom>=spikesBounds.top){finishGame("crash");return}
+ const spikesBounds=$("hazards").getBoundingClientRect();
+ const planeBounds=$("plane").getBoundingClientRect();
+ if(hasLiftedOff&&planeBounds.bottom>=spikesBounds.top){finishGame("crash");return}
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
 }
 function finishGame(reason="time"){
- if(finished)return;finished=true;clearInterval(timer);$("typing").disabled=true;
+ if(finished)return;finished=true;clearInterval(timer);document.body.classList.remove("typing-active");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
  $("duration").disabled=false;
  updateCountdown();
- if(reason==="crash"){$("flightStatus").textContent="💥 কাঁটায় লেগে বিমান আউট!";$("againBtn").textContent="🔁 আবার শুরু করুন";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
+ if(reason==="crash"){$("flightStatus").textContent="💥 বিমান বিধ্বস্ত!";$("againBtn").textContent="🔁 আবার চেষ্টা করুন";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
  else{$("flightStatus").textContent="⏱️ সময় শেষ!";$("againBtn").textContent="✈ আবার খেলুন";updateFinal(reason);$("againBtn").focus()}
 }
 function updateFinal(reason){
  const wpm=calcAverageWpm(),acc=typed?Math.round(correct/typed*100):100;
  $("rWpm").textContent=wpm;$("rTyped").textContent=typed;$("rAccuracy").textContent=acc+"%";$("rPoints").textContent=points;$("rCorrect").textContent=correct;$("rWrong").textContent=wrong;$("rLevel").textContent=wpm>40?"Expert":wpm>30?"Advanced":wpm>20?"Intermediate":"Beginner";$("rTime").textContent=elapsedText();
- $("resultTitle").textContent=reason==="crash"?"💥 বিমান কাঁটায় লেগেছে!":"🎉 অভিনন্দন! সময় শেষ!";
- $("resultMessage").textContent=reason==="crash"?"আপনি আউট হয়ে গেছেন। আবার শুরু করে আরও দ্রুত টাইপ করুন!":"নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!";
- $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"কাঁটায় লেগে গেম শেষ! আবার শুরু করুন।":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";queueSkyGameScore(reason);
+ $("resultTitle").textContent=reason==="crash"?"💥 বিমান বিধ্বস্ত!":"🎉 অভিনন্দন! সময় শেষ!";
+ $("resultMessage").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!";
+ $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";queueSkyGameScore(reason);
 }
 $("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats()});
 $("startBtn").addEventListener("click",()=>{setPassage();startGame()});
+$("mobileStartBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("duration").addEventListener("change",()=>{durationMs=Number($("duration").value)*60000;updateCountdown()});
 $("nextBtn").addEventListener("click",()=>{if(startedAt&&!finished){clearInterval(timer);startedAt=0;finished=false;$("typing").disabled=true;$("duration").disabled=false;$("startBtn").textContent="▶ গেম শুরু";correct=0;wrong=0;typed=0;points=0;completedCorrect=0;completedWrong=0;completedTyped=0;speedSamples=[]}setPassage()});
 $("againBtn").addEventListener("click",()=>{setPassage();startGame()});
+$("closeResultBtn").addEventListener("click",()=>{clearTimeout(crashRevealTimer);startedAt=0;finished=false;$("typing").disabled=true;$("duration").disabled=false;$("startBtn").textContent="▶ গেম শুরু";setPassage()});
 window.addEventListener("storage",event=>{if(event.key==="currentUser")listenForGameAccount()});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){listenForGameAccount();processPendingSkyScores()}});
 window.addEventListener("online",processPendingSkyScores);
