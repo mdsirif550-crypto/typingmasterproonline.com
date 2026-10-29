@@ -268,7 +268,7 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
 <section class="rules">
   <h3>🎮 কীভাবে খেলবেন?</h3>
   <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন—মোবাইলে ব্যানারের ওপরের বাটন থেকেও শুরু করা যাবে। গেম চলার সময় মিউজিক বাজবে। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
-  <p>২. বিমানটি ব্যানারের বাঁ দিকের শুরু থেকে, উচ্চতার ঠিক মাঝখানে শুরু হবে। সাম্প্রতিক ৫ সেকেন্ডের WPM যত বাড়বে, বিমান তত সামনে এগোবে ও উপরে উঠবে; গতি কমলে পিছিয়ে নিচে নামবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে। নিচের কাঁটায় লাগলে বিমান আগুন ধরে ফ্লাইট শেষ হবে।</p>
+  <p>২. বিমানটি ব্যানারের বাঁ দিকে ও মাঝারি উচ্চতায় শুরু হবে। সাম্প্রতিক ৫ সেকেন্ডের WPM বাড়লে বিমান সামনে এগিয়ে উপরে উঠবে; WPM ০ হলে বিমান নিচে নামবে এবং ১.৫ সেকেন্ডেও টাইপিং শুরু না করলে কাঁটায় ধাক্কা খেয়ে গেম শেষ হবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে।</p>
   <p>৩. মূল টাইপিং লিডারবোর্ডের নিয়মেই প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট পাবেন। গেম চলার সময় পয়েন্ট লিডারবোর্ডে যোগ হবে; WPM বিমানের সামনে এগোনো ও উচ্চতা নিয়ন্ত্রণ করে।</p>
   <p>৪. নির্ভুলভাবে টাইপ করুন, নিজের স্পিড ও Accuracy বাড়ান। সময় শেষ হলে ফলাফল দেখানো হবে।</p>
 </section>
@@ -287,7 +287,7 @@ const passages=[
 "Every expert was once a beginner. Keep learning, keep typing, and celebrate every small improvement.",
 "Accuracy is important when you type. Slow down when needed, then build speed with regular practice."
 ];
-let target="",startedAt=0,timer=null,crashRevealTimer=null,finished=false,hasLiftedOff=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
+let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
 let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
 const $=id=>document.getElementById(id);
@@ -480,7 +480,7 @@ async function processPendingSkyScores(){
    queue=queue.filter(item=>item.id!==entry.id);
    if(!writeSkyScoreQueue(entry.userId,queue))return;
    const month=getGameMonthKey(),monthly=result.monthlyPointsMonth===month?Number(result.monthlyPoints)||0:0;
-   setLeaderboardStatus(`${entry.earned} পয়েন্ট লিডারবোর্ডে যোগ হয়েছে • মাসিক মোট ${monthly}`,false)
+   setLeaderboardStatus(`পয়েন্ট লিডারবোর্ডে যোগ হয়েছে • মাসিক মোট ${monthly}`,false)
   }
  }catch(error){console.error("Could not add sky game points to the leaderboard:",error);setLeaderboardStatus("পয়েন্ট লিডারবোর্ডে সেভ হয়নি; সংযোগ ফিরলে আবার চেষ্টা হবে।",true)}
  finally{gameScoreQueueProcessing=false}
@@ -506,7 +506,7 @@ function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,M
 function setPassage(){stopGameMusic();document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
 function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="2%";$("plane").style.top="50%";$("plane").style.transform="translateY(-50%) rotate(-8deg)";$("trail").style.width="2%";$("flightStatus").textContent="🛫 Ready for takeoff!"}
 function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
-function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;finished=false;hasLiftedOff=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -514,6 +514,7 @@ function updateStats(){
  for(let i=0;i<v.length;i++){if(v[i]===target[i])currentCorrect++;else currentWrong++}
  typed=completedTyped+currentTyped;correct=completedCorrect+currentCorrect;wrong=completedWrong+currentWrong;
  lastWpm=calcWpm();
+ if(correct>0&&lastWpm===0){if(!zeroWpmSince)zeroWpmSince=Date.now()}else zeroWpmSince=0;
  setSkySpeed(lastWpm);updateCountdown();
  // Match the leaderboard: one point per five correctly typed characters.
  points=Math.floor(correct/5);
@@ -523,8 +524,8 @@ function updateStats(){
  const skyWidth=$("sky").clientWidth,planeWidth=$("plane").offsetWidth;
  const maxLeft=(skyWidth-planeWidth)/skyWidth*100;
  const left=2+(maxLeft-2)*Math.min(lastWpm,60)/60;
- if(lastWpm>=10)hasLiftedOff=true;
- const top=hasLiftedOff?Math.max(31,69-Math.min(lastWpm,60)*.5):50;
+ const zeroWpmElapsed=zeroWpmSince?Date.now()-zeroWpmSince:0;
+ const top=zeroWpmSince?50+15*Math.min(1,zeroWpmElapsed/1500):Math.max(28,50-Math.min(lastWpm,60)*.4);
  $("plane").style.left=left+"%";$("plane").style.top=top+"%";
  $("plane").style.transform=`translateY(-50%) rotate(${-8-Math.min(lastWpm,40)*.25}deg)`;
  $("trail").style.width=left+"%";
@@ -532,9 +533,7 @@ function updateStats(){
  $("message").textContent=`প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট • সঠিক ${correct} • ভুল ${wrong} • সময় ${timeText()}`;
  queueSkyGameScore("live");
  if(timeUp){finishGame("time");return}
- const spikesBounds=$("hazards").getBoundingClientRect();
- const planeBounds=$("plane").getBoundingClientRect();
- if(hasLiftedOff&&planeBounds.bottom>=spikesBounds.top){finishGame("crash");return}
+ if(zeroWpmSince&&zeroWpmElapsed>=1500){finishGame("crash");return}
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
 }
 function finishGame(reason="time"){
