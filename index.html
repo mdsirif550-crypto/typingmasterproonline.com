@@ -13,7 +13,7 @@
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title> Free Typing Practice & live site - TypingMaster Pro Online </title>
+  <title>TypingMaster Pro Online - Free Typing Practice & live site </title>
   <meta name="google-site-verification" content="q1fo44ipDTHffmhZwriPwwfS4_ClOT5QcvfESIzFPtM" />
   <meta name="description" content="TypingMaster Pro Online is world best free typing master. Test your speed on our global typing leaderboard, practice English typing, and improve your WPM.">
   <meta name="keywords" content="typing leaderboard, global typing leaderboard, typing leaderboard competition, online typing leaderboard, TypingMaster Pro Online, typingmasterproonline.com, typing master pro online, typing practice, earn money typing">
@@ -33,8 +33,8 @@
   
   <!-- PWA মেনিফেস্ট লিংক -->
   <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/png" href="https://typingmasterproonline.com/logo.png">
-<link rel="shortcut icon" type="image/png" href="https://typingmasterproonline.com/logo.png">
+<link rel="icon" type="image/png" href="https://typingmasterproonline.com/logo.png?v=2">
+<link rel="shortcut icon" type="image/png" href="https://typingmasterproonline.com/logo.png?v=2">
 
   <!-- স্ট্রাকচারড ডাটা স্কিমা (Schema.org JSON-LD) -->
 <script type="application/ld+json">
@@ -219,6 +219,8 @@
     .home-top-three-join:hover { filter: brightness(1.08); }
     .home-top-three-sky { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(125,211,252,0.45); border-radius: 999px; background: linear-gradient(135deg, #0369a1, #0e7490); color: #fff; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
     .home-top-three-sky:hover { filter: brightness(1.12); }
+    .home-top-three-racer { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(253,224,71,0.55); border-radius: 999px; background: linear-gradient(135deg, #b91c1c, #ea580c); color: #fff; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
+    .home-top-three-racer:hover { filter: brightness(1.12); }
     .home-top-three-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 7px; }
     .home-top-player { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 3px; padding: 6px; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: linear-gradient(160deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.8)); color: #fff; text-align: center; text-decoration: none; }
     .home-top-player[data-rank="1"] { order: 2; border-color: rgba(250, 204, 21, 0.55); background: linear-gradient(160deg, rgba(120, 83, 17, 0.42), rgba(30, 41, 59, 0.88)); }
@@ -232,12 +234,16 @@
     .home-top-player-points { color: #6ee7b7; font-size: 9px; font-weight: 800; }
     .home-top-three-status { padding: 7px 6px; color: var(--text-muted); font-size: 11px; text-align: center; }
     .home-top-three-status[hidden], .home-top-three-list[hidden] { display: none; }
-    .welcome-image-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+    .welcome-image-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
     .welcome-image-action { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: #082f49; box-shadow: 0 5px 14px rgba(0,0,0,0.24); color: #fff; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
     .welcome-image-action:hover { transform: translateY(-3px); border-color: #7dd3fc; box-shadow: 0 9px 20px rgba(0,0,0,0.32); }
     .welcome-image-action:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
     .welcome-image-action img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .welcome-image-action span { display: block; padding: 7px 8px; background: linear-gradient(135deg, #075985, #12345a); font-size: 12px; font-weight: 900; line-height: 1.3; text-align: center; }
+    .welcome-image-action-racer-art { display: grid; aspect-ratio: 16 / 9; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 35%, rgba(251,191,36,0.48), transparent 42%), linear-gradient(165deg, #38bdf8 0%, #0c4a6e 52%, #334155 52%, #0f172a 100%); }
+    .welcome-image-action-racer-art::before { content: ""; width: 100%; height: 13px; align-self: end; grid-area: 1 / 1; background: repeating-linear-gradient(90deg, #f8fafc 0 22px, transparent 22px 40px); opacity: 0.9; }
+    .welcome-image-action-racer-art strong { grid-area: 1 / 1; color: #fff; font-size: clamp(24px, 5vw, 42px); filter: drop-shadow(0 5px 4px rgba(0,0,0,.45)); }
+    .welcome-image-action-racer span { background: linear-gradient(135deg, #b91c1c, #ea580c); }
     .welcome-banner-controls .adu-office-app-widget { position: static; flex: 0 0 auto; max-width: none; padding: 3px 22px 3px 4px; border-color: rgba(255,255,255,0.25); border-radius: 999px; }
     .welcome-banner-controls .adu-office-app-link { gap: 4px; font-size: 10px; }
     .welcome-banner-controls .adu-office-app-link img { width: 24px; height: 24px; }
@@ -392,6 +398,7 @@
       .home-top-three-countdown { font-size: 9px; }
       .home-top-three-join { padding: 5px 6px; font-size: 9px; }
       .home-top-three-sky { padding: 5px 6px; font-size: 9px; }
+      .home-top-three-racer { padding: 5px 6px; font-size: 9px; }
       .home-top-three-header .home-top-three-title { flex: 0 0 100%; }
       .home-top-three-list { gap: 5px; }
       .welcome-image-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 9px; }
@@ -535,6 +542,7 @@
         <a class="welcome-banner-about" href="/about.html">About Us</a>
         <a class="home-top-three-join" href="typing_Master_Pro.html"><span aria-hidden="true">👑</span>Join Leaderboard - Click Here</a>
         <a class="home-top-three-sky" href="typing_sky_game.html"><span aria-hidden="true">✈️</span>Typing Sky Game</a>
+        <a class="home-top-three-racer" href="typing_car_racer.html"><span aria-hidden="true">🏎️</span>Typing Car Racer</a>
         <div class="adu-office-app-widget" id="aduOfficeAppWidget">
           <a class="adu-office-app-link" href="https://play.google.com/store/apps/details?id=com.smart.aduoffice" target="_blank" rel="noopener noreferrer" aria-label="Google Play-এ Adu Office অ্যাপ ডাউনলোড করুন">
             <img src="adu-office-logo.png" alt="Adu Office logo">
@@ -557,13 +565,17 @@
       <a id="mobile-notice-cta" class="mobile-notice-cta" href="typing_Master_Pro.html#typing-input">🏆 Type on mobile — join the leaderboard</a>
     </aside>
     <nav class="welcome-image-actions" aria-label="Typing practice and game shortcuts">
+      <a class="welcome-image-action" href="#typingPanel" aria-label="Start typing practice on this first screen">
+        <img src="home-action-typing-practice.jpg" alt="" loading="lazy" decoding="async">
+        <span>⌨️ Start Typing Practice</span>
+      </a>
       <a class="welcome-image-action" href="typing_sky_game.html" aria-label="Open Typing Sky Game">
         <img src="home-action-sky-game.jpg" alt="" loading="lazy" decoding="async">
         <span>✈️ Typing Sky Game</span>
       </a>
-      <a class="welcome-image-action" href="#typingPanel" aria-label="Start typing practice on this first screen">
-        <img src="home-action-typing-practice.jpg" alt="" loading="lazy" decoding="async">
-        <span>⌨️ Start Typing Practice</span>
+       <a class="welcome-image-action" href="typing_car_racer.html" aria-label="Open Typing Car Racer">
+        <img src="home-action-car_racer.jpg" alt="" loading="lazy" decoding="async">
+        <span>🏁 Typing Car Racer</span>
       </a>
       <a class="welcome-image-action" href="typing_Master_Pro.html" aria-label="Open the typing leaderboard">
         <img src="home-action-leaderboard.jpg" alt="" loading="lazy" decoding="async">
