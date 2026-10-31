@@ -8,8 +8,10 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+
     gtag('config', 'G-0LGMNWJX19');
   </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>TypingMaster Pro Online - Free Typing Practice & live site </title>
   <meta name="google-site-verification" content="q1fo44ipDTHffmhZwriPwwfS4_ClOT5QcvfESIzFPtM" />
@@ -472,7 +474,7 @@
           <h1>TypingMaster Pro <span>Online</span></h1>
         </div>
         <div class="welcome-banner-account">
-          <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()">Login / Register</button>
+          <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" hidden aria-hidden="true">Login / Register</button>
           <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" hidden>
             <img id="welcomeBannerProfileAvatar" src="logo.png" alt="">
             <span id="welcomeBannerProfileName"></span>
@@ -532,7 +534,7 @@
         </div>
         <div class="welcome-banner-profile-actions" id="welcomeBannerProfileActions" hidden>
           <a class="welcome-banner-profile-join" href="typing_Master_Pro.html#typing-input">🏆 Join Leaderboard</a>
-          <a class="welcome-banner-profile-login" href="typing_Master_Pro.html?openLogin=1" hidden>Login / Register</a>
+          <button class="welcome-banner-profile-login" id="welcomeBannerProfileLogin" type="button" onclick="openHomeAuth()" hidden>Login / Register</button>
           <button class="welcome-banner-profile-logout" id="welcomeBannerLogout" type="button" onclick="logoutFromHome()">Log out</button>
         </div>
       </div>
@@ -758,6 +760,18 @@
     let homeLeaderboardUsers = [];
     let liveViewerCount = 0;
     let liveTypingCount = 0;
+    function getSharedGuestTypingId() {
+      try {
+        const existing = localStorage.getItem("typingMasterGuestPresenceId");
+        if (existing && String(existing).trim()) return String(existing).trim();
+        const nextId = `guest_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+        localStorage.setItem("typingMasterGuestPresenceId", nextId);
+        return nextId;
+      } catch (error) {
+        console.warn("Could not create a shared guest typing id:", error);
+        return `guest_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+      }
+    }
     let demoViewerCount = Math.floor(Math.random() * 1301) + 150;
     let demoTypingCount = Math.floor(Math.random() * 51) + 110;
     let demoViewerDirection = Math.random() < 0.5 ? -1 : 1;
@@ -943,7 +957,7 @@
         } catch (error) {
           console.error("Could not read the signed-in typing profile:", error);
         }
-        activityAnonymousUserId = typingUserId || activityDatabase.ref("online_users").push().key;
+        activityAnonymousUserId = typingUserId || getSharedGuestTypingId();
         activityTypingRef = activityDatabase.ref(`online_users/${activityAnonymousUserId}/connections/${activitySessionId}`);
 
         activityDatabase.ref(".info/connected").on("value", snapshot => {
@@ -959,8 +973,8 @@
           ]).then(() => Promise.all([
             activityViewerRef.set({ connectedAt: firebase.database.ServerValue.TIMESTAMP }),
             activityTypingRef.set({
-              uid: typingUserId || null,
-              name: typingUserId || null,
+              uid: typingUserId || activityAnonymousUserId,
+              name: typingUserId ? (JSON.parse(localStorage.getItem("currentUser") || "null")?.name || typingUserId) : "Guest",
               online: true,
               typing: false,
               wpm: 0,
@@ -1126,9 +1140,15 @@
     function playKeySound(isCorrect) { try { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if (isCorrect) { osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.08, audioCtx.currentTime); } else { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(130, audioCtx.currentTime); gain.gain.setValueAtTime(0.12, audioCtx.currentTime); } gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } catch (e) {} }
     function updateWelcomeBannerProfile(userOverride, users = []) {
       const loginLink = document.querySelector(".welcome-banner-login");
+      const profileLoginButton = document.getElementById("welcomeBannerProfileLogin");
       const profileLink = document.getElementById("welcomeBannerProfile");
       const profileName = document.getElementById("welcomeBannerProfileName");
       const profileAvatar = document.getElementById("welcomeBannerProfileAvatar");
+      const detailsPanel = document.getElementById("welcomeBannerProfileDetails");
+      const actionPanel = document.getElementById("welcomeBannerProfileActions");
+      const logoutButton = document.getElementById("welcomeBannerLogout");
+      const editToggle = document.getElementById("welcomeBannerEditToggle");
+      const editForm = document.getElementById("welcomeBannerEditForm");
       let user = userOverride;
       if (user === undefined) {
         try {
@@ -1139,13 +1159,34 @@
       }
 
       if (!user || typeof user !== "object" || !user.id) {
-        loginLink.hidden = false;
-        profileLink.hidden = true;
-        document.getElementById("welcomeBannerProfileDetails").hidden = true;
-        document.getElementById("welcomeBannerProfileActions").hidden = true;
+        if (loginLink) {
+          loginLink.hidden = true;
+          loginLink.setAttribute("aria-hidden", "true");
+        }
+        if (profileLoginButton) profileLoginButton.hidden = false;
+        if (profileLink) profileLink.hidden = true;
+        detailsPanel.hidden = false;
+        actionPanel.hidden = false;
+        if (logoutButton) logoutButton.hidden = true;
+        if (editToggle) editToggle.hidden = true;
+        if (editForm) editForm.hidden = true;
+        document.getElementById("welcomeBannerDetailsName").textContent = "Guest account";
+        document.getElementById("welcomeBannerDetailsId").textContent = "Login or register to save your profile";
+        document.getElementById("welcomeBannerDetailsBio").textContent = "Guest mode is active while you use the site.";
+        document.getElementById("welcomeBannerDetailsAvatar").src = "logo.png";
+        document.getElementById("welcomeBannerProfileActions").hidden = false;
         return;
       }
 
+      if (loginLink) {
+        loginLink.hidden = true;
+        loginLink.setAttribute("aria-hidden", "true");
+      }
+      if (profileLoginButton) profileLoginButton.hidden = true;
+      if (logoutButton) logoutButton.hidden = false;
+      if (editToggle) editToggle.hidden = false;
+      detailsPanel.hidden = false;
+      actionPanel.hidden = false;
       profileName.textContent = String(user.name || user.id);
       profileAvatar.onerror = () => {
         profileAvatar.onerror = null;
@@ -1190,11 +1231,14 @@
       document.getElementById("welcomeBannerDetailsWpm").textContent = String(Number(user.bestWpm) || 0);
       document.getElementById("welcomeBannerEventLabel").textContent = `${currentMonth} Monthly Typing Event`;
       document.getElementById("welcomeBannerProfileActions").hidden = false;
-      document.querySelector(".welcome-banner-profile-login").hidden = true;
-      document.getElementById("welcomeBannerLogout").hidden = false;
+      if (profileLoginButton) profileLoginButton.hidden = true;
+      if (logoutButton) logoutButton.hidden = false;
       profileLink.setAttribute("aria-label", `Show ${String(user.name || user.id)}'s typing profile`);
-      loginLink.hidden = true;
-      profileLink.hidden = false;
+      if (loginLink) {
+        loginLink.hidden = true;
+        loginLink.setAttribute("aria-hidden", "true");
+      }
+      if (profileLink) profileLink.hidden = false;
     }
 
     function openHomeAuth() {
