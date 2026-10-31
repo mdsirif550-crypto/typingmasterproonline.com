@@ -164,7 +164,12 @@
 
             <!-- Users Tab -->
             <div id="view-users" class="view-section hidden">
-                <h2 class="text-2xl font-black text-slate-800 mb-4">👥 Manage Users</h2>
+                <div class="flex flex-col gap-3 mb-4 md:flex-row md:items-center md:justify-between">
+                    <h2 class="text-2xl font-black text-slate-800">👥 Manage Users</h2>
+                    <div class="flex items-center gap-2 w-full md:max-w-sm">
+                        <input id="user-search-input" type="text" placeholder="Search by User ID" class="slim-input !mb-0" aria-label="Search users by ID" oninput="userSearchTerm = this.value.trim(); renderUsers();">
+                    </div>
+                </div>
                 <div class="glass overflow-x-auto">
                     <table class="w-full text-xs">
                         <thead class="bg-slate-100 text-slate-600 uppercase">
@@ -280,7 +285,8 @@
             { value: 'gold_check', label: 'Gold seal' },
             { value: 'winged_check', label: 'Blue wings + star' },
             { value: 'blue_seal', label: 'Blue seal check' },
-            { value: 'red_seal', label: 'Red glitter check' }
+            { value: 'red_seal', label: 'Red glitter check' },
+            { value: 'blue_tick_mark', label: 'Blue Tick Mark' }
         ];
 
         function escapeAdminHtml(value) {
@@ -303,6 +309,7 @@
         let chatListListener = null;
         let chatMsgListener = null;
         let verificationRequests = {};
+        let userSearchTerm = '';
 
         // ============================================
         // LOGIN
@@ -443,7 +450,12 @@
 
         function renderUsers() {
             const tbody = document.getElementById('users-list');
-            tbody.innerHTML = allUsers.map(u => {
+            const query = String(userSearchTerm || '').trim().toLowerCase();
+            const filteredUsers = !query
+                ? allUsers
+                : allUsers.filter(user => String(user.id || '').toLowerCase().includes(query));
+
+            tbody.innerHTML = filteredUsers.map(u => {
                 const isOnline = isUserOnline(u.id);
                 const userId = escapeAdminHtml(u.id);
                 const badgeType = u.verifiedBadge === true
@@ -468,7 +480,7 @@
                         <button onclick="openChat('${userId}')" class="btn btn-success btn-sm">Chat</button>
                     </td>
                 </tr>`;
-            }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">No users</td></tr>';
+            }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">No users found for this ID search.</td></tr>';
             tbody.querySelectorAll('[data-save-badge]').forEach(button => {
                 button.addEventListener('click', () => {
                     const userId = button.dataset.saveBadge;
