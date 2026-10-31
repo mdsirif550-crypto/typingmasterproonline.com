@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="bng">
 <head>
-      <!-- Google tag (gtag.js) - ট্র্যাকিং সচল রাখার জন্য -->
-  <script async src="https://googletagmanager.com"></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LGMNWJX19"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -12,7 +12,7 @@
 
   <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>leaderboard Typing Master Pro online- Premium English &amp; Bijoy 52 Practice</title>
+  <title>Typing Master Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
   <meta name="description" content="Start your premium typing practice on TypingMaster Pro Board. Improve your typing speed in English &amp; Bangla Bijoy 52 without any distraction.">
   <meta name="keywords" content="typing master pro board, online typing board, bangla typing practice, english typing master pro, wpm booster, typing pro version">
   <meta name="author" content="TypingMaster Pro Online">
@@ -3053,6 +3053,19 @@
             }
         }
 
+        function resolveCurrentUserId() {
+            try {
+                const storedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                const candidate = storedUser && (storedUser.id || storedUser.uid || storedUser.userId || storedUser.username || storedUser.email);
+                if (typeof candidate !== 'string') return '';
+                const normalized = candidate.trim();
+                return normalized && !/[.#$/\[\]]/.test(normalized) ? normalized : '';
+            } catch (error) {
+                console.error('Could not resolve the active user id:', error);
+                return '';
+            }
+        }
+
         function readPendingTypingScores(userId) {
             try {
                 const queue = JSON.parse(localStorage.getItem(getTypingScoreQueueKey(userId)) || '[]');
@@ -3081,15 +3094,28 @@
                 if (!automatic) openAuth();
                 return;
             }
+            const resolvedUserId = resolveCurrentUserId();
+            if (resolvedUserId && loggedInUser && String(loggedInUser.id).trim() !== resolvedUserId) {
+                loggedInUser = { ...loggedInUser, id: resolvedUserId };
+            }
+            if (!loggedInUser.id && !resolvedUserId) {
+                if (!automatic) openAuth();
+                return;
+            }
             const score = snapshot || getTypingSessionSnapshot();
             const typedDelta = Math.max(0, score.typedChars - score.checkpoint.typedChars);
             const earned = Math.max(0, Math.floor(score.correctChars / 5) - Math.floor(score.checkpoint.correctChars / 5));
             const mistakes = Math.max(0, score.mistakes - score.checkpoint.mistakes);
+            const activeUserId = String(loggedInUser.id || resolveCurrentUserId()).trim();
+            if (!activeUserId) {
+                if (!automatic) openAuth();
+                return;
+            }
             if (typedDelta === 0 && earned === 0 && mistakes === 0) {
-                const queue = readPendingTypingScores(loggedInUser.id);
+                const queue = readPendingTypingScores(activeUserId);
                 if (final && queue.length) {
                     queue[queue.length - 1].final = true;
-                    if (!writePendingTypingScores(loggedInUser.id, queue)) return;
+                    if (!writePendingTypingScores(activeUserId, queue)) return;
                     processPendingTypingScores();
                 } else if (!automatic) {
                     alert('প্রথমে টাইপ করুন, তারপর সেভ করুন।');
@@ -3097,11 +3123,11 @@
                 return;
             }
 
-            const queue = readPendingTypingScores(loggedInUser.id);
+            const queue = readPendingTypingScores(activeUserId);
             const scoreEntry = {
                 id: `${score.sessionId}-${score.sequence}`,
                 sessionId: score.sessionId,
-                userId: loggedInUser.id,
+                userId: activeUserId,
                 earned,
                 mistakes,
                 wpm: score.wpm,
@@ -3112,12 +3138,12 @@
             if (existingEntry) {
                 if (final) {
                     existingEntry.final = true;
-                    if (writePendingTypingScores(loggedInUser.id, queue)) processPendingTypingScores();
+                    if (writePendingTypingScores(activeUserId, queue)) processPendingTypingScores();
                 }
                 return;
             }
             queue.push(scoreEntry);
-            if (!writePendingTypingScores(loggedInUser.id, queue)) return;
+            if (!writePendingTypingScores(activeUserId, queue)) return;
 
             if (score.sessionId === scoreSessionId) {
                 scoreCheckpoint = { typedChars: score.typedChars, correctChars: score.correctChars, mistakes: score.mistakes };
@@ -3171,13 +3197,25 @@
             const userRef = db.ref('users/' + scoreEntry.userId);
             return new Promise((resolve, reject) => {
                 userRef.transaction(user => {
-                    if (!user) return;
-                    const receipts = user.typingScoreReceipts || {};
-                    if (receipts[scoreEntry.id]) return user;
+                    const baseUser = user && typeof user === 'object' ? user : {
+                        id: scoreEntry.userId,
+                        name: loggedInUser && loggedInUser.name ? loggedInUser.name : scoreEntry.userId,
+                        password: loggedInUser && loggedInUser.password ? loggedInUser.password : '',
+                        points: 0,
+                        monthlyPoints: 0,
+                        monthlyPointsMonth: getCurrentMonthKey(),
+                        mistakes: 0,
+                        bestWpm: 0,
+                        pic: loggedInUser && loggedInUser.pic ? loggedInUser.pic : '',
+                        bio: loggedInUser && loggedInUser.bio ? loggedInUser.bio : '',
+                        typingScoreReceipts: {}
+                    };
+                    const receipts = baseUser.typingScoreReceipts || {};
+                    if (receipts[scoreEntry.id]) return baseUser;
 
                     const currentMonth = getCurrentMonthKey();
-                    const previousMonth = /^\d{4}-\d{2}$/.test(user.monthlyPointsMonth || '') &&
-                        user.monthlyPointsMonth < currentMonth;
+                    const previousMonth = /^\d{4}-\d{2}$/.test(baseUser.monthlyPointsMonth || '') &&
+                        baseUser.monthlyPointsMonth < currentMonth;
                     const nextReceipts = { ...receipts, [scoreEntry.id]: scoreEntry.createdAt };
                     const receiptIds = Object.keys(nextReceipts);
                     if (receiptIds.length > 200) {
@@ -3186,18 +3224,23 @@
                     }
 
                     return {
-                        ...user,
-                        points: (Number(user.points) || 0) + scoreEntry.earned,
-                        monthlyPoints: (previousMonth ? 0 : Number(user.monthlyPoints) || 0) + scoreEntry.earned,
+                        ...baseUser,
+                        id: baseUser.id || scoreEntry.userId,
+                        name: baseUser.name || (loggedInUser && loggedInUser.name ? loggedInUser.name : scoreEntry.userId),
+                        password: baseUser.password || (loggedInUser && loggedInUser.password ? loggedInUser.password : ''),
+                        points: (Number(baseUser.points) || 0) + scoreEntry.earned,
+                        monthlyPoints: (previousMonth ? 0 : Number(baseUser.monthlyPoints) || 0) + scoreEntry.earned,
                         monthlyPointsMonth: currentMonth,
-                        mistakes: (Number(user.mistakes) || 0) + scoreEntry.mistakes,
-                        bestWpm: Math.max(Number(user.bestWpm) || 0, scoreEntry.wpm),
-                        typingScoreReceipts: nextReceipts
+                        mistakes: (Number(baseUser.mistakes) || 0) + scoreEntry.mistakes,
+                        bestWpm: Math.max(Number(baseUser.bestWpm) || 0, scoreEntry.wpm),
+                        typingScoreReceipts: nextReceipts,
+                        pic: baseUser.pic || (loggedInUser && loggedInUser.pic ? loggedInUser.pic : ''),
+                        bio: baseUser.bio || (loggedInUser && loggedInUser.bio ? loggedInUser.bio : '')
                     };
                 }, (error, committed, snapshot) => {
                     if (error) {
                         reject(error);
-                    } else if (!committed && !(snapshot.val() && snapshot.val().typingScoreReceipts && snapshot.val().typingScoreReceipts[scoreEntry.id])) {
+                    } else if (!committed || !snapshot) {
                         reject(new Error('The score transaction was not committed.'));
                     } else {
                         resolve(snapshot.val());
