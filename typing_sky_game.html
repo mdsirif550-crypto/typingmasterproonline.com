@@ -172,7 +172,7 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
   <div class="pill">🌤️ Beginner Flight School</div>
 </header>
 <div class="leaderboard-sync" role="status" aria-live="polite">
-  <span id="leaderboardSyncMessage">লিডারবোর্ড অ্যাকাউন্ট যাচাই হচ্ছে…</span>
+  <span id="leaderboardSyncMessage" data-game-leaderboard-status>লিডারবোর্ড অ্যাকাউন্ট যাচাই হচ্ছে…</span>
   <a id="leaderboardLoginLink" href="typing_Master_Pro.html?openLogin=1" target="_blank" rel="noopener noreferrer" hidden>লগইন / রেজিস্টার</a>
   <a href="index.html">লিডারবোর্ড দেখুন</a>
 </div>
@@ -269,13 +269,14 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
   <h3>🎮 কীভাবে খেলবেন?</h3>
   <p>১. গেম শুরুর আগে ১–১০ মিনিট সময় বেছে নিয়ে <b>গেম শুরু</b> চাপুন—মোবাইলে ব্যানারের ওপরের বাটন থেকেও শুরু করা যাবে। গেম চলার সময় মিউজিক বাজবে। বাক্য শেষ হলে সময় থাকা পর্যন্ত নতুন বাক্য আসবে।</p>
   <p>২. বিমানটি ব্যানারের বাঁ দিকে ও মাঝারি উচ্চতায় শুরু হবে। সাম্প্রতিক ৫ সেকেন্ডের WPM বাড়লে বিমান সামনে এগিয়ে উপরে উঠবে; WPM ০ হলে বিমান নিচে নামবে এবং ১.৫ সেকেন্ডেও টাইপিং শুরু না করলে কাঁটায় ধাক্কা খেয়ে গেম শেষ হবে। WPM ১০-এর নিচে আকাশ লাল, ১০–১৫-এ হলুদ এবং ১৫-এর ওপরে সবুজ হবে।</p>
-  <p>৩. মূল টাইপিং লিডারবোর্ডের নিয়মেই প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট পাবেন। গেম চলার সময় পয়েন্ট লিডারবোর্ডে যোগ হবে; WPM বিমানের সামনে এগোনো ও উচ্চতা নিয়ন্ত্রণ করে।</p>
+  <p>৩. প্রতি ৫টি সঠিক অক্ষরে ১ পয়েন্ট পাবেন। লগইন করা থাকলে গেমের পয়েন্ট লিডারবোর্ডে যোগ হবে এবং টাইপিং স্পিড সেখানে লাইভ দেখা যাবে; লগইন ছাড়াও গেম খেলা যাবে, তবে পয়েন্ট শুধু এই সেশনে থাকবে। WPM বিমানের সামনে এগোনো ও উচ্চতা নিয়ন্ত্রণ করে।</p>
   <p>৪. নির্ভুলভাবে টাইপ করুন, নিজের স্পিড ও Accuracy বাড়ান। সময় শেষ হলে ফলাফল দেখানো হবে।</p>
 </section>
 <footer>Typing Sky Game • Practice makes progress • আপনার ফলাফল এই ব্রাউজারেই হিসাব করা হয়</footer>
 </div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="game-leaderboard.js"></script>
 <script>
 const passages=[
 "The quick brown fox jumps over the lazy dog. Practice typing every day to improve your speed and accuracy.",
@@ -289,7 +290,7 @@ const passages=[
 ];
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
 const $=id=>document.getElementById(id);
 function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
  const oscillator=context.createOscillator(),gain=context.createGain();
@@ -348,7 +349,7 @@ function playCrashSound(){
   else context.resume().then(play).catch(error=>{console.error("Could not resume audio for the crash sound:",error);if(gameAudioContext===context)gameAudioContext=null})
  }catch(error){console.error("Could not initialize the crash sound:",error)}
 }
-function setLeaderboardStatus(message,isError=false,showLogin=false){const status=$("leaderboardSyncMessage"),resultStatus=$("resultLeaderboardStatus");status.textContent=message;status.classList.toggle("sync-error",isError);resultStatus.textContent=message;resultStatus.classList.toggle("sync-error",isError);$("leaderboardLoginLink").hidden=!showLogin}
+function setLeaderboardStatus(message,isError=false,showLogin=false){const status=$("leaderboardSyncMessage"),resultStatus=$("resultLeaderboardStatus");status.textContent=message;status.classList.toggle("sync-error",isError);status.classList.toggle("game-leaderboard-error",isError);resultStatus.textContent=message;resultStatus.classList.toggle("sync-error",isError);$("leaderboardLoginLink").hidden=!showLogin}
 function getGameMonthKey(){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit"}).formatToParts(new Date());return `${parts.find(part=>part.type==="year").value}-${parts.find(part=>part.type==="month").value}`}
 function renderSkyTopThree(users){
  skyLeaderboardUsers=users;
@@ -419,7 +420,7 @@ function listenForGameAccount(){
  let savedUser;
  try{savedUser=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(error){console.error("Could not read the shared leaderboard account:",error);if(gameUserRef){gameUserRef.off("value");gameUserRef=null}gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("লিডারবোর্ড অ্যাকাউন্ট পড়া যায়নি।",true,true);return}
  const userId=String(savedUser&&savedUser.id||"").trim();
- if(!userId){if(gameUserRef){gameUserRef.off("value");gameUserRef=null}gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("পয়েন্ট লিডারবোর্ডে যোগ করতে একই অ্যাকাউন্টে লগইন করুন।",false,true);return}
+ if(!userId){if(gameUserRef){gameUserRef.off("value");gameUserRef=null}gameUser=null;renderSkyCurrentPlayer();setLeaderboardStatus("লগইন ছাড়াই গেম খেলুন; পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",false,true);return}
  try{
   const userRef=gameDatabase.ref("users").child(userId);
   if(gameUserRef&&gameUserRef.toString()!==userRef.toString())gameUserRef.off("value");
@@ -440,13 +441,14 @@ function initializeSkyLeaderboard(){
  try{
   const app=firebase.apps.find(existing=>existing.name==="[DEFAULT]")||firebase.initializeApp(gameFirebaseConfig);
   gameDatabase=app.database();
+  GameLeaderboard.initPresence();
   listenForSkyTopThree();
   gameDatabase.ref(".info/connected").on("value",snapshot=>{gameScoreConnected=snapshot.val()===true;if(gameScoreConnected)processPendingSkyScores();else if(gameUser)setLeaderboardStatus("ডাটাবেজে সংযোগ হচ্ছে; পয়েন্ট অপেক্ষমাণ থাকবে।")},error=>{console.error("Leaderboard connection listener failed:",error);setLeaderboardStatus("লিডারবোর্ড সংযোগ যাচাই করা যায়নি।",true)});
   listenForGameAccount();
  }catch(error){console.error("Could not initialize the shared leaderboard database:",error);setLeaderboardStatus("লিডারবোর্ড ডাটাবেজ চালু করা যায়নি।",true)}
 }
 function queueSkyGameScore(reason){
- if(!gameUser){setLeaderboardStatus("এই খেলায় পাওয়া পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",true,true);return}
+ if(!gameUser){if(points>0&&!skyGuestStatusShown){setLeaderboardStatus("লগইন ছাড়া খেলা চলছে; এই গেমের পয়েন্ট লিডারবোর্ডে যোগ হবে না।",false,true);skyGuestStatusShown=true}return}
  if(!gameRunId)return;
  const earned=points-skyQueuedPointTotal;
  if(earned<=0)return;
@@ -503,10 +505,10 @@ function renderPrompt(){
 }
 function setSkySpeed(wpm){const sky=$("sky");sky.classList.remove("speed-low","speed-medium","speed-high");sky.classList.add(wpm<10?"speed-low":wpm<=15?"speed-medium":"speed-high")}
 function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());countdown.textContent=Math.floor(remaining/60)+":"+String(remaining%60).padStart(2,"0");countdown.classList.toggle("running",Boolean(startedAt&&!finished));countdown.classList.toggle("urgent",Boolean(startedAt&&!finished&&remaining<=10))}
-function setPassage(){stopGameMusic();document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
+function setPassage(){stopGameMusic();GameLeaderboard.setTypingStatus(false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
 function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="2%";$("plane").style.top="50%";$("plane").style.transform="translateY(-50%) rotate(-8deg)";$("trail").style.width="2%";$("flightStatus").textContent="🛫 Ready for takeoff!"}
 function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
-function startGame(){if(!gameUser){setLeaderboardStatus("লিডারবোর্ড পয়েন্ট পেতে আগে একই অ্যাকাউন্টে লগইন করুন।",true,true);$("leaderboardLoginLink").focus();return}clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";if(!gameUser)setLeaderboardStatus("লগইন ছাড়া খেলা যাবে; পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -537,7 +539,7 @@ function updateStats(){
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
 }
 function finishGame(reason="time"){
- if(finished)return;finished=true;clearInterval(timer);document.body.classList.remove("typing-active");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
+ if(finished)return;finished=true;clearInterval(timer);GameLeaderboard.setTypingStatus(false);document.body.classList.remove("typing-active");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
  $("duration").disabled=false;
  updateCountdown();
  if(reason==="crash"){$("flightStatus").textContent="💥 বিমান বিধ্বস্ত!";$("againBtn").textContent="🔁 আবার চেষ্টা করুন";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
@@ -548,9 +550,9 @@ function updateFinal(reason){
  $("rWpm").textContent=wpm;$("rTyped").textContent=typed;$("rAccuracy").textContent=acc+"%";$("rPoints").textContent=points;$("rCorrect").textContent=correct;$("rWrong").textContent=wrong;$("rLevel").textContent=wpm>40?"Expert":wpm>30?"Advanced":wpm>20?"Intermediate":"Beginner";$("rTime").textContent=elapsedText();
  $("resultTitle").textContent=reason==="crash"?"💥 বিমান বিধ্বস্ত!":"🎉 অভিনন্দন! সময় শেষ!";
  $("resultMessage").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!";
- $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";queueSkyGameScore(reason);
+ $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";if(!gameUser&&points>0){setLeaderboardStatus("লগইন ছাড়া খেলা হয়েছে; এই গেমের পয়েন্ট লিডারবোর্ডে যোগ হয়নি।",false,true);skyGuestStatusShown=true}queueSkyGameScore(reason);
 }
-$("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats()});
+$("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats();if(!finished)GameLeaderboard.setTypingStatus(true,lastWpm)});
 $("startBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("mobileStartBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("duration").addEventListener("change",()=>{durationMs=Number($("duration").value)*60000;updateCountdown()});
@@ -559,6 +561,7 @@ $("againBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("closeResultBtn").addEventListener("click",()=>{clearTimeout(crashRevealTimer);startedAt=0;finished=false;$("typing").disabled=true;$("duration").disabled=false;$("startBtn").textContent="▶ গেম শুরু";setPassage()});
 window.addEventListener("storage",event=>{if(event.key==="currentUser")listenForGameAccount()});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){listenForGameAccount();processPendingSkyScores()}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)GameLeaderboard.setTypingStatus(false)});
 window.addEventListener("online",processPendingSkyScores);
 setPassage();
 initializeSkyLeaderboard();
