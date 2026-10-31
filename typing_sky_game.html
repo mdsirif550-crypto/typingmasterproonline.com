@@ -567,9 +567,24 @@ function finishGame(reason="time"){
 function updateFinal(reason){
  const wpm=calcAverageWpm(),acc=typed?Math.round(correct/typed*100):100;
  $("rWpm").textContent=wpm;$("rTyped").textContent=typed;$("rAccuracy").textContent=acc+"%";$("rPoints").textContent=points;$("rCorrect").textContent=correct;$("rWrong").textContent=wrong;$("rLevel").textContent=wpm>40?"Expert":wpm>30?"Advanced":wpm>20?"Intermediate":"Beginner";$("rTime").textContent=elapsedText();
- $("resultTitle").textContent=reason==="crash"?"💥 বিমান বিধ্বস্ত!":"🎉 অভিনন্দন! সময় শেষ!";
- $("resultMessage").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"নির্ধারিত সময়ের অনুশীলন শেষ করেছেন—দারুণ করেছেন!";
- $("resultOverlay").style.display="flex";$("message").textContent=reason==="crash"?"আপনি গেমটি শেষ করতে পারেননি। আবার চেষ্টা করুন!":"সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।";if(!gameUser&&points>0){setLeaderboardStatus("লগইন ছাড়া খেলা হয়েছে; এই গেমের পয়েন্ট লিডারবোর্ডে যোগ হয়নি।",false,true);skyGuestStatusShown=true}queueSkyGameScore(reason);
+ const guestMessage = "লগইন করলে আপনার স্কোর লিডারবোর্ডে দেখানো হবে।";
+ const crashTitle = "💥 আপনার বিমান বাষ্ট হয়ে গেছে!";
+ const crashMessage = reason==="crash" ? "আপনার বিমান বাষ্ট হয়ে গেছে। আবার চেষ্টা করুন।" : "আপনি গেমটি সফলভাবে শেষ করেছেন!";
+ const successTitle = "🎉 অভিনন্দন! আপনি সফলভাবে শেষ করেছেন!";
+ const successMessage = "দারুণ করেছেন! নির্ধারিত সময়ের অনুশীলন সম্পন্ন হয়েছে।";
+ if(reason==="crash"){
+   $("resultTitle").textContent = crashTitle;
+   $("resultMessage").textContent = !gameUser ? `${crashMessage} ${guestMessage}` : crashMessage;
+ } else {
+   $("resultTitle").textContent = successTitle;
+   $("resultMessage").textContent = !gameUser ? `${successMessage} ${guestMessage}` : successMessage;
+ }
+ $("resultOverlay").style.display="flex";$("message").textContent = !gameUser
+   ? (reason==="crash" ? `${crashMessage} লগইন করতে হবে.` : `${successMessage} লগইন করলে আপনার স্কোর দেখা যাবে.`)
+   : (reason==="crash" ? "আপনার বিমান বাশ্ট হয়ে গেছে। আবার চেষ্টা করুন!" : "সময় শেষ! অনুশীলনের জন্য ধন্যবাদ।");
+ if(!gameUser&&points>0){setLeaderboardStatus("লগইন ছাড়া খেলা হয়েছে; এই গেমের পয়েন্ট লিডারবোর্ডে যোগ হয়নি।",false,true);skyGuestStatusShown=true}
+ if(!gameUser && points===0){setLeaderboardStatus("গেম শেষ হয়েছে। স্কোর সেভ করতে লগইন করুন।",false,true);skyGuestStatusShown=true}
+ queueSkyGameScore(reason);
 }
 $("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats();if(!finished)safeGameLeaderboard("setTypingStatus", true, lastWpm)});
 $("startBtn").addEventListener("click",()=>{setPassage();startGame()});
