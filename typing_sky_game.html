@@ -524,10 +524,24 @@ function renderPrompt(){
 }
 function setSkySpeed(wpm){const sky=$("sky");sky.classList.remove("speed-low","speed-medium","speed-high");sky.classList.add(wpm<10?"speed-low":wpm<=15?"speed-medium":"speed-high")}
 function updateCountdown(){const countdown=$("countdown"),remaining=Math.max(0,Math.ceil(durationMs/1000)-elapsedSeconds());countdown.textContent=Math.floor(remaining/60)+":"+String(remaining%60).padStart(2,"0");countdown.classList.toggle("running",Boolean(startedAt&&!finished));countdown.classList.toggle("urgent",Boolean(startedAt&&!finished&&remaining<=10))}
-function setPassage(){stopGameMusic();safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
+function setPassage(){stopGameMusic();safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");target=pickPassage();$("typing").value="";$("typing").disabled=true;$("typing").hidden=false;$("typing").style.display="block";$("typing").style.visibility="visible";lastInputValue="";renderPrompt();$("resultOverlay").style.display="none";$("message").textContent="সময় বেছে নিয়ে গেম শুরু করুন—বিমান আকাশে উড়বে!";resetPlane();setSkySpeed(0);updateCountdown()}
 function resetPlane(){$("plane").classList.remove("crashed");$("plane").style.left="2%";$("plane").style.top="50%";$("plane").style.transform="translateY(-50%) rotate(-8deg)";$("trail").style.width="2%";$("flightStatus").textContent="🛫 Ready for takeoff!"}
 function createSkyGameRunId(){return typeof crypto!=="undefined"&&typeof crypto.randomUUID==="function"?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`}
-function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;$("typing").disabled=false;document.body.classList.add("typing-active");$("sky").classList.add("game-running");$("typing").focus();if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";if(!gameUser)setLeaderboardStatus("লগইন ছাড়া খেলা যাবে; পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function activateSkyTypingField(){
+  const field = $("typing");
+  if (!field) return;
+  field.disabled = false;
+  field.hidden = false;
+  field.style.display = "block";
+  field.style.visibility = "visible";
+  field.setAttribute("aria-hidden", "false");
+  window.setTimeout(() => {
+    field.focus();
+    const len = field.value.length;
+    try { field.setSelectionRange(len, len); } catch (error) {}
+  }, 120);
+}
+function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ নতুন করে শুরু";$("againBtn").textContent="✈ আবার খেলুন";$("message").textContent="গতি বাড়িয়ে বিমানকে কাঁটা থেকে দূরে রাখুন!";if(!gameUser)setLeaderboardStatus("লগইন ছাড়া খেলা যাবে; পয়েন্ট লিডারবোর্ডে যোগ করতে লগইন করুন।",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -587,6 +601,7 @@ function updateFinal(reason){
  queueSkyGameScore(reason);
 }
 $("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats();if(!finished)safeGameLeaderboard("setTypingStatus", true, lastWpm)});
+$("typing").addEventListener("focus",()=>{if(window.innerWidth <= 700){try{window.scrollTo({ top: 0, left: 0, behavior: 'instant' });}catch(e){window.scrollTo(0,0);}}});
 $("startBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("mobileStartBtn").addEventListener("click",()=>{setPassage();startGame()});
 $("duration").addEventListener("change",()=>{durationMs=Number($("duration").value)*60000;updateCountdown()});
