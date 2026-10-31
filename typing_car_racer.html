@@ -162,8 +162,18 @@ function syncProfileChip(){
       return;
     }
     const displayName = savedUser.displayName || savedUser.name || savedUser.username || (savedUser.email ? savedUser.email.split("@")[0] : "Player");
-    const avatar = savedUser.photoURL || savedUser.avatar || "logo.png";
+    const avatar = (() => {
+      const candidates = [savedUser.pic, savedUser.photoURL, savedUser.avatar, savedUser.profileImage, savedUser.image];
+      for (const candidate of candidates) {
+        if (typeof candidate === "string" && candidate.trim()) return candidate.trim();
+      }
+      return "logo.png";
+    })();
     nameNode.textContent = displayName;
+    avatarNode.onerror = () => {
+      avatarNode.onerror = null;
+      avatarNode.src = "logo.png";
+    };
     avatarNode.src = avatar || "logo.png";
     statusNode.textContent = "Logged in";
     chip.hidden = false;
