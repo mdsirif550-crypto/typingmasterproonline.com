@@ -179,7 +179,13 @@
     #shareFallbackModal.active { display: flex; }
     .share-fallback-card { width: min(100%, 360px); padding: 18px; border: 1px solid rgba(125, 211, 252, 0.4); border-radius: 16px; background: linear-gradient(145deg, #f8fafc, #e2e8f0); color: #0f172a; box-shadow: 0 18px 50px rgba(0,0,0,0.4); }
     .share-fallback-card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 900; }
-    .share-fallback-url { display: block; margin: 0 0 12px; color: #0369a1; font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+    .share-fallback-url-row { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
+    .share-fallback-url { min-width: 0; flex: 1; color: #0369a1; font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+    .share-copy-button { flex: 0 0 auto; padding: 7px 10px; border: 0; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; font: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+    .share-copy-button:hover { filter: brightness(1.08); }
+    .share-links-list { display: grid; gap: 5px; max-height: 28vh; overflow-y: auto; margin: 0 0 12px; }
+    .share-links-list a { padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #075985; font-size: 12px; font-weight: 800; overflow-wrap: anywhere; text-decoration: none; }
+    .share-links-list a:hover { background: #f0f9ff; }
     .share-fallback-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
     .share-fallback-actions a, .share-fallback-actions button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; padding: 8px; border: 0; border-radius: 9px; background: #0f766e; color: #fff; font: inherit; font-size: 11px; font-weight: 900; text-align: center; text-decoration: none; cursor: pointer; }
     .share-fallback-actions .android-share-action { grid-column: 1 / -1; background: linear-gradient(135deg, #2563eb, #0891b2); }
@@ -672,13 +678,17 @@
   <div id="shareFallbackModal" role="dialog" aria-modal="true" aria-labelledby="shareFallbackTitle" onclick="if(event.target===this) closeShareFallback()">
     <div class="share-fallback-card">
       <h2 id="shareFallbackTitle">Share TypingMaster Pro</h2>
-      <span class="share-fallback-url">https://typingmasterproonline.com</span>
+      <div class="share-fallback-url-row">
+        <span class="share-fallback-url">https://typingmasterproonline.com</span>
+        <button class="share-copy-button" id="copySiteAddressButton" type="button" onclick="copySiteAddress()">📋 Copy</button>
+      </div>
+      <nav id="shareLinksList" class="share-links-list" aria-label="Main website links"></nav>
       <div class="share-fallback-actions">
         <button class="android-share-action" id="androidShareAction" type="button" onclick="openAndroidShare()">📲 Share using phone apps</button>
-        <a id="shareWhatsAppLink" href="https://wa.me/?text=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <a id="shareTelegramLink" href="https://t.me/share/url?url=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">Telegram</a>
-        <a id="shareFacebookLink" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">Facebook</a>
-        <a id="shareSmsLink" href="sms:?body=https%3A%2F%2Ftypingmasterproonline.com">SMS / Messages</a>
+        <a id="shareWhatsAppLink" href="https://wa.me/" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a id="shareTelegramLink" href="https://t.me/share/url" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a id="shareFacebookLink" href="https://www.facebook.com/sharer/sharer.php" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a id="shareSmsLink" href="sms:?body=">SMS / Messages</a>
       </div>
       <p class="share-fallback-status" id="shareFallbackStatus" role="status" aria-live="polite"></p>
       <button class="share-fallback-close" type="button" onclick="closeShareFallback()">Close</button>
@@ -1694,13 +1704,44 @@
       document.getElementById("summaryModal").style.display = "none";
     }
     function closeSummary() { document.getElementById("summaryModal").style.display = "none"; resetExercise(); }
+    const shareDestinationLinks = [
+      { label: "🏠 Home", url: "https://typingmasterproonline.com/" },
+      { label: "⌨️ Mobile Typing", url: "https://typingmasterproonline.com/typing_Master_Pro.html#typing-input" },
+      { label: "🏆 Leaderboard", url: "https://typingmasterproonline.com/typing_Master_Pro.html" },
+      { label: "✈️ Typing Sky Game", url: "https://typingmasterproonline.com/typing_sky_game.html" },
+      { label: "🏁 Typing Car Racer", url: "https://typingmasterproonline.com/typing_car_racer.html" },
+      { label: "👤 Profile", url: "https://typingmasterproonline.com/profile.html" },
+      { label: "ℹ️ About Us", url: "https://typingmasterproonline.com/about.html" }
+    ];
+    function getShareMessage() {
+      return [
+        "TypingMaster Pro Online",
+        ...shareDestinationLinks.map(({ label, url }) => `${label}: ${url}`)
+      ].join("\n");
+    }
+    function updateShareFallbackLinks() {
+      const message = getShareMessage();
+      const encodedMessage = encodeURIComponent(message);
+      const homepageUrl = encodeURIComponent(shareDestinationLinks[0].url);
+      const linksList = document.getElementById("shareLinksList");
+      linksList.replaceChildren(...shareDestinationLinks.map(({ label, url }) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.textContent = label;
+        return link;
+      }));
+      document.getElementById("shareWhatsAppLink").href = `https://wa.me/?text=${encodedMessage}`;
+      document.getElementById("shareTelegramLink").href = `https://t.me/share/url?url=${homepageUrl}&text=${encodedMessage}`;
+      document.getElementById("shareFacebookLink").href = `https://www.facebook.com/sharer/sharer.php?u=${homepageUrl}&quote=${encodedMessage}`;
+      document.getElementById("shareSmsLink").href = `sms:?body=${encodedMessage}`;
+    }
     async function shareSiteAddress() {
+      const message = getShareMessage();
       if (typeof navigator.share === "function" && window.isSecureContext) {
         try {
           await navigator.share({
             title: "TypingMaster Pro Online",
-            text: "TypingMaster Pro Online",
-            url: "https://typingmasterproonline.com"
+            text: message
           });
           return;
         } catch (error) {
@@ -1710,14 +1751,37 @@
       }
       const modal = document.getElementById("shareFallbackModal");
       document.getElementById("shareFallbackStatus").textContent = "";
+      updateShareFallbackLinks();
       document.getElementById("androidShareAction").hidden = !/android/i.test(navigator.userAgent);
       modal.classList.add("active");
     }
     function closeShareFallback() {
       document.getElementById("shareFallbackModal").classList.remove("active");
     }
+    async function copySiteAddress() {
+      const url = "https://typingmasterproonline.com";
+      const status = document.getElementById("shareFallbackStatus");
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "Website address copied!";
+        return;
+      } catch (error) {
+        console.error("Clipboard API could not copy the website address; trying the compatibility method:", error);
+      }
+
+      const input = document.createElement("textarea");
+      input.value = url;
+      input.setAttribute("readonly", "");
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      const copied = document.execCommand("copy");
+      input.remove();
+      status.textContent = copied ? "Website address copied!" : "Could not copy. Please copy the address manually.";
+    }
     function openAndroidShare() {
-      const text = encodeURIComponent("TypingMaster Pro Online https://typingmasterproonline.com");
+      const text = encodeURIComponent(getShareMessage());
       window.location.href = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=${text};end`;
     }
     let deferredInstallPrompt = null;
