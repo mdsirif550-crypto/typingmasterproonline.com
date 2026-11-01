@@ -24,15 +24,16 @@
   <meta property="og:title" content="TypingMaster Pro Online ⌨️ - Type Fast & Join Leaderboard">
   <meta property="og:description" content="Join the global typing leaderboard and compete with typists worldwide!">
   <meta property="og:url" content="https://typingmasterproonline.com">
-  <meta property="og:image" content="https://typingmasterproonline.com/logo.png">
+  <meta property="og:image" content="https://typingmasterproonline.com/app-icon-192.png">
   <meta property="og:image:alt" content="TypingMaster Pro Online Logo">
   <meta property="og:locale" content="en_BD">
 
   
   <!-- PWA মেনিফেস্ট লিংক -->
   <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/png" href="https://typingmasterproonline.com/logo.png?v=2">
-<link rel="shortcut icon" type="image/png" href="https://typingmasterproonline.com/logo.png?v=2">
+<link rel="icon" type="image/png" sizes="518x518" href="app-icon-192.png">
+<link rel="shortcut icon" type="image/png" href="app-icon-192.png">
+<link rel="apple-touch-icon" href="app-icon-192.png">
 
   <!-- স্ট্রাকচারড ডাটা স্কিমা (Schema.org JSON-LD) -->
 <script type="application/ld+json">
@@ -311,6 +312,7 @@
     .typing-panel .controls select { min-width: 0; width: 100%; max-width: 100%; padding: 6px 7px; font-size: 11px; }
     .typing-panel .controls .btn-reset { padding: 6px 7px; font-size: 11px; }
     .typing-panel .typing-zoom-controls { position: static; justify-content: flex-end; gap: 4px; }
+    .typing-fullscreen-controls { display: none; }
     @media (min-width: 601px) {
       .typing-panel .typing-zoom-controls { gap: 2px; }
       .typing-panel .typing-zoom-controls button { min-width: 30px; height: 30px; padding: 0 2px; font-size: 14px; }
@@ -318,6 +320,13 @@
       .typing-panel .typing-zoom-controls output { min-width: 40px; }
     }
     .typing-panel:fullscreen .dashboard, .typing-panel.is-text-fullscreen .dashboard { display: none; }
+    .typing-panel:fullscreen .typing-fullscreen-controls,
+    .typing-panel.is-text-fullscreen .typing-fullscreen-controls { position: absolute; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); right: max(10px, env(safe-area-inset-right)); z-index: 5; display: flex; align-items: center; gap: 8px; padding: 7px 9px; border: 1px solid rgba(125, 211, 252, 0.28); border-radius: 12px; background: rgba(4, 30, 18, 0.92); box-shadow: 0 4px 14px rgba(0,0,0,0.28); }
+    .typing-fullscreen-field { display: grid; flex: 1 1 0; min-width: 0; gap: 3px; color: #bae6fd; font-size: 11px; font-weight: 900; }
+    .typing-fullscreen-field[hidden] { display: none !important; }
+    .typing-fullscreen-controls select { width: 100%; min-width: 0; max-width: 440px; padding: 7px 10px; border: 1px solid rgba(125, 211, 252, 0.35); border-radius: 8px; background: #102b21; color: #fff; font: inherit; font-size: 13px; font-weight: 800; }
+    .typing-fullscreen-exit { flex: 0 0 auto; padding: 7px 11px; border: 1px solid rgba(252, 165, 165, 0.4); border-radius: 8px; background: linear-gradient(135deg, #be123c, #e11d48); color: #fff; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
+    .typing-fullscreen-exit:hover { filter: brightness(1.12); }
     @keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } 100% { transform: translateX(0); } }
     .panel-shake { animation: shakeError 0.2s ease-in-out; border-color: var(--danger) !important; }
     .text-display { font-size: 24px; line-height: 1.7; letter-spacing: 1px; min-height: 120px; color: var(--text-muted); font-family: 'Courier New', Courier, monospace; outline: none; word-break: break-word; }
@@ -359,7 +368,9 @@
     .typing-panel.bengali-mode .bengali-typing-box { min-height: 120px; font-size: 20px; touch-action: manipulation; }
     .typing-panel.bengali-mode .bengali-typing-box:focus { border-color: var(--primary); outline: 2px solid rgba(192,38,211,0.22); }
     .typing-panel.bengali-mode:fullscreen,
-    .typing-panel.bengali-mode.is-text-fullscreen { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); align-content: stretch; justify-content: stretch; gap: 10px; box-sizing: border-box; padding: 10px; overflow: hidden; }
+    .typing-panel.bengali-mode.is-text-fullscreen { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); align-content: stretch; justify-content: stretch; gap: 10px; box-sizing: border-box; padding: 10px; overflow: hidden; }
+    .typing-panel.bengali-mode:fullscreen .typing-fullscreen-controls,
+    .typing-panel.bengali-mode.is-text-fullscreen .typing-fullscreen-controls { position: static; inset: auto; }
     .typing-panel.bengali-mode:fullscreen .text-display,
     .typing-panel.bengali-mode.is-text-fullscreen .text-display { width: 100%; height: auto; min-height: 0; max-height: none; margin: 0; overflow-y: auto; align-self: stretch; text-align: left; }
     .typing-panel.bengali-mode:fullscreen .bengali-typing-box,
@@ -448,6 +459,10 @@
       .typing-panel.bengali-mode #lessonSelect { min-width: 0; }
       .typing-panel.bengali-mode .text-display { padding: 12px; min-height: 150px; }
       .typing-panel.bengali-mode .bengali-typing-box { min-height: 100px; padding: 12px; font-size: 18px; }
+      .typing-panel:fullscreen .typing-fullscreen-controls,
+      .typing-panel.is-text-fullscreen .typing-fullscreen-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; gap: 6px; padding: 7px; }
+      .typing-panel:fullscreen .typing-fullscreen-exit,
+      .typing-panel.is-text-fullscreen .typing-fullscreen-exit { grid-column: 2; justify-self: end; }
       .home-top-player { padding: 2px 5px 2px 2px; }
       .welcome-banner-controls .adu-office-app-widget { padding: 2px 19px 2px 3px; }
       .welcome-banner-controls .adu-office-app-link { font-size: 9px; }
@@ -519,19 +534,19 @@
     <div class="welcome-banner-brand">
       <div class="welcome-banner-topline">
         <div class="welcome-banner-identity">
-          <img class="welcome-banner-logo" src="logo.png" alt="TypingMaster Pro Online logo">
+          <img class="welcome-banner-logo" src="app-icon-192.png" alt="TypingMaster Pro Online logo">
           <h1>TypingMaster Pro <span>Online</span></h1>
         </div>
         <div class="welcome-banner-account">
           <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" aria-label="Login or register" title="Login or register">👤 Login / Register</button>
           <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" aria-expanded="false" aria-controls="welcomeBannerProfileDetails" hidden>
-            <span class="welcome-banner-avatar-wrap"><img id="welcomeBannerProfileAvatar" src="logo.png" alt=""><span class="welcome-banner-verified" id="welcomeBannerVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+            <span class="welcome-banner-avatar-wrap"><img id="welcomeBannerProfileAvatar" src="app-icon-192.png" alt=""><span class="welcome-banner-verified" id="welcomeBannerVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
             <span class="welcome-banner-profile-name" id="welcomeBannerProfileName"></span>
           </a>
         </div>
       </div>
       <div class="welcome-banner-profile-details" id="welcomeBannerProfileDetails" hidden>
-        <span class="welcome-banner-details-avatar-wrap"><img id="welcomeBannerDetailsAvatar" src="logo.png" alt=""><span class="welcome-banner-verified welcome-banner-details-verified" id="welcomeBannerDetailsVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+        <span class="welcome-banner-details-avatar-wrap"><img id="welcomeBannerDetailsAvatar" src="app-icon-192.png" alt=""><span class="welcome-banner-verified welcome-banner-details-verified" id="welcomeBannerDetailsVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
         <div class="welcome-banner-profile-copy">
           <strong id="welcomeBannerDetailsName"></strong>
           <span id="welcomeBannerDetailsId"></span>
@@ -752,6 +767,17 @@
           <button type="button" id="typingFullscreenButton" onclick="toggleTypingFullscreen()" aria-label="Show typing text fullscreen" title="Fullscreen">⛶</button>
         </div>
       </div>
+      <div class="typing-fullscreen-controls" id="typingFullscreenControls">
+        <label class="typing-fullscreen-field" id="typingFullscreenLevelField" for="typingFullscreenLevel">
+          <span id="typingFullscreenLevelLabel">লেভেল</span>
+          <select id="typingFullscreenLevel" aria-label="লেভেল নির্বাচন" onchange="selectFullscreenLevel(this.value)"></select>
+        </label>
+        <label class="typing-fullscreen-field" for="typingFullscreenLesson">
+          <span id="typingFullscreenLessonLabel">লেসন</span>
+          <select id="typingFullscreenLesson" aria-label="লেসন নির্বাচন" onchange="selectFullscreenLesson(this.value)"></select>
+        </label>
+        <button type="button" class="typing-fullscreen-exit" id="typingFullscreenExit" onclick="toggleTypingFullscreen()" aria-label="ফুলস্ক্রিন থেকে বের হন">✕ বের হন</button>
+      </div>
       <div id="statusFeedback" class="status-feedback"><span style="color: var(--text-muted)">Press any key to start typing...</span></div>
       <div id="textDisplay" class="text-display" aria-label="লেসনের লেখা"></div>
       <textarea id="bengaliTypingBox" class="bengali-typing-box" aria-label="বাংলা টাইপিং বক্স" placeholder="এখানে ট্যাপ করে বাংলা টাইপ করুন..." inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
@@ -927,12 +953,12 @@
 
         const avatar = document.createElement("img");
         avatar.className = "home-top-player-avatar";
-        avatar.src = user.pic || "logo.png";
+        avatar.src = user.pic || "app-icon-192.png";
         avatar.alt = "";
         avatar.loading = "lazy";
         avatar.onerror = () => {
           avatar.onerror = null;
-          avatar.src = "logo.png";
+          avatar.src = "app-icon-192.png";
         };
 
         card.append(rankLabel, avatar);
@@ -1206,7 +1232,7 @@
         document.getElementById("welcomeBannerDetailsName").textContent = "Guest account";
         document.getElementById("welcomeBannerDetailsId").textContent = "Login or register to save your profile";
         document.getElementById("welcomeBannerDetailsBio").textContent = "Guest mode is active while you use the site.";
-        document.getElementById("welcomeBannerDetailsAvatar").src = "logo.png";
+        document.getElementById("welcomeBannerDetailsAvatar").src = "app-icon-192.png";
         document.getElementById("welcomeBannerProfileActions").hidden = false;
         return;
       }
@@ -1228,7 +1254,7 @@
       if (detailsVerifiedBadge) detailsVerifiedBadge.hidden = user.verifiedBadge !== true;
       profileAvatar.onerror = () => {
         profileAvatar.onerror = null;
-        profileAvatar.src = "logo.png";
+        profileAvatar.src = "app-icon-192.png";
       };
       profileAvatar.src = typeof user.pic === "string" && user.pic.trim()
         ? user.pic
@@ -1240,7 +1266,7 @@
       const detailsAvatar = document.getElementById("welcomeBannerDetailsAvatar");
       detailsAvatar.onerror = () => {
         detailsAvatar.onerror = null;
-        detailsAvatar.src = "logo.png";
+        detailsAvatar.src = "app-icon-192.png";
       };
       detailsAvatar.src = profileAvatar.src;
       document.getElementById("welcomeBannerDetailsName").textContent = profileDisplayName;
@@ -1469,6 +1495,38 @@
       });
       lessonSelect.appendChild(grp);
       lessonSelect.value = 0;
+      syncFullscreenLessonSelector();
+    }
+    function syncFullscreenLessonSelector() {
+      const lessonSelect = document.getElementById("lessonSelect");
+      const fullscreenLessonSelect = document.getElementById("typingFullscreenLesson");
+      const levelSelect = document.getElementById("levelSelect");
+      const fullscreenLevelSelect = document.getElementById("typingFullscreenLevel");
+      if (!lessonSelect || !fullscreenLessonSelect || !levelSelect || !fullscreenLevelSelect) return;
+      fullscreenLevelSelect.innerHTML = levelSelect.innerHTML;
+      fullscreenLevelSelect.value = levelSelect.value;
+      fullscreenLessonSelect.innerHTML = lessonSelect.innerHTML;
+      fullscreenLessonSelect.value = lessonSelect.value;
+      const isBengali = currentLanguage === "bn";
+      document.getElementById("typingFullscreenLevelField").hidden = isBengali;
+      document.getElementById("typingFullscreenLevelLabel").textContent = isBengali ? "লেভেল" : "Level";
+      fullscreenLevelSelect.setAttribute("aria-label", isBengali ? "লেভেল নির্বাচন" : "Select level");
+      document.getElementById("typingFullscreenLessonLabel").textContent = isBengali ? "লেসন" : "Lesson";
+      fullscreenLessonSelect.setAttribute("aria-label", isBengali ? "লেসন নির্বাচন" : "Select lesson");
+      const exitButton = document.getElementById("typingFullscreenExit");
+      exitButton.textContent = isBengali ? "✕ বের হন" : "✕ Exit";
+      exitButton.setAttribute("aria-label", isBengali ? "ফুলস্ক্রিন থেকে বের হন" : "Exit fullscreen");
+    }
+    function selectFullscreenLevel(value) {
+      const levelSelect = document.getElementById("levelSelect");
+      levelSelect.value = value;
+      populateLessonsDropdown();
+      loadLesson();
+    }
+    function selectFullscreenLesson(value) {
+      const lessonSelect = document.getElementById("lessonSelect");
+      lessonSelect.value = value;
+      loadLesson();
     }
     function updateKeyboardLayoutDisplay() { document.querySelectorAll(".key").forEach(keyEl => { const keyChar = keyEl.getAttribute("data-key"); if (keyChar && keyChar.length === 1) { if (currentLanguage === 'bn') { const bnChar = bengaliKeyLabelMap[keyChar.toLowerCase()]; keyEl.innerHTML = bnChar ? `<span style="font-size: 14px;">${keyChar.toUpperCase()}</span><span style="font-size: 11px; color: var(--primary); position: absolute; top: 2px; right: 6px;">${bnChar}</span>` : keyChar.toUpperCase(); } else keyEl.innerHTML = keyChar.toUpperCase(); } }); }
     function loadLesson(options = {}) {
@@ -1477,6 +1535,7 @@
       const levelKey = currentLanguage === "bn" ? "basic" : (levelSelect.value || "basic");
       const lessons = currentLanguage === "en" ? englishLessonsByLevel[levelKey] : bengaliLessonsByLevel.basic.slice(0, 10);
       targetText = lessons[lessonSelect.value] || lessons[0];
+      syncFullscreenLessonSelector();
       document.getElementById("nextLessonButton").hidden = currentLanguage === "bn" && Number(lessonSelect.value) >= 9;
       resetExercise(options);
     }
