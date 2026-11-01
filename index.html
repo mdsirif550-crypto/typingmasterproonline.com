@@ -176,6 +176,17 @@
     .welcome-banner-login { padding: 7px 12px; border: 1px solid rgba(255,255,255,0.28); border-radius: 999px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; font-size: 12px; font-weight: 900; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(37,99,235,0.24); }
     button.welcome-banner-login { font: inherit; cursor: pointer; }
     .welcome-banner-login:hover { filter: brightness(1.12); }
+    #shareFallbackModal { display: none; position: fixed; inset: 0; z-index: 300001; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 6, 23, 0.78); backdrop-filter: blur(7px); }
+    #shareFallbackModal.active { display: flex; }
+    .share-fallback-card { width: min(100%, 360px); padding: 18px; border: 1px solid rgba(125, 211, 252, 0.4); border-radius: 16px; background: linear-gradient(145deg, #f8fafc, #e2e8f0); color: #0f172a; box-shadow: 0 18px 50px rgba(0,0,0,0.4); }
+    .share-fallback-card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 900; }
+    .share-fallback-url { display: block; margin: 0 0 12px; color: #0369a1; font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+    .share-fallback-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .share-fallback-actions a, .share-fallback-actions button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; padding: 8px; border: 0; border-radius: 9px; background: #0f766e; color: #fff; font: inherit; font-size: 11px; font-weight: 900; text-align: center; text-decoration: none; cursor: pointer; }
+    .share-fallback-actions .android-share-action { grid-column: 1 / -1; background: linear-gradient(135deg, #2563eb, #0891b2); }
+    .share-fallback-actions .android-share-action[hidden] { display: none; }
+    .share-fallback-status { min-height: 18px; margin: 8px 0 0; color: #334155; font-size: 11px; text-align: center; }
+    .share-fallback-close { width: 100%; margin-top: 8px; padding: 8px; border: 0; background: transparent; color: #64748b; font: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
     #homeAuthModal { display: none; position: fixed; inset: 0; z-index: 300000; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 6, 23, 0.78); backdrop-filter: blur(7px); }
     #homeAuthModal.active { display: flex; }
     .home-auth-card { width: min(100%, 390px); padding: 22px; border: 1px solid rgba(125, 211, 252, 0.35); border-radius: 18px; background: linear-gradient(145deg, #f8fafc, #e2e8f0); color: #0f172a; box-shadow: 0 18px 50px rgba(0,0,0,0.4); }
@@ -394,7 +405,8 @@
       .welcome-banner-identity h1 { min-width: 0; font-size: clamp(18px, 5vw, 24px); }
       .welcome-banner-controls { width: 100%; gap: 8px; flex-wrap: wrap; }
       .welcome-banner-about { margin-left: 0; padding: 6px 9px; font-size: 10px; }
-      .welcome-banner-login { padding: 6px 9px; font-size: 10px; }
+      .welcome-banner-login { width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: 0; }
+      .welcome-banner-login::after { content: "👤"; font-size: 17px; }
       .welcome-banner-profile { width: 34px; height: 34px; max-width: 34px; justify-content: center; padding: 3px; }
       .welcome-banner-profile img { width: 26px; height: 26px; flex-basis: 26px; }
       .welcome-banner-profile-name { display: none; }
@@ -495,7 +507,7 @@
           <h1>TypingMaster Pro <span>Online</span></h1>
         </div>
         <div class="welcome-banner-account">
-          <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" hidden aria-hidden="true">Login / Register</button>
+          <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" aria-label="Login or register" title="Login or register">👤 Login / Register</button>
           <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" aria-expanded="false" aria-controls="welcomeBannerProfileDetails" hidden>
             <img id="welcomeBannerProfileAvatar" src="logo.png" alt="">
             <span class="welcome-banner-profile-name" id="welcomeBannerProfileName"></span>
@@ -622,6 +634,21 @@
       <button class="home-auth-submit" id="homeAuthSubmit" type="submit">Login / Register</button>
       <button class="home-auth-close" type="button" onclick="closeHomeAuth()">Close</button>
     </form>
+  </div>
+  <div id="shareFallbackModal" role="dialog" aria-modal="true" aria-labelledby="shareFallbackTitle" onclick="if(event.target===this) closeShareFallback()">
+    <div class="share-fallback-card">
+      <h2 id="shareFallbackTitle">Share TypingMaster Pro</h2>
+      <span class="share-fallback-url">https://typingmasterproonline.com</span>
+      <div class="share-fallback-actions">
+        <button class="android-share-action" id="androidShareAction" type="button" onclick="openAndroidShare()">📲 Share using phone apps</button>
+        <a id="shareWhatsAppLink" href="https://wa.me/?text=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a id="shareTelegramLink" href="https://t.me/share/url?url=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a id="shareFacebookLink" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ftypingmasterproonline.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a id="shareSmsLink" href="sms:?body=https%3A%2F%2Ftypingmasterproonline.com">SMS / Messages</a>
+      </div>
+      <p class="share-fallback-status" id="shareFallbackStatus" role="status" aria-live="polite"></p>
+      <button class="share-fallback-close" type="button" onclick="closeShareFallback()">Close</button>
+    </div>
   </div>
   <div id="loadingScreen" class="loader-overlay">
     <div class="loader-sun"></div>
@@ -1144,8 +1171,8 @@
 
       if (!user || typeof user !== "object" || !user.id) {
         if (loginLink) {
-          loginLink.hidden = true;
-          loginLink.setAttribute("aria-hidden", "true");
+          loginLink.hidden = false;
+          loginLink.setAttribute("aria-hidden", "false");
         }
         if (profileLoginButton) profileLoginButton.hidden = false;
         if (profileLink) profileLink.hidden = true;
@@ -1582,21 +1609,30 @@
     }
     function closeSummary() { document.getElementById("summaryModal").style.display = "none"; resetExercise(); }
     async function shareSiteAddress() {
-      if (!navigator.share) {
-        alert("এই ব্রাউজারে সরাসরি শেয়ার সুবিধা নেই। ব্রাউজারের Share মেনু ব্যবহার করুন।");
-        return;
+      if (typeof navigator.share === "function" && window.isSecureContext) {
+        try {
+          await navigator.share({
+            title: "TypingMaster Pro Online",
+            text: "TypingMaster Pro Online",
+            url: "https://typingmasterproonline.com"
+          });
+          return;
+        } catch (error) {
+          if (error.name === "AbortError") return;
+          console.error("Native website share failed; showing share options:", error);
+        }
       }
-      try {
-        await navigator.share({
-          title: "TypingMaster Pro Online",
-          text: "TypingMaster Pro Online",
-          url: "https://typingmasterproonline.com"
-        });
-      } catch (error) {
-        if (error.name === "AbortError") return;
-        console.error("Website address share failed:", error);
-        alert("ওয়েবসাইটটি শেয়ার করা যায়নি। আবার চেষ্টা করুন।");
-      }
+      const modal = document.getElementById("shareFallbackModal");
+      document.getElementById("shareFallbackStatus").textContent = "";
+      document.getElementById("androidShareAction").hidden = !/android/i.test(navigator.userAgent);
+      modal.classList.add("active");
+    }
+    function closeShareFallback() {
+      document.getElementById("shareFallbackModal").classList.remove("active");
+    }
+    function openAndroidShare() {
+      const text = encodeURIComponent("TypingMaster Pro Online https://typingmasterproonline.com");
+      window.location.href = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=${text};end`;
     }
     let deferredInstallPrompt = null;
     window.addEventListener("beforeinstallprompt", event => {
@@ -1824,7 +1860,10 @@
       if (event.target === event.currentTarget) closeHomeAuth();
     });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeHomeAuth();
+      if (event.key === "Escape") {
+        closeHomeAuth();
+        closeShareFallback();
+      }
     });
     window.onload = () => {
       updateWelcomeBannerProfile();
