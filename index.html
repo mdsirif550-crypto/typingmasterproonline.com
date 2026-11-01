@@ -199,14 +199,17 @@
     .welcome-banner-profile { display: inline-flex; align-items: center; gap: 6px; max-width: 180px; padding: 4px 9px 4px 4px; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 999px; background: linear-gradient(135deg, rgba(8, 145, 178, 0.32), rgba(37, 99, 235, 0.28)); color: #fff; font: inherit; font-size: 11px; font-weight: 900; text-decoration: none; white-space: nowrap; }
     .welcome-banner-profile[hidden] { display: none; }
     .welcome-banner-profile:hover { filter: brightness(1.12); }
+    .welcome-banner-avatar-wrap { position: relative; display: inline-flex; width: 26px; height: 26px; flex: 0 0 26px; }
     .welcome-banner-profile img { width: 26px; height: 26px; flex: 0 0 26px; border: 1px solid rgba(255,255,255,0.65); border-radius: 50%; object-fit: cover; background: #fff; }
     .welcome-banner-profile-name { overflow: hidden; text-overflow: ellipsis; }
-    .welcome-banner-verified { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; align-items: center; justify-content: center; border-radius: 50%; background: #2563eb; color: #fff; }
+    .welcome-banner-verified { position: absolute; right: -3px; bottom: -3px; display: inline-flex; width: 14px; height: 14px; flex: 0 0 14px; align-items: center; justify-content: center; border: 2px solid #082f49; border-radius: 50%; background: #2563eb; color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
     .welcome-banner-verified[hidden] { display: none; }
-    .welcome-banner-verified svg { width: 12px; height: 12px; }
+    .welcome-banner-verified svg { display: block; width: 9px; height: 9px; }
     .welcome-banner-profile-details { position: absolute; top: 72px; right: 12px; z-index: 20; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 9px 11px; width: min(360px, calc(100vw - 32px)); max-height: min(75vh, 620px); overflow-y: auto; padding: 10px 12px; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: rgba(2, 20, 32, 0.97); color: #e0f2fe; box-shadow: 0 12px 32px rgba(0,0,0,0.42); }
     .welcome-banner-profile-details[hidden] { display: none !important; }
-    .welcome-banner-profile-details > img { width: 48px; height: 48px; grid-row: span 2; border: 2px solid rgba(125, 211, 252, 0.6); border-radius: 50%; object-fit: cover; background: #fff; }
+    .welcome-banner-details-avatar-wrap { position: relative; display: inline-flex; width: 48px; height: 48px; grid-row: span 2; }
+    .welcome-banner-profile-details > .welcome-banner-details-avatar-wrap > img { width: 48px; height: 48px; border: 2px solid rgba(125, 211, 252, 0.6); border-radius: 50%; object-fit: cover; background: #fff; }
+    .welcome-banner-details-verified { right: -2px; bottom: -2px; width: 17px; height: 17px; border-color: #021420; }
     .welcome-banner-profile-copy { display: grid; gap: 3px; min-width: 0; font-size: 11px; }
     .welcome-banner-profile-copy strong { overflow: hidden; color: #fff; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
     .welcome-banner-profile-copy span { color: #bae6fd; }
@@ -217,6 +220,13 @@
     .welcome-banner-profile-edit-form input, .welcome-banner-profile-edit-form textarea { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid rgba(125, 211, 252, 0.24); border-radius: 7px; outline: none; background: rgba(2, 20, 32, 0.65); color: #fff; font: inherit; font-size: 11px; }
     .welcome-banner-profile-edit-form textarea { min-height: 56px; resize: vertical; }
     .welcome-banner-profile-edit-form input[type="file"] { padding: 6px; }
+    .welcome-banner-photo-upload { display: flex; grid-column: 1 / -1; align-items: center; gap: 8px; }
+    .welcome-banner-photo-preview { width: 42px; height: 42px; flex: 0 0 42px; border: 2px solid rgba(125, 211, 252, 0.6); border-radius: 50%; object-fit: cover; background: #fff; }
+    .welcome-banner-photo-preview[hidden] { display: none; }
+    .welcome-banner-photo-save { padding: 6px 10px; border: 1px solid rgba(125, 211, 252, 0.4); border-radius: 999px; background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; font-size: 10px; font-weight: 900; cursor: pointer; }
+    .welcome-banner-photo-save:hover:not(:disabled) { filter: brightness(1.12); }
+    .welcome-banner-photo-save:focus-visible { outline: 2px solid #fde68a; outline-offset: 2px; }
+    .welcome-banner-photo-save:disabled { cursor: not-allowed; opacity: 0.55; }
     .welcome-banner-profile-edit-visibility { display: flex !important; align-items: center; gap: 6px !important; color: #e0f2fe !important; }
     .welcome-banner-profile-edit-visibility input { width: 14px; height: 14px; accent-color: #10b981; }
     .welcome-banner-profile-edit-actions { display: flex; justify-content: flex-end; gap: 7px; }
@@ -231,8 +241,10 @@
     .welcome-banner-profile-stat span { color: #bae6fd; font-size: 8px; font-weight: 800; text-transform: uppercase; }
     .welcome-banner-profile-event { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; }
     .welcome-banner-profile-event-label { min-width: 0; color: #fde68a; font-size: 10px; font-weight: 800; }
-    .welcome-banner-profile-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
-    .welcome-banner-profile-join, .welcome-banner-profile-login, .welcome-banner-profile-logout { flex: 0 0 auto; padding: 6px 9px; border: 0; border-radius: 999px; font: inherit; font-size: 10px; font-weight: 900; text-decoration: none; white-space: nowrap; cursor: pointer; }
+    .welcome-banner-profile-actions { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .welcome-banner-profile-actions > a, .welcome-banner-profile-actions > button { display: inline-flex; min-width: 0; min-height: 32px; align-items: center; justify-content: center; padding: 6px 8px; border: 1px solid rgba(255,255,255,0.16); border-radius: 9px; font: inherit; font-size: 10px; font-weight: 900; line-height: 1.2; text-align: center; text-decoration: none; white-space: nowrap; cursor: pointer; transition: filter 0.18s ease, transform 0.18s ease; }
+    .welcome-banner-profile-actions > a:hover, .welcome-banner-profile-actions > button:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .welcome-banner-profile-actions > a:focus-visible, .welcome-banner-profile-actions > button:focus-visible { outline: 2px solid #fde68a; outline-offset: 2px; }
     .welcome-banner-profile-join { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); color: #111; }
     .welcome-banner-profile-verify { background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; }
     .welcome-banner-profile-view { background: rgba(255,255,255,0.12); color: #e0f2fe; }
@@ -346,6 +358,12 @@
     .typing-panel.bengali-mode .bengali-typing-box { display: block; width: 100%; min-height: 120px; margin-top: 14px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; background: rgba(4,30,18,0.48); color: var(--text-main); font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-size: 22px; line-height: 1.7; resize: vertical; }
     .typing-panel.bengali-mode .bengali-typing-box { min-height: 120px; font-size: 20px; touch-action: manipulation; }
     .typing-panel.bengali-mode .bengali-typing-box:focus { border-color: var(--primary); outline: 2px solid rgba(192,38,211,0.22); }
+    .typing-panel.bengali-mode:fullscreen,
+    .typing-panel.bengali-mode.is-text-fullscreen { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); align-content: stretch; justify-content: stretch; gap: 10px; box-sizing: border-box; padding: 10px; overflow: hidden; }
+    .typing-panel.bengali-mode:fullscreen .text-display,
+    .typing-panel.bengali-mode.is-text-fullscreen .text-display { width: 100%; height: auto; min-height: 0; max-height: none; margin: 0; overflow-y: auto; align-self: stretch; text-align: left; }
+    .typing-panel.bengali-mode:fullscreen .bengali-typing-box,
+    .typing-panel.bengali-mode.is-text-fullscreen .bengali-typing-box { width: 100%; height: auto; min-height: 0; max-height: none; margin: 0; overflow-y: auto; align-self: stretch; box-sizing: border-box; resize: none; }
     .keyboard-container.bengali-hidden { display: none; }
     .keyboard-container { width: min(100%, 900px); min-width: 0; margin: 0 auto; background-color: var(--panel-bg); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
     .keyboard-row { display: flex; justify-content: center; gap: 6px; width: 100%; min-width: 0; margin-bottom: 10px; }
@@ -507,14 +525,13 @@
         <div class="welcome-banner-account">
           <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" aria-label="Login or register" title="Login or register">👤 Login / Register</button>
           <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" aria-expanded="false" aria-controls="welcomeBannerProfileDetails" hidden>
-            <img id="welcomeBannerProfileAvatar" src="logo.png" alt="">
+            <span class="welcome-banner-avatar-wrap"><img id="welcomeBannerProfileAvatar" src="logo.png" alt=""><span class="welcome-banner-verified" id="welcomeBannerVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
             <span class="welcome-banner-profile-name" id="welcomeBannerProfileName"></span>
-            <span class="welcome-banner-verified" id="welcomeBannerVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </a>
         </div>
       </div>
       <div class="welcome-banner-profile-details" id="welcomeBannerProfileDetails" hidden>
-        <img id="welcomeBannerDetailsAvatar" src="logo.png" alt="">
+        <span class="welcome-banner-details-avatar-wrap"><img id="welcomeBannerDetailsAvatar" src="logo.png" alt=""><span class="welcome-banner-verified welcome-banner-details-verified" id="welcomeBannerDetailsVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
         <div class="welcome-banner-profile-copy">
           <strong id="welcomeBannerDetailsName"></strong>
           <span id="welcomeBannerDetailsId"></span>
@@ -535,6 +552,10 @@
           <label for="welcomeBannerEditAvatarFile">Or upload a profile photo
             <input id="welcomeBannerEditAvatarFile" type="file" accept="image/*">
           </label>
+          <div class="welcome-banner-photo-upload">
+            <img class="welcome-banner-photo-preview" id="welcomeBannerPhotoPreview" alt="Selected profile photo preview" hidden>
+            <button class="welcome-banner-photo-save" id="welcomeBannerPhotoSave" type="button" disabled>📷 Upload photo</button>
+          </div>
           <label for="welcomeBannerEditWhatsapp">WhatsApp number (with country code)
             <input id="welcomeBannerEditWhatsapp" type="tel" maxlength="24" autocomplete="tel" inputmode="tel" placeholder="+8801XXXXXXXXX">
           </label>
@@ -1153,6 +1174,7 @@
       const profileName = document.getElementById("welcomeBannerProfileName");
       const profileAvatar = document.getElementById("welcomeBannerProfileAvatar");
       const verifiedBadge = document.getElementById("welcomeBannerVerifiedBadge");
+      const detailsVerifiedBadge = document.getElementById("welcomeBannerDetailsVerifiedBadge");
       const detailsPanel = document.getElementById("welcomeBannerProfileDetails");
       const actionPanel = document.getElementById("welcomeBannerProfileActions");
       const logoutButton = document.getElementById("welcomeBannerLogout");
@@ -1175,6 +1197,7 @@
         if (profileLoginButton) profileLoginButton.hidden = false;
         if (profileLink) profileLink.hidden = true;
         if (verifiedBadge) verifiedBadge.hidden = true;
+        if (detailsVerifiedBadge) detailsVerifiedBadge.hidden = true;
         detailsPanel.hidden = true;
         actionPanel.hidden = true;
         if (logoutButton) logoutButton.hidden = true;
@@ -1196,8 +1219,13 @@
       if (logoutButton) logoutButton.hidden = false;
       if (editToggle) editToggle.hidden = false;
       actionPanel.hidden = false;
-      profileName.textContent = String(user.name || user.id);
+      const rawName = String(user.name || user.id);
+      const profileDisplayName = user.verifiedBadge === true
+        ? rawName.replace(/(?:\s*[☑✔✓✅]\uFE0F?)+\s*$/u, "").trim() || rawName
+        : rawName;
+      profileName.textContent = profileDisplayName;
       if (verifiedBadge) verifiedBadge.hidden = user.verifiedBadge !== true;
+      if (detailsVerifiedBadge) detailsVerifiedBadge.hidden = user.verifiedBadge !== true;
       profileAvatar.onerror = () => {
         profileAvatar.onerror = null;
         profileAvatar.src = "logo.png";
@@ -1215,7 +1243,7 @@
         detailsAvatar.src = "logo.png";
       };
       detailsAvatar.src = profileAvatar.src;
-      document.getElementById("welcomeBannerDetailsName").textContent = String(user.name || user.id);
+      document.getElementById("welcomeBannerDetailsName").textContent = profileDisplayName;
       document.getElementById("welcomeBannerDetailsId").textContent = `ID: ${String(user.id)}`;
       document.getElementById("welcomeBannerDetailsPhone").textContent = `Mobile: ${String(user.whatsapp || "Not added")}`;
       document.getElementById("welcomeBannerDetailsBio").textContent = String(user.bio || "Typing profile");
@@ -1225,6 +1253,7 @@
         document.getElementById("welcomeBannerEditAvatar").value =
           typeof user.pic === "string" && /^https?:\/\//i.test(user.pic) ? user.pic : "";
         document.getElementById("welcomeBannerEditAvatarFile").value = "";
+        clearHomeProfilePhotoPreview();
         document.getElementById("welcomeBannerEditWhatsapp").value = String(user.whatsapp || "");
         document.getElementById("welcomeBannerEditShowWhatsapp").checked = user.showWhatsApp === true;
         document.getElementById("welcomeBannerEditHasWhatsapp").checked = user.hasWhatsApp !== false;
@@ -1250,7 +1279,7 @@
       document.getElementById("welcomeBannerProfileActions").hidden = false;
       if (profileLoginButton) profileLoginButton.hidden = true;
       if (logoutButton) logoutButton.hidden = false;
-      profileLink.setAttribute("aria-label", `Show ${String(user.name || user.id)}'s typing profile`);
+      profileLink.setAttribute("aria-label", `Show ${profileDisplayName}'s typing profile`);
       if (loginLink) {
         loginLink.hidden = true;
         loginLink.setAttribute("aria-hidden", "true");
@@ -1690,6 +1719,8 @@
       form.hidden = isExpanded;
       document.getElementById("welcomeBannerEditStatus").textContent = "";
     });
+    document.getElementById("welcomeBannerEditAvatarFile").addEventListener("change", previewHomeProfilePhoto);
+    document.getElementById("welcomeBannerPhotoSave").addEventListener("click", saveHomeProfilePhoto);
     document.getElementById("welcomeBannerEditCancel").addEventListener("click", () => {
       const button = document.getElementById("welcomeBannerEditToggle");
       button.setAttribute("aria-expanded", "false");
@@ -1697,6 +1728,98 @@
       document.getElementById("welcomeBannerEditForm").hidden = true;
       updateWelcomeBannerProfile();
     });
+    function clearHomeProfilePhotoPreview() {
+      const preview = document.getElementById("welcomeBannerPhotoPreview");
+      if (preview.dataset.previewUrl) {
+        URL.revokeObjectURL(preview.dataset.previewUrl);
+        delete preview.dataset.previewUrl;
+      }
+      preview.removeAttribute("src");
+      preview.hidden = true;
+      document.getElementById("welcomeBannerPhotoSave").disabled = true;
+    }
+    function previewHomeProfilePhoto(event) {
+      const input = event.currentTarget;
+      const file = input.files[0] || null;
+      const status = document.getElementById("welcomeBannerEditStatus");
+      clearHomeProfilePhotoPreview();
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        input.value = "";
+        status.textContent = "Choose a valid image file for your profile photo.";
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        input.value = "";
+        status.textContent = "Choose an image smaller than 10 MB.";
+        return;
+      }
+      const preview = document.getElementById("welcomeBannerPhotoPreview");
+      try {
+        const previewUrl = URL.createObjectURL(file);
+        preview.dataset.previewUrl = previewUrl;
+        preview.src = previewUrl;
+        preview.hidden = false;
+        document.getElementById("welcomeBannerPhotoSave").disabled = false;
+        status.textContent = "Photo selected. Tap Upload photo to save it to your profile.";
+      } catch (error) {
+        console.error("Could not preview the selected profile photo:", error);
+        input.value = "";
+        status.textContent = "Could not preview this photo. Please choose another image.";
+      }
+    }
+    async function saveHomeProfilePhoto() {
+      const input = document.getElementById("welcomeBannerEditAvatarFile");
+      const saveButton = document.getElementById("welcomeBannerPhotoSave");
+      const status = document.getElementById("welcomeBannerEditStatus");
+      const file = input.files[0] || null;
+      if (!file) {
+        status.textContent = "Choose a photo before uploading.";
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        status.textContent = "Choose a valid image file for your profile photo.";
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        status.textContent = "Choose an image smaller than 10 MB.";
+        return;
+      }
+      let user;
+      try {
+        user = JSON.parse(localStorage.getItem("currentUser") || "null");
+      } catch (error) {
+        console.error("Could not read the signed-in profile for photo upload:", error);
+        status.textContent = "Could not read your profile. Please sign in again.";
+        return;
+      }
+      if (!user || !user.id) {
+        status.textContent = "Please sign in before changing your profile photo.";
+        return;
+      }
+      if (!activityDatabase) {
+        status.textContent = "Profile service is unavailable. Please try again later.";
+        return;
+      }
+
+      saveButton.disabled = true;
+      status.textContent = "Uploading profile photo...";
+      try {
+        const pic = await compressHomeProfileAvatar(file);
+        await activityDatabase.ref(`users/${String(user.id)}`).update({ pic });
+        const updatedUser = { ...user, pic };
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+        updateWelcomeBannerProfile(updatedUser, homeLeaderboardUsers);
+        input.value = "";
+        clearHomeProfilePhotoPreview();
+        status.textContent = "Profile photo updated successfully.";
+      } catch (error) {
+        console.error("Homepage profile photo upload failed:", error);
+        status.textContent = error.message || "Photo could not be uploaded. Check your connection and try again.";
+      } finally {
+        saveButton.disabled = !input.files[0];
+      }
+    }
     async function saveHomeProfile(event) {
       event.preventDefault();
       const status = document.getElementById("welcomeBannerEditStatus");
@@ -1805,6 +1928,10 @@
         }
         localStorage.setItem("currentUser", JSON.stringify(updatedUser));
         updateWelcomeBannerProfile(updatedUser, homeLeaderboardUsers);
+        if (avatarFile) {
+          document.getElementById("welcomeBannerEditAvatarFile").value = "";
+          clearHomeProfilePhotoPreview();
+        }
         status.textContent = "Profile updated successfully.";
         document.getElementById("welcomeBannerPhoneVerificationLink").hidden = true;
       } catch (error) {
