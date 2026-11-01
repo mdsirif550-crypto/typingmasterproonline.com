@@ -9,7 +9,6 @@
     gtag('js', new Date());
     gtag('config', 'G-0LGMNWJX19');
   </script>
-
   <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Typing Master Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
@@ -18,16 +17,16 @@
   <meta name="author" content="TypingMaster Pro Online">
   <link rel="canonical" href="https://typingmasterproonline.com">
   
-  <!-- সোশ্যাল মিডিয়া ও গুগলে আসল লোগো (logo.png) দেখানোর লিংকসমূহ -->
+  <!-- সোশ্যাল মিডিয়া ও গুগলে আসল লোগো দেখানোর লিংকসমূহ -->
   <meta property="og:title" content="TypingMaster Pro Board ⌨️🔥 - Test Your Speed">
   <meta property="og:description" content="Advance Typing Practice Mode - Live WPM &amp; Accuracy Tracker">
   <meta property="og:url" content="https://typingmasterproonline.com">
-  <meta property="og:image" content="https://typingmasterproonline.com">
+  <meta property="og:image" content="https://typingmasterproonline.com/app-icon-192.png">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
+  <meta property="og:image:width" content="518">
+  <meta property="og:image:height" content="518">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/png" sizes="518x518" href="app-icon-192.png">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -129,7 +128,7 @@
         #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 220px; resize: none; overflow-y: auto; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
         #practice-stage.bengali-mode #typing-input { font-weight: 600; }
         #typing-input:disabled { background: #f1f5f9; cursor: not-allowed; }
-        #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; background: #f1f5f9; }
+        #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: var(--practice-viewport-height, 100vh); height: var(--practice-viewport-height, 100dvh); width: 100vw; overflow: hidden; background: #f1f5f9; }
         #practice-fullscreen-shell:fullscreen > .marquee, #practice-fullscreen-shell:-webkit-full-screen > .marquee { display: none; }
         #practice-fullscreen-shell:fullscreen > nav, #practice-fullscreen-shell:-webkit-full-screen > nav { position: static; flex-shrink: 0; }
         #practice-fullscreen-shell:fullscreen > .practice-page-content, #practice-fullscreen-shell:-webkit-full-screen > .practice-page-content { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; flex: 1; width: 100%; max-width: none; min-height: 0; margin: 0; padding: 12px 20px 16px; gap: 8px; }
@@ -143,6 +142,16 @@
         #practice-fullscreen-shell:fullscreen #fullscreen-timer, #practice-fullscreen-shell:-webkit-full-screen #fullscreen-timer { display: inline-flex; }
         .practice-fullscreen-exit { display: none; }
         #practice-fullscreen-shell:fullscreen .practice-fullscreen-exit, #practice-fullscreen-shell:-webkit-full-screen .practice-fullscreen-exit { display: block; position: absolute; top: 8px; right: 28px; z-index: 2; }
+        @media (max-width: 640px) {
+            #practice-fullscreen-shell:fullscreen > nav, #practice-fullscreen-shell:-webkit-full-screen > nav { display: none; }
+            #practice-fullscreen-shell:fullscreen > .practice-page-content, #practice-fullscreen-shell:-webkit-full-screen > .practice-page-content { padding: 6px 8px; gap: 6px; }
+            #practice-fullscreen-shell:fullscreen #typing-controls, #practice-fullscreen-shell:-webkit-full-screen #typing-controls { gap: 5px; margin: 0; }
+            #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+            #practice-fullscreen-shell:fullscreen #display-box, #practice-fullscreen-shell:-webkit-full-screen #display-box { box-sizing: border-box; flex: 1 1 0; min-height: 0; max-height: none; padding: 30px 12px 10px; font-size: 1rem; line-height: 1.6; }
+            #practice-fullscreen-shell:fullscreen #typing-input, #practice-fullscreen-shell:-webkit-full-screen #typing-input { box-sizing: border-box; flex: 1 1 0; min-height: 0; padding: 10px 12px; font-size: 16px; line-height: 1.6; }
+            #practice-fullscreen-shell:fullscreen #practice-stats, #practice-fullscreen-shell:-webkit-full-screen #practice-stats { gap: 5px; padding: 6px; }
+            #practice-fullscreen-shell:fullscreen #practice-stats .stat-pill, #practice-fullscreen-shell:-webkit-full-screen #practice-stats .stat-pill { padding: 3px 6px; }
+        }
         
         .stat-pill { background: white; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: inline-flex; align-items: center; gap: 4px; }
         .stat-pill .num { font-size: 16px; }
@@ -300,8 +309,8 @@
             .announcement-viewport { height: 96px; }
             .announcement-more-button { padding: 5px 9px; }
             .char { font-size: 1.15rem; }
-            #display-box { height: 250px; font-size: 1.15rem; line-height: 1.8; padding: 16px; }
-            #typing-input { height: 180px; font-size: 1.05rem; padding: 14px; }
+            #display-box { height: 160px; font-size: 1.15rem; line-height: 1.8; padding: 12px; }
+            #typing-input { height: 150px; font-size: 1.05rem; padding: 12px; }
             .stat-pill { font-size: 9px; padding: 4px 10px; }
             .stat-pill .num { font-size: 13px; }
             .modal-box { padding: 16px; }
@@ -354,6 +363,8 @@
             const progressbar = loader.querySelector('[role="progressbar"]');
             const progressBar = document.getElementById('page-loader-progress-bar');
             const percentLabel = document.getElementById('page-loader-percent');
+            const openingMessages = new URLSearchParams(window.location.search).get('openMessages') === '1';
+            if (openingMessages) loader.classList.add('is-hidden');
             let progress = 1;
             let loaderFinished = false;
             let loaderCompleted = false;
@@ -862,6 +873,7 @@
         const EMPTY_ANNOUNCEMENT_VIDEOS = Array.from({ length: 5 }, () => null);
 
         let loggedInUser = null;
+        let shouldOpenMessagesAfterLogin = false;
         let allUsers = [];
         let allLessons = [];
         const supplementaryEnglishPoems = [
@@ -1380,11 +1392,21 @@
             }
         }
 
+        function updatePracticeViewportHeight() {
+            const shell = document.getElementById('practice-fullscreen-shell');
+            if (document.fullscreenElement === shell && window.visualViewport) {
+                shell.style.setProperty('--practice-viewport-height', `${Math.round(window.visualViewport.height)}px`);
+            } else {
+                shell.style.removeProperty('--practice-viewport-height');
+            }
+        }
+
         function updatePracticeFullscreenButton() {
             const isFullscreen = document.fullscreenElement === document.getElementById('practice-fullscreen-shell');
             const button = document.getElementById('practice-fullscreen-button');
             button.textContent = '⛶ Full screen';
             button.setAttribute('aria-pressed', String(isFullscreen));
+            updatePracticeViewportHeight();
         }
 
         function performMonthlyReset(currentMonth = getCurrentMonthKey()) {
@@ -1849,7 +1871,8 @@
             processPendingTypingScores();
             listenHelp();
             listenConversations();
-            if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
+            if (shouldOpenMessagesAfterLogin || new URLSearchParams(window.location.search).get('openMessages') === '1') {
+                shouldOpenMessagesAfterLogin = false;
                 const url = new URL(window.location.href);
                 url.searchParams.delete('openMessages');
                 history.replaceState(null, '', url);
@@ -3358,10 +3381,13 @@
         function init() {
             const queryParams = new URLSearchParams(window.location.search);
             const openLoginOnLoad = queryParams.get('openLogin') === '1';
+            const openMessagesOnLoad = queryParams.get('openMessages') === '1';
+            shouldOpenMessagesAfterLogin = openMessagesOnLoad;
             pendingProfileId = queryParams.get('profile');
-            if (openLoginOnLoad || pendingProfileId) {
+            if (openLoginOnLoad || openMessagesOnLoad || pendingProfileId) {
                 const cleanUrl = new URL(window.location.href);
                 cleanUrl.searchParams.delete('openLogin');
+                cleanUrl.searchParams.delete('openMessages');
                 cleanUrl.searchParams.delete('profile');
                 history.replaceState(null, '', cleanUrl);
             }
@@ -3369,9 +3395,14 @@
             listenForTypingScoreConnection();
             setupMessageNotifications();
             document.addEventListener('fullscreenchange', updatePracticeFullscreenButton);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', updatePracticeViewportHeight);
+            }
             setLanguage(localStorage.getItem('preferredLanguage') || 'en');
             typingLang = localStorage.getItem('typingLanguage') || 'en';
             document.getElementById('typing-lang').value = typingLang;
+            document.getElementById('practice-stage').classList.toggle('bengali-mode', typingLang === 'bn');
+            document.getElementById('typing-input').setAttribute('lang', typingLang);
             updateConjunctNoticeVisibility();
             
             syncUsers();
@@ -3410,6 +3441,11 @@
                             localStorage.removeItem('currentUser');
                             loggedInUser = null;
                             updateNav();
+                            if (openMessagesOnLoad) {
+                                shouldOpenMessagesAfterLogin = false;
+                                closeMessages();
+                                openAuth();
+                            }
                         }
                     }).catch(err => {
                         console.error('Session restore failed:', err);
@@ -3420,10 +3456,11 @@
                     localStorage.removeItem('currentUser');
                     loggedInUser = null;
                     updateNav();
+                    if (openMessagesOnLoad) openAuth();
                 }
             } else {
                 updateNav();
-                if (openLoginOnLoad) openAuth();
+                if (openLoginOnLoad || openMessagesOnLoad) openAuth();
             }
 
             // Typing input
@@ -3435,6 +3472,8 @@
             });
 
             const typingInput = document.getElementById('typing-input');
+            const isMobileKeyboardVisible = () =>
+                window.visualViewport && window.visualViewport.height < window.innerHeight * 0.75;
             let typingScrollPosition = null;
             let manualTypingScroll = false;
             let manualTypingScrollTimeout = null;
@@ -3453,7 +3492,7 @@
                     typingScrollPosition = { x: window.scrollX, y: window.scrollY };
                 }
                 const restoreScrollPosition = () => {
-                    if (manualTypingScroll) return;
+                    if (manualTypingScroll || document.fullscreenElement || isMobileKeyboardVisible()) return;
                     window.scrollTo({
                         left: typingScrollPosition.x,
                         top: typingScrollPosition.y,
@@ -3477,7 +3516,7 @@
                 }
             });
             window.addEventListener('scroll', () => {
-                if (!isStarted || document.activeElement !== typingInput) return;
+                if (!isStarted || document.activeElement !== typingInput || document.fullscreenElement || isMobileKeyboardVisible()) return;
                 const currentPosition = { x: window.scrollX, y: window.scrollY };
                 if (manualTypingScroll) {
                     typingScrollPosition = currentPosition;
@@ -3581,11 +3620,21 @@
                 }
             });
             
+            if (openMessagesOnLoad) {
+            if (loggedInUser) {
+                setTimeout(() => {
+                    if (shouldOpenMessagesAfterLogin && loggedInUser) openMessages();
+                }, 0);
+            } else {
+                openAuth();
+            }
+            }
             console.log('✅ App initialized');
             window.finishPageLoader();
         }
 
         window.onload = init;
     </script>
+        <script src="floating-messages.js"></script>
 </body>
 </html>
