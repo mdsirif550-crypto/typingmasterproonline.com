@@ -284,14 +284,147 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
 </div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="game-leaderboard.js"></script>
 <script>
-window.GameLeaderboard = window.GameLeaderboard || {
-  init() {},
-  save() { return Promise.resolve(false); },
-  initPresence() {},
-  setTypingStatus() {}
-};
+window.GameLeaderboard = window.GameLeaderboard || (() => {
+  let database = null;
+  let connectionRef = null;
+  let presenceRef = null;
+  let sessionId = null;
+  let userId = null;
+  let presenceUser = null;
+  let connected = false;
+  let typing = false;
+  let wpm = 0;
+  let idleTimer = null;
+
+  function readUser() {
+    try {
+      const savedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+      return savedUser && typeof savedUser.id === "string" && savedUser.id.trim()
+        ? savedUser
+        : null;
+    } catch (error) {
+      console.error("Could not read the typing presence account:", error);
+      setLeaderboardStatus("লগইন তথ্য পড়া যায়নি; লাইভ টাইপিং দেখানো যাচ্ছে না।", true);
+      return null;
+    }
+  }
+
+  function registerPresence() {
+    if (!presenceRef || !connected || !presenceUser) return;
+    const ref = presenceRef;
+    ref.onDisconnect().remove().then(() => ref.set({
+      uid: presenceUser.id,
+      name: presenceUser.name || presenceUser.id,
+      online: true,
+      typing: false,
+      wpm: 0,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP
+    })).then(() => {
+      if (typing) updateTypingStatus(true, wpm);
+    }).catch(error => {
+      console.error("Could not register sky game typing presence:", error);
+      setLeaderboardStatus("লাইভ টাইপিং সংযোগ করা যায়নি।", true);
+    });
+  }
+
+  function syncAccount() {
+    const nextUser = readUser();
+    const nextUserId = nextUser ? nextUser.id.trim() : "";
+    if (nextUserId === userId) {
+      presenceUser = nextUser;
+      return;
+    }
+    if (presenceRef) {
+      const previousRef = presenceRef;
+      previousRef.onDisconnect().cancel().catch(error =>
+        console.error("Could not cancel the previous typing presence:", error)
+      );
+      previousRef.remove().catch(error =>
+        console.error("Could not clear the previous typing presence:", error)
+      );
+    }
+    presenceRef = null;
+    userId = nextUserId || null;
+    presenceUser = nextUser;
+    if (!userId) return;
+    if (/[.#$/\[\]]/.test(userId)) {
+      setLeaderboardStatus("এই অ্যাকাউন্ট আইডি দিয়ে লাইভ টাইপিং দেখানো যাচ্ছে না।", true);
+      userId = null;
+      presenceUser = null;
+      return;
+    }
+    if (!database || !sessionId) return;
+    presenceRef = database.ref(`online_users/${userId}/connections/${sessionId}`);
+    if (connected) registerPresence();
+  }
+
+  function initPresence() {
+    if (connectionRef) return;
+    if (!window.firebase || !firebase.database) {
+      setLeaderboardStatus("Firebase সংযোগ নেই; লাইভ টাইপিং দেখানো যাচ্ছে না।", true);
+      return;
+    }
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp({
+          apiKey: "AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",
+          authDomain: "eirnbooster.firebaseapp.com",
+          databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
+          projectId: "eirnbooster",
+          storageBucket: "eirnbooster.firebasestorage.app",
+          messagingSenderId: "1062288115898",
+          appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
+        });
+      }
+      database = firebase.database();
+      sessionId = database.ref("online_users").push().key;
+      if (!sessionId) throw new Error("Could not create a typing presence session.");
+      connectionRef = database.ref(".info/connected");
+      connectionRef.on("value", snapshot => {
+        connected = snapshot.val() === true;
+        if (!connected) return;
+        const previousUserId = userId;
+        syncAccount();
+        if (previousUserId === userId) registerPresence();
+      }, error => {
+        console.error("Could not check the sky game database connection:", error);
+        setLeaderboardStatus("লাইভ টাইপিং সংযোগ যাচাই করা যায়নি।", true);
+      });
+      window.addEventListener("storage", event => {
+        if (event.key === "currentUser") syncAccount();
+      });
+      syncAccount();
+    } catch (error) {
+      console.error("Could not initialize sky game typing presence:", error);
+      setLeaderboardStatus("লাইভ টাইপিং চালু করা যায়নি।", true);
+    }
+  }
+
+  function updateTypingStatus(active, speed = 0) {
+    if (!connectionRef) initPresence();
+    typing = Boolean(active);
+    wpm = typing ? Math.max(0, Math.round(Number(speed) || 0)) : 0;
+    clearTimeout(idleTimer);
+    if (typing) idleTimer = setTimeout(() => updateTypingStatus(false), 5000);
+    if (!presenceRef || !connected) return;
+    presenceRef.update({
+      typing,
+      wpm,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP
+    }).catch(error => {
+      console.error("Could not update sky game typing presence:", error);
+      setLeaderboardStatus("লাইভ টাইপিং আপডেট করা যায়নি।", true);
+    });
+  }
+
+  return {
+    init() {},
+    save() { return Promise.resolve(false); },
+    initPresence,
+    setTypingStatus: updateTypingStatus
+  };
+})();
 const safeGameLeaderboard = (methodName, ...args) => {
   const leaderboard = window.GameLeaderboard;
   if (leaderboard && typeof leaderboard[methodName] === "function") {
