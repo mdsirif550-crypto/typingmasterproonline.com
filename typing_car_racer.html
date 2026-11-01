@@ -177,7 +177,357 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
     </div>
   </section>
 </div>
-<script src="game-leaderboard.js"></script>
+<script>
+(() => {
+  const config = {
+    apiKey: "AIzaSyBdgULfChhdMSGMy4DiB5AvX0egXgz84E",
+    authDomain: "eirnbooster.firebaseapp.com",
+    databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
+    projectId: "eirnbooster",
+    storageBucket: "eirnbooster.firebasestorage.app",
+    messagingSenderId: "1062288115898",
+    appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
+  };
+  const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+  const monthKey = () => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit"
+    }).formatToParts(new Date());
+    return `${parts.find(part => part.type === "year").value}-${parts.find(part => part.type === "month").value}`;
+  };
+  let database = null;
+  let users = {};
+  let presenceRef = null;
+  let sessionId = null;
+  let activeUser = null;
+  let connected = false;
+  let typing = false;
+  let typingWpm = 0;
+  let idleTimer = null;
+
+  function setStatus(message, isError = false) {
+    document.querySelectorAll("[data-game-leaderboard-status]").forEach(element => {
+      element.textContent = message;
+      element.classList.toggle("game-leaderboard-error", isError);
+      element.classList.toggle("sync-error", isError);
+    });
+  }
+
+  function currentUser() {
+    try {
+      const user = JSON.parse(localStorage.getItem("currentUser") || "null");
+      return user && typeof user.id === "string" && user.id.trim() ? user : null;
+    } catch (error) {
+      console.error("Could not read the Car Racer account:", error);
+      setStatus("লগইন তথ্য পড়া যায়নি; leaderboard sync করা যাচ্ছে না।", true);
+      return null;
+    }
+  }
+
+  function ensureLeaderboard() {
+    if (document.querySelector("[data-game-leaderboard]")) return;
+    const style = document.createElement("style");
+    style.textContent = ".game-leaderboard{max-width:1050px;margin:18px auto;padding:18px;border:1px solid #d7e4f2;border-radius:18px;background:#fff;box-shadow:0 5px 18px #17406a12;font-family:Arial,Helvetica,sans-serif;color:#17365d}.game-leaderboard h2,.game-leaderboard h3{margin:0 0 8px}.game-leaderboard-status,.game-live-status{margin:0 0 12px;color:#65758e;font-size:13px}.game-leaderboard-error{color:#bd3348}.game-leaderboard-list,.game-live-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0;margin:0;list-style:none}.game-live-list{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:8px}.game-leaderboard-entry,.game-live-entry{display:flex;align-items:center;gap:8px;min-width:0;padding:12px;border:1px solid #d8e8f5;border-radius:13px;background:#f7fbff}.game-leaderboard-entry img{width:38px;height:38px;flex:none;border-radius:50%;object-fit:cover}.game-leaderboard-name,.game-live-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}.game-leaderboard-score{margin-left:auto;white-space:nowrap;color:#1677ef;font-size:12px;font-weight:800}.game-live-entry{flex-direction:column;align-items:flex-start;gap:4px}.game-live-entry.is-typing{border-color:#98d2a8;background:#effdf5}.game-live-meta{display:flex;justify-content:space-between;width:100%;gap:6px}.game-live-score{color:#1677ef;font-size:12px;font-weight:800}.game-my-rank{display:flex;align-items:center;gap:10px;margin:12px 0 18px;padding:12px;border:2px solid #8bb9ff;border-radius:14px;background:#eff6ff;color:inherit;text-decoration:none}.game-my-rank[hidden]{display:none}.game-my-rank img{width:44px;height:44px;border-radius:50%;object-fit:cover}.game-my-rank-name{font-weight:800}.game-my-rank-values{margin-left:auto;text-align:right;color:#1658b6;font-size:12px;font-weight:800}.game-live-empty,.game-leaderboard-empty{grid-column:1/-1;color:#65758e}@media(max-width:650px){.game-leaderboard{margin:14px 12px;padding:14px}.game-leaderboard-list,.game-live-list{grid-template-columns:1fr}.game-my-rank{font-size:12px}.game-my-rank-values{font-size:11px}}";
+    document.head.appendChild(style);
+    const panel = document.createElement("section");
+    panel.className = "game-leaderboard";
+    panel.setAttribute("data-game-leaderboard", "");
+    const heading = document.createElement("h2");
+    heading.textContent = "🏆 মাসের সেরা ৩ খেলোয়াড়";
+    const status = document.createElement("p");
+    status.className = "game-leaderboard-status";
+    status.setAttribute("data-game-leaderboard-status", "");
+    status.textContent = "লিডারবোর্ড লোড হচ্ছে…";
+    const list = document.createElement("ol");
+    list.className = "game-leaderboard-list";
+    list.setAttribute("data-game-leaderboard-list", "");
+    const mine = document.createElement("a");
+    mine.className = "game-my-rank";
+    mine.setAttribute("data-game-my-rank", "");
+    mine.hidden = true;
+    mine.innerHTML = '<img alt="প্রোফাইল ছবি"><span class="game-my-rank-name"></span><span class="game-my-rank-values"></span>';
+    const liveHeading = document.createElement("h3");
+    liveHeading.textContent = "📡 এখন টাইপ করছে";
+    const liveStatus = document.createElement("p");
+    liveStatus.className = "game-live-status";
+    liveStatus.setAttribute("data-game-live-status", "");
+    liveStatus.textContent = "লাইভ টাইপিং লোড হচ্ছে…";
+    const liveList = document.createElement("ul");
+    liveList.className = "game-live-list";
+    liveList.setAttribute("data-game-live-list", "");
+    panel.append(heading, status, list, mine, liveHeading, liveStatus, liveList);
+    const footer = document.querySelector("footer");
+    if (footer) footer.before(panel);
+    else document.body.appendChild(panel);
+  }
+
+  function renderLeaderboard() {
+    const month = monthKey();
+    const ranked = Object.entries(users).map(([id, user]) => ({
+      ...user,
+      id,
+      name: user && (user.name || id),
+      monthlyPoints: user && user.monthlyPointsMonth === month ? number(user.monthlyPoints) : 0
+    })).sort((a, b) => b.monthlyPoints - a.monthlyPoints || number(b.points) - number(a.points));
+    const list = document.querySelector("[data-game-leaderboard-list]");
+    list.replaceChildren();
+    if (!ranked.length) {
+      const empty = document.createElement("li");
+      empty.className = "game-leaderboard-empty";
+      empty.textContent = "এখনো কোনো খেলোয়াড় নেই।";
+      list.appendChild(empty);
+    }
+    ranked.slice(0, 3).forEach((user, index) => {
+      const item = document.createElement("li");
+      item.className = "game-leaderboard-entry";
+      const avatar = document.createElement("img");
+      avatar.src = user.pic || "logo.png";
+      avatar.alt = "";
+      avatar.onerror = () => { avatar.onerror = null; avatar.src = "logo.png"; };
+      const name = document.createElement("span");
+      name.className = "game-leaderboard-name";
+      name.textContent = `${["🥇", "🥈", "🥉"][index]} ${user.name}${user.verifiedBadge === true ? " ✓" : ""}`;
+      const score = document.createElement("span");
+      score.className = "game-leaderboard-score";
+      score.textContent = `${user.monthlyPoints} মাসিক পয়েন্ট`;
+      item.append(avatar, name, score);
+      list.appendChild(item);
+    });
+    const me = currentUser();
+    const mine = document.querySelector("[data-game-my-rank]");
+    const playerIndex = me ? ranked.findIndex(user => user.id === me.id) : -1;
+    if (playerIndex < 0) {
+      mine.hidden = true;
+      return;
+    }
+    const player = ranked[playerIndex];
+    mine.href = `profile.html?id=${encodeURIComponent(player.id)}`;
+    const avatar = mine.querySelector("img");
+    avatar.src = player.pic || "logo.png";
+    avatar.onerror = () => { avatar.onerror = null; avatar.src = "logo.png"; };
+    mine.querySelector(".game-my-rank-name").textContent =
+      `${player.name}${player.verifiedBadge === true ? " ✓" : ""} · ID: ${player.id}`;
+    mine.querySelector(".game-my-rank-values").textContent =
+      `#${playerIndex + 1} · ${player.monthlyPoints} মাসিক · ${number(player.points)} মোট পয়েন্ট`;
+    mine.hidden = false;
+  }
+
+  function renderLive(entries) {
+    const live = [];
+    Object.entries(entries || {}).forEach(([id, entry]) => {
+      Object.values(entry && entry.connections || {}).forEach(connection => {
+        if (!connection) return;
+        if (connection.typing === true || Date.now() - number(connection.lastSeen) < 15000) {
+          live.push({
+            name: connection.name || entry.name || id,
+            typing: connection.typing === true,
+            wpm: Math.max(0, number(connection.wpm)),
+            lastSeen: number(connection.lastSeen)
+          });
+        }
+      });
+    });
+    live.sort((a, b) => Number(b.typing) - Number(a.typing) || b.wpm - a.wpm || b.lastSeen - a.lastSeen);
+    const list = document.querySelector("[data-game-live-list]");
+    const status = document.querySelector("[data-game-live-status]");
+    list.replaceChildren();
+    if (!live.length) {
+      const empty = document.createElement("li");
+      empty.className = "game-live-empty";
+      empty.textContent = "কেউ এখন টাইপ করছে না।";
+      list.appendChild(empty);
+      status.textContent = "কেউ এখন টাইপ করছে না।";
+      return;
+    }
+    live.slice(0, 6).forEach(entry => {
+      const item = document.createElement("li");
+      item.className = `game-live-entry${entry.typing ? " is-typing" : ""}`;
+      const meta = document.createElement("div");
+      meta.className = "game-live-meta";
+      const name = document.createElement("span");
+      name.className = "game-live-name";
+      name.textContent = entry.name;
+      const state = document.createElement("strong");
+      state.textContent = entry.typing ? "টাইপ করছে" : "লাইভ";
+      meta.append(name, state);
+      const speed = document.createElement("span");
+      speed.className = "game-live-score";
+      speed.textContent = `${entry.wpm} WPM`;
+      item.append(meta, speed);
+      list.appendChild(item);
+    });
+    status.textContent = `লাইভ: ${live.length} জন`;
+  }
+
+  function syncAccount() {
+    const user = currentUser();
+    let id = user ? user.id.trim() : "";
+    let name = user && (user.name || id);
+    if (!id) {
+      try {
+        id = localStorage.getItem("typingMasterGuestPresenceId") || `guest_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+        localStorage.setItem("typingMasterGuestPresenceId", id);
+      } catch (error) {
+        console.error("Could not save guest typing presence id:", error);
+      }
+      name = "Guest";
+    }
+    if (/[.#$/\[\]]/.test(id)) {
+      setStatus("এই অ্যাকাউন্ট ID দিয়ে লাইভ টাইপিং দেখানো যাচ্ছে না।", true);
+      return;
+    }
+    const changed = !activeUser || activeUser.id !== id;
+    if (!changed) {
+      activeUser = { id, name };
+      return;
+    }
+    if (presenceRef) {
+      presenceRef.onDisconnect().cancel().catch(error => console.error("Could not cancel previous Car Racer presence:", error));
+      presenceRef.remove().catch(error => console.error("Could not clear previous Car Racer presence:", error));
+    }
+    activeUser = { id, name };
+    presenceRef = database.ref(`online_users/${id}/connections/${sessionId}`);
+    if (connected) registerPresence();
+  }
+
+  function registerPresence() {
+    if (!presenceRef || !activeUser || !connected) return;
+    const ref = presenceRef;
+    ref.onDisconnect().remove().then(() => ref.set({
+      uid: activeUser.id,
+      name: activeUser.name,
+      online: true,
+      typing: false,
+      wpm: 0,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP
+    })).then(() => {
+      if (typing) updateTypingStatus(true, typingWpm);
+    }).catch(error => {
+      console.error("Could not register Car Racer live presence:", error);
+      setStatus("লাইভ leaderboard-এ সংযোগ করা যায়নি।", true);
+    });
+  }
+
+  function initPresence() {
+    if (database) return;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(config);
+      database = firebase.database();
+      sessionId = database.ref("online_users").push().key;
+      if (!sessionId) throw new Error("Could not create Car Racer live session.");
+      database.ref(".info/connected").on("value", snapshot => {
+        connected = snapshot.val() === true;
+        if (!connected) return;
+        const oldId = activeUser && activeUser.id;
+        syncAccount();
+        if (oldId === activeUser.id) registerPresence();
+      }, error => {
+        console.error("Could not check Car Racer database connection:", error);
+        setStatus("Firebase leaderboard connection যাচাই করা যায়নি।", true);
+      });
+      database.ref("users").on("value", snapshot => {
+        users = snapshot.val() || {};
+        renderLeaderboard();
+      }, error => {
+        console.error("Car Racer leaderboard load failed:", error);
+        setStatus("Top 3 leaderboard লোড করা যায়নি। পরে আবার চেষ্টা করুন।", true);
+      });
+      database.ref("online_users").on("value", snapshot => renderLive(snapshot.val()), error => {
+        console.error("Car Racer live typing load failed:", error);
+        document.querySelector("[data-game-live-status]").textContent = "লাইভ WPM লোড করা যায়নি।";
+      });
+      window.addEventListener("storage", event => {
+        if (event.key === "currentUser") syncAccount();
+      });
+      syncAccount();
+      const me = currentUser();
+      setStatus(me ? `${me.name || me.id} হিসেবে লগইন • পয়েন্ট লাইভ সেভ হবে।` : "লগইন করলে পয়েন্ট আপনার leaderboard-এ যোগ হবে।", false);
+    } catch (error) {
+      console.error("Could not initialize Car Racer leaderboard:", error);
+      setStatus("Firebase leaderboard চালু করা যায়নি।", true);
+    }
+  }
+
+  function updateTypingStatus(active, wpm = 0) {
+    if (!database) initPresence();
+    typing = Boolean(active);
+    typingWpm = typing ? Math.max(0, Math.round(number(wpm))) : 0;
+    clearTimeout(idleTimer);
+    if (typing) idleTimer = setTimeout(() => updateTypingStatus(false), 5000);
+    if (!presenceRef || !connected) return;
+    presenceRef.update({
+      typing,
+      wpm: typingWpm,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP
+    }).catch(error => {
+      console.error("Car Racer live WPM update failed:", error);
+      setStatus("লাইভ WPM আপডেট করা যায়নি।", true);
+    });
+  }
+
+  function saveRaceProgress(raceId, correctChars, wpm, mistakes = 0) {
+    const user = currentUser();
+    if (!user || !user.id || /[.#$/\[\]]/.test(user.id)) {
+      setStatus("রেসের পয়েন্ট সেভ করতে লগইন করুন।", true);
+      return Promise.resolve(false);
+    }
+    if (!database) initPresence();
+    if (!database) return Promise.resolve(false);
+    const typedCorrect = Math.max(0, Math.floor(number(correctChars)));
+    const speed = Math.max(0, Math.floor(number(wpm)));
+    const errors = Math.max(0, Math.floor(number(mistakes)));
+    let earned = 0;
+    return new Promise(resolve => {
+      database.ref(`users/${user.id}`).transaction(account => {
+        if (!account || typeof account !== "object") return;
+        const month = monthKey();
+        const progress = account.gameRaceProgress && typeof account.gameRaceProgress === "object"
+          ? { ...account.gameRaceProgress } : {};
+        const previous = progress[raceId] && typeof progress[raceId] === "object" ? progress[raceId] : {};
+        const nextCorrect = Math.max(number(previous.correctChars), typedCorrect);
+        const nextMistakes = Math.max(number(previous.mistakes), errors);
+        earned = Math.max(0, Math.floor(nextCorrect / 5) - Math.floor(number(previous.correctChars) / 5));
+        progress[raceId] = { correctChars: nextCorrect, mistakes: nextMistakes, updatedAt: Date.now() };
+        const ids = Object.keys(progress);
+        if (ids.length > 25) {
+          ids.sort((a, b) => number(progress[a].updatedAt) - number(progress[b].updatedAt));
+          ids.slice(0, ids.length - 25).forEach(id => delete progress[id]);
+        }
+        return {
+          ...account,
+          id: account.id || user.id,
+          name: account.name || user.name || user.id,
+          points: number(account.points) + earned,
+          monthlyPoints: (account.monthlyPointsMonth === month ? number(account.monthlyPoints) : 0) + earned,
+          monthlyPointsMonth: month,
+          bestWpm: Math.max(number(account.bestWpm), speed),
+          mistakes: number(account.mistakes) + Math.max(0, nextMistakes - number(previous.mistakes)),
+          gameRaceProgress: progress
+        };
+      }, (error, committed) => {
+        if (error || !committed) {
+          if (error) console.error("Car Racer race score save failed:", error);
+          setStatus("রেসের পয়েন্ট leaderboard-এ সেভ করা যায়নি।", true);
+          resolve(false);
+          return;
+        }
+        setStatus(earned ? `লাইভ leaderboard-এ +${earned} পয়েন্ট যোগ হয়েছে।` : "রেসের leaderboard আপডেট হয়েছে।", false);
+        resolve(true);
+      }, false);
+    });
+  }
+
+  window.GameLeaderboard = {
+    init() {
+      ensureLeaderboard();
+      initPresence();
+    },
+    initPresence,
+    setTypingStatus: updateTypingStatus,
+    saveRaceProgress
+  };
+})();
+</script>
 <script>
 const texts={easy:["i love to learn typing","the car is very fast","practice every day","keep your fingers on home row","i can type with care","speed comes with practice","drive safely and learn"],medium:["Typing every day improves speed and accuracy.","The quick brown fox jumps over the lazy dog.","Keep your eyes on the screen while typing.","Careful drivers stay focused on the road.","Build good habits one keystroke at a time."],hard:["Consistent practice transforms typing into a valuable skill.","Accuracy, rhythm, and focus help every typist improve.","Challenge yourself to reach a new personal record today.","Fast and accurate typing makes digital work more efficient."]};const $=id=>document.getElementById(id);document.querySelectorAll("[data-game-home]").forEach(link=>{link.href="index.html#typingPanel"});let sentence="",running=false,finished=false,remaining=60,raceDuration=1,timer=null,startedAt=0,correct=0,total=0,score=0,done=0,lastValue="",raceStart=0,playerX=8,rivalX=[18,28,38],lastTick=Date.now(),correctKeystrokes=[];
 let engineContext=null,engineOscillator=null,engineFilter=null,engineGain=null,soundEnabled=true,currentRaceId="",lastReportedRacePoint=0;
