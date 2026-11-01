@@ -139,7 +139,6 @@ h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font
 .sky.game-running .mobile-start-btn{display:none}
 .ground{height:25px;background:repeating-linear-gradient(120deg,#72ce6a 0 35px,#8cdb73 35px 70px)}
 .playarea{padding:22px;min-width:0}
-.lesson-label{margin:0 0 7px;color:#52718f;font-size:12px;font-weight:800}
 .prompt{min-width:0;overflow-wrap:anywhere;white-space:normal;font-size:clamp(18px,2.6vw,24px);line-height:1.9;background:#f4faff;border:1px solid #d6eafb;border-radius:16px;padding:16px 18px;min-height:95px;letter-spacing:.2px}
 .prompt span.done{color:#16a765}.prompt span.current{background:#ffdf75;color:#17365d;border-radius:4px;box-shadow:0 0 0 2px #ffdf75}.prompt span.missed{color:#e94f70;text-decoration:underline}
 .duration-control{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:14px;font-weight:750}
@@ -181,88 +180,11 @@ footer{text-align:center;color:#7b91a7;font-size:12px;padding:20px}
 @media(max-width:700px){.wrap{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.sky{height:225px}.controls{grid-template-columns:1fr}.desktop-start-btn{display:none}.mobile-start-btn{display:inline-flex;align-items:center;justify-content:center}.result-grid{grid-template-columns:repeat(2,1fr)}.plane{font-size:43px}.multiplier-callout{max-width:42%;font-size:11px}.result-overlay{padding:10px}.result{max-height:calc(100vh - 20px);border-radius:18px}.sky-current-player{align-items:flex-start}.sky-current-player-info{flex-wrap:wrap;gap:4px 7px}.sky-current-player-label{width:100%}.sky-current-player-rank{margin-left:auto}.typing-active header,.typing-active .leaderboard-sync,.typing-active .sky-leaderboard,.typing-active .stats{display:none}.typing-active .wrap{padding-top:8px}.typing-active .playarea{padding:10px}.typing-active .prompt{max-height:76px;min-height:0;overflow:auto;padding:8px 10px;font-size:15px;line-height:1.5}.typing-active .duration-control,.typing-active #nextBtn,.typing-active .badges{display:none}.typing-active .controls{margin-top:8px}.typing-active textarea{min-height:100px;resize:none;font-size:16px;scroll-margin:12px}}
 @media(max-width:460px){.sky-leaderboard-list{gap:4px}.sky-top-player{gap:4px;padding:4px}.sky-top-player-avatar{width:24px;height:24px;flex-basis:24px}.sky-top-player-name{font-size:9px}.sky-top-player-points{font-size:8px}.sky-current-player{gap:5px;padding:5px}.sky-current-player-avatar{width:27px;height:27px;flex-basis:27px}.sky-current-player-info{gap:5px}.sky-current-player-label,.sky-current-player-name,.sky-current-player-points{font-size:9px}.sky-current-player-rank{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.result,.result h2,.celebration-confetti span,.countdown.urgent,.plane.crashed,.plane.crashed::before,.plane.crashed::after{animation:none}}
-body{overflow-x:hidden;background:linear-gradient(145deg,#dcf8ff 0%,#eaf4ff 48%,#f2e8ff 100%)}
-html{overflow-x:hidden}
-.wrap{max-width:1050px;padding:0 13px 22px}
-header{position:relative;z-index:0;display:grid;grid-template-columns:1fr auto 1fr;min-height:112px;align-items:center;margin:0 0 18px;padding:16px 18px}
-header::before{position:absolute;inset:0 auto 0 50%;z-index:-1;width:100vw;transform:translateX(-50%);background:linear-gradient(115deg,#112c65,#156bd6 55%,#7d45d7);box-shadow:0 8px 22px #164f9a35;content:""}
-.header-home{justify-self:start;display:inline-flex;align-items:center;justify-content:center;padding:8px 13px;border:1px solid #ffffff72;border-radius:12px;background:#ffffff20;color:#fff;text-decoration:none;font-size:13px;font-weight:800;box-shadow:0 3px 0 #09245e80}
-.brand{grid-column:2;grid-row:1;justify-self:center}
-.brand .logo{border:1px solid #ffffff8c;box-shadow:0 5px 0 #09245e66,0 8px 18px #09245e40}
-header h1{color:#fff;text-shadow:0 2px 6px #09245e70}
-header .sub{color:#d6e8ff}
-.pill{grid-column:3;grid-row:1;justify-self:end;border:1px solid #ffffff72;background:#ffffff20;color:#fff;box-shadow:0 3px 0 #09245e80}
-.leaderboard-sync,.sky-leaderboard{border:1px solid #ffffffc7;border-radius:15px;background:linear-gradient(145deg,#ffffffed,#e4f2ffeb);box-shadow:0 5px 0 #bfd5ef,0 10px 20px #173a6414}
-.leaderboard-sync{margin:0 0 12px}
-.sky-leaderboard{margin:0 0 12px}
-.sky-game-options{position:relative;z-index:2;display:flex;min-height:52px;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:0 0 13px;padding:7px 12px;border:1px solid #ffffffb8;border-radius:14px;background:linear-gradient(145deg,#ffffffdf,#dceeffe8);box-shadow:0 4px 0 #579bc7,0 8px 14px #174c7133}
-.sky-game-options .duration-control{margin:0;color:#24527b}
-.sky-game-options select{min-height:34px;padding:6px 12px;border:1px solid #fff;border-radius:10px;background:linear-gradient(180deg,#fff,#e3f0ff);color:#17477e;font-weight:800;box-shadow:0 4px 0 #9db9dd,0 6px 10px #173a6430}
-.sky-game-options .lesson-label{margin:0;padding:7px 10px;border:1px solid #cfe2fa;border-radius:9px;background:#ffffffbd;color:#24527b}
-.game{border:3px solid #fff;border-radius:20px;box-shadow:inset 0 2px 7px #ffffffc9,0 9px 0 #b7d2ef,0 17px 30px #153b6430}
-.sky{height:390px;border-bottom:0}
-.sky .stats{position:absolute;top:10px;right:12px;left:12px;z-index:5;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0}
-.sky .stat{min-width:0;padding:8px 5px;border:1px solid #ffffffd9;border-radius:11px;background:#ffffffed;box-shadow:0 4px 0 #95bde4,0 7px 14px #173a6430}
-.sky .stat .label{font-size:10px}
-.sky .stat .value{font-size:clamp(17px,2.4vw,23px)}
-.sky .stat small{font-size:10px}
-.countdown{top:88px;left:12px;border:1px solid #ffffffb8;box-shadow:0 4px 0 #091a38,0 7px 13px #0006}
-.plane{top:57%}
-.ground{height:20px;background:linear-gradient(90deg,#72ce6a,#8cdb73 50%,#72ce6a);box-shadow:inset 0 3px 0 #ffffff87}
-.playarea{padding:18px;background:linear-gradient(145deg,#fff,#f2f8ff)}
-.prompt{border:1px solid #d6eafb;border-radius:14px;background:linear-gradient(145deg,#f8fbff,#edf6ff);box-shadow:inset 0 2px 3px #dcecff50}
-.controls{align-items:start}
-.controls textarea{border-color:#cbd9e9;box-shadow:0 3px 0 #d9e8f7}
-.controls textarea:focus{border-color:#2476ef;box-shadow:0 0 0 3px #2476ef20}
-.primary,.secondary{box-shadow:0 4px 0 #184da8,0 7px 14px #15345d30;transition:transform .12s,box-shadow .12s}
-.secondary{box-shadow:0 4px 0 #bfd3ee,0 7px 14px #15345d1c}
-button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da8}
-.desktop-start-btn{position:absolute;top:57%;left:50%;z-index:8;display:inline-flex;min-width:220px;align-items:center;justify-content:center;transform:translate(-50%,-50%);padding:15px 26px;border:2px solid #ffffffd9;border-radius:16px;background:linear-gradient(135deg,#12a76c,#087bcb 58%,#5946d5);box-shadow:0 7px 0 #123a75,0 13px 26px #0e234b80;color:#fff;font-size:clamp(18px,3vw,24px);text-shadow:0 2px 3px #142b5590}
-.desktop-start-btn:not(:disabled):active{transform:translate(-50%,calc(-50% + 3px))}
-.sky.game-running .desktop-start-btn{display:none}
-.sky.game-running .mobile-start-btn{display:none}
-.rules{border:1px solid #d7eaf9;border-radius:18px;background:#ffffffbd;box-shadow:0 7px 0 #c6d9f0,0 13px 26px #173a641a}
-.rules p{padding:10px 12px;border:1px solid #dce8f5;border-radius:10px;background:linear-gradient(145deg,#fff,#edf6ff);box-shadow:0 4px 0 #d9e8f7}
-@media(max-width:700px){
-  .wrap{padding:0 10px 16px}
-  header{grid-template-columns:1fr auto;min-height:100px;padding:13px 10px}
-  .brand{grid-column:1/-1;grid-row:1;justify-self:center}
-  .header-home{grid-column:1;grid-row:2;justify-self:start;padding:6px 9px;font-size:11px}
-  .pill{grid-column:2;grid-row:2;justify-self:end;padding:6px 9px;font-size:10px}
-  .sky-game-options{justify-content:space-between;gap:6px;padding:7px}
-  .sky-game-options .duration-control{gap:5px;font-size:12px}
-  .sky-game-options select{min-height:32px;padding:5px 7px;font-size:11px}
-  .sky-game-options .lesson-label{padding:6px 7px;font-size:10px}
-  .sky{height:320px}
-  .sky .stats{right:7px;left:7px;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
-  .sky .stat{padding:5px 3px}
-  .sky .stat:last-child{grid-column:auto}
-  .sky .stat .label{font-size:clamp(7px,2vw,10px)}
-  .sky .stat .value{font-size:clamp(15px,4vw,21px)}
-  .countdown{top:162px;right:8px;left:auto;min-width:50px;padding:5px 8px;font-size:13px}
-  .plane{top:60%;width:clamp(130px,42%,190px)}
-  .desktop-start-btn{display:none}
-  .mobile-start-btn{top:62%;padding:11px 17px;border:2px solid #ffffffd9;background:linear-gradient(135deg,#12a76c,#087bcb 58%,#5946d5);font-weight:900;box-shadow:0 5px 0 #123a75,0 10px 20px #0e234b80}
-  .playarea{padding:12px}
-  .controls{grid-template-columns:1fr}
-  .controls textarea{min-height:76px}
-}
-@media(max-width:390px){
-  .brand{gap:8px}
-  .brand .logo{width:42px;height:42px;font-size:24px}
-  .brand h1{font-size:22px}
-  .brand .sub{font-size:11px}
-  header{min-height:92px}
-  .sky-game-options{align-items:stretch}
-  .sky-game-options .lesson-label{max-width:48%;text-align:center}
-}
-@media(prefers-reduced-motion:reduce){.desktop-start-btn{transition:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <a class="header-home" href="index.html">🏠 হোমে ফিরুন</a>
   <div class="brand"><div class="logo">✈️</div><div><h1>Typing Sky Game</h1><div class="sub">Type faster. Fly higher. Learn every day!</div></div></div>
   <div class="pill">🌤️ Beginner Flight School</div>
 </header>
@@ -288,31 +210,17 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
   </div>
 </section>
 
-<div class="sky-game-options">
-  <label class="duration-control" for="duration">
-    অনুশীলনের সময়:
-    <select id="duration" aria-label="অনুশীলনের সময়">
-      <option value="1">১ মিনিট</option><option value="2">২ মিনিট</option>
-      <option value="3">৩ মিনিট</option><option value="4">৪ মিনিট</option>
-      <option value="5">৫ মিনিট</option><option value="6">৬ মিনিট</option>
-      <option value="7">৭ মিনিট</option><option value="8">৮ মিনিট</option>
-      <option value="9">৯ মিনিট</option><option value="10">১০ মিনিট</option>
-    </select>
-  </label>
-  <span class="lesson-label" id="lessonLabel" aria-live="polite"></span>
-</div>
+<section class="stats" aria-label="Live typing statistics">
+  <div class="stat"><div class="label">✈️ LIVE TYPING SPEED</div><div class="value" id="wpm">0</div><small>WPM</small></div>
+  <div class="stat"><div class="label">⌨️ CHARACTERS TYPED</div><div class="value" id="typed">0</div><small>characters</small></div>
+  <div class="stat"><div class="label">🎯 ACCURACY</div><div class="value" id="accuracy">100%</div><small>correctness</small></div>
+  <div class="stat"><div class="label">🏆 POINTS</div><div class="value" id="points">0</div><small>earned points</small></div>
+</section>
 
 <section class="game">
   <div class="sky" id="sky">
     <span class="countdown" id="countdown" aria-live="polite">১:০০</span>
     <button class="mobile-start-btn" id="mobileStartBtn" type="button">▶ গেম শুরু</button>
-    <button class="primary desktop-start-btn" id="startBtn" type="button">✈️ গেম শুরু</button>
-    <section class="stats" aria-label="Live typing statistics">
-      <div class="stat"><div class="label">✈️ LIVE TYPING SPEED</div><div class="value" id="wpm">0</div><small>WPM</small></div>
-      <div class="stat"><div class="label">⌨️ CHARACTERS TYPED</div><div class="value" id="typed">0</div><small>characters</small></div>
-      <div class="stat"><div class="label">🎯 ACCURACY</div><div class="value" id="accuracy">100%</div><small>correctness</small></div>
-      <div class="stat"><div class="label">🏆 POINTS</div><div class="value" id="points">0</div><small>earned points</small></div>
-    </section>
     <div class="sun"></div><div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">☁</div>
     <div class="flight-path"></div><div class="trail" id="trail"></div>
     <div class="hazards" id="hazards" aria-label="Flight path spikes" aria-hidden="true"><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span><span class="spike"></span></div>
@@ -323,9 +231,21 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
   <div class="ground"></div>
   <div class="playarea">
     <div class="prompt" id="prompt" aria-label="Text to type"></div>
+    <label class="duration-control" for="duration">
+      অনুশীলনের সময়:
+      <select id="duration" aria-label="অনুশীলনের সময়">
+        <option value="1">১ মিনিট</option><option value="2">২ মিনিট</option>
+        <option value="3">৩ মিনিট</option><option value="4">৪ মিনিট</option>
+        <option value="5">৫ মিনিট</option><option value="6">৬ মিনিট</option>
+        <option value="7">৭ মিনিট</option><option value="8">৮ মিনিট</option>
+        <option value="9">৯ মিনিট</option><option value="10">১০ মিনিট</option>
+      </select>
+      <span>বেশি সময় নিলে বেশি বাক্য অনুশীলন হবে।</span>
+    </label>
     <div class="controls">
       <textarea id="typing" placeholder="এখানে উপরের বাক্যটি টাইপ করুন… ✍️" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></textarea>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-content:start">
+        <button class="primary desktop-start-btn" id="startBtn">▶ গেম শুরু</button>
         <button class="secondary" id="nextBtn">নতুন বাক্য ↻</button>
       </div>
     </div>
@@ -375,7 +295,6 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
 </div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="game-lessons.js"></script>
 <script>
 window.GameLeaderboard = window.GameLeaderboard || (() => {
   let database = null;
@@ -524,8 +443,17 @@ const safeGameLeaderboard = (methodName, ...args) => {
   }
   return undefined;
 };
+const passages=[
+"The quick brown fox jumps over the lazy dog. Practice typing every day to improve your speed and accuracy.",
+"Learning to type is a useful skill. Keep your fingers relaxed and look at the screen while you type.",
+"Small steps every day can help you become faster. Stay focused, keep practicing, and enjoy the journey.",
+"Typing well takes time and patience. Make fewer mistakes first, then gradually increase your speed.",
+"Welcome to Typing Sky Game. Type each word carefully and watch your airplane fly higher into the sky.",
+"Good habits make learning easier. Sit comfortably, use both hands, and practice a little every day.",
+"Every expert was once a beginner. Keep learning, keep typing, and celebrate every small improvement.",
+"Accuracy is important when you type. Slow down when needed, then build speed with regular practice."
+];
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
-let activeSkyLesson=null,skySentenceDeck=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
 let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
 const $=id=>document.getElementById(id);
@@ -759,20 +687,7 @@ async function processPendingSkyScores(){
  }catch(error){console.error("Could not add sky game points to the leaderboard:",error);setLeaderboardStatus("পয়েন্ট লিডারবোর্ডে সেভ হয়নি; সংযোগ ফিরলে আবার চেষ্টা হবে।",true)}
  finally{gameScoreQueueProcessing=false}
 }
-function pickPassage(){
- const lesson=window.TypingGameLessons.getCurrentLesson("typingSkyGameLesson");
- if(!activeSkyLesson||lesson.index!==activeSkyLesson.index){
-   activeSkyLesson=lesson;
-   skySentenceDeck=[];
-   $("lessonLabel").textContent=`Lesson ${lesson.index+1}/${window.TypingGameLessons.total} · changes every 5 hours`;
- }
- if(!skySentenceDeck.length){
-   skySentenceDeck=lesson.sentences.slice();
-   for(let i=skySentenceDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[skySentenceDeck[i],skySentenceDeck[j]]=[skySentenceDeck[j],skySentenceDeck[i]]}
-   if(skySentenceDeck.length>1&&skySentenceDeck[skySentenceDeck.length-1]===target)[skySentenceDeck[0],skySentenceDeck[skySentenceDeck.length-1]]=[skySentenceDeck[skySentenceDeck.length-1],skySentenceDeck[0]];
- }
- return skySentenceDeck.pop();
-}
+function pickPassage(){let p=passages[Math.floor(Math.random()*passages.length)];if(p===target)p=passages[(passages.indexOf(p)+1)%passages.length];return p}
 function calcWpm(){if(!startedAt)return 0;const now=Date.now(),windowStart=now-5000;speedSamples=speedSamples.filter(sample=>sample.time>=windowStart);const recentCorrect=speedSamples.reduce((sum,sample)=>sum+sample.count,0),windowMs=Math.min(5000,Math.max(2000,now-startedAt));return Math.round(recentCorrect/5/(windowMs/60000))}
 function calcAverageWpm(){if(!startedAt)return 0;const mins=Math.max((Date.now()-startedAt)/60000,1/60);return Math.round((completedCorrect+correct)/5/mins)}
 function recordTypingSpeed(){const value=$("typing").value;let commonPrefix=0;while(commonPrefix<lastInputValue.length&&commonPrefix<value.length&&lastInputValue[commonPrefix]===value[commonPrefix])commonPrefix++;let correctAdded=0;for(let i=commonPrefix;i<value.length;i++)if(value[i]===target[i])correctAdded++;if(correctAdded)speedSamples.push({time:Date.now(),count:correctAdded});lastInputValue=value;return correctAdded}
@@ -838,7 +753,7 @@ function updateStats(){
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`বাক্য সম্পূর্ণ! পরের বাক্য শুরু করুন • সঠিক ${correct} • ভুল ${wrong} • বাকি ${timeText()}`}
 }
 function finishGame(reason="time"){
- if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
+ if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
  $("duration").disabled=false;
  updateCountdown();
  if(reason==="crash"){$("flightStatus").textContent="💥 বিমান বিধ্বস্ত!";$("againBtn").textContent="🔁 আবার চেষ্টা করুন";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
@@ -881,6 +796,6 @@ window.addEventListener("online",processPendingSkyScores);
 setPassage();
 initializeSkyLeaderboard();
 </script>
-  <script src="floating-messages.js"></script>
+    <script src="../../floating-messages.js"></script>
 </body>
 </html>
