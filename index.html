@@ -93,10 +93,14 @@
     .btn-pro-version:hover { transform: scale(1.05); filter: brightness(1.2); }
     .install-btn { background: linear-gradient(135deg, #10b981, #34d399); color: #041e12; border: 2px solid rgba(255,255,255,0.25); box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35); }
     .install-btn.hidden { display: none; }
-    .brand-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; flex-wrap: wrap; }
+    .brand-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .brand-wrap::-webkit-scrollbar { display: none; }
     .brand-mark { width: 110px; height: 110px; object-fit: contain; border-radius: 24px; background: rgba(255,255,255,0.06); box-shadow: 0 18px 40px rgba(0,0,0,0.25); padding: 10px; }
-    .brand-domain { font-size: 21px; font-weight: 900; letter-spacing: 0.4px; color: #f5f7ff; text-shadow: 0 0 16px rgba(255,255,255,0.16); line-height: 1.2; }
-    .brand-domain span { color: #7ae6ff; }
+    .brand-domain-row { display: flex; align-items: center; justify-content: center; gap: 6px; max-width: 100%; }
+    .brand-domain { font-size: 15px; font-weight: 900; letter-spacing: 0.2px; color: #7ae6ff; text-shadow: 0 0 16px rgba(255,255,255,0.16); line-height: 1.2; white-space: nowrap; }
+    .brand-domain span { color: inherit; }
+    .share-domain-btn { flex: 0 0 auto; padding: 4px 7px; border: 1px solid rgba(147,197,253,0.6); border-radius: 7px; background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 3px 10px rgba(37,99,235,0.3); }
+    .share-domain-btn:hover { background: linear-gradient(135deg, #1d4ed8, #0e7490); }
     .live-activity-bar { position: static; z-index: auto; transform: none; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; width: fit-content; max-width: 100%; margin: 0; padding: 5px 8px; border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; background: rgba(17,30,22,0.88); box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
     .live-activity-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(52,211,153,0.35); border-radius: 999px; background: rgba(16,185,129,0.12); color: #d1fae5; font-size: 12px; font-weight: 800; white-space: nowrap; }
     .activity-demo-row, .activity-real-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; width: fit-content; max-width: 100%; margin: 0; padding: 5px 8px; border-radius: 12px; }
@@ -113,10 +117,21 @@
     .facebook-page-link svg { width: 15px; height: 15px; flex-shrink: 0; }
     .header-compact-rows { display: grid; gap: 8px; width: 100%; }
     .header-compact-row { display: flex; align-items: center; justify-content: center; gap: 12px; min-width: 0; }
-    .header-download-links { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-    .download-btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; color: #fff; text-decoration: none; font-size: 12px; font-weight: 800; line-height: 1.2; box-shadow: 0 4px 10px rgba(0,0,0,0.18); transition: transform 0.2s, filter 0.2s; }
+    .header-primary-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; row-gap: 8px; }
+    .header-download-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 4px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(15,23,42,0.42); }
+    .header-primary-row .brand-wrap { flex-direction: row; width: 100%; }
+    .header-primary-row .brand-wrap > * { flex: 0 0 auto; }
+    .header-secondary-row { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; align-items: center; gap: 7px; }
+    .header-secondary-row .academy-tag, .header-secondary-row .mode-container { grid-column: 1 / -1; text-align: center; }
+    .header-secondary-row .mode-container { width: min(100%, 360px); margin: 0; padding: 4px; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; background: rgba(15,23,42,0.68); }
+    .header-secondary-row .lang-btn { flex: 1 1 0; min-width: 0; }
+    .download-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 0; min-height: 30px; padding: 5px 4px; border: 1px solid rgba(255,255,255,0.18); border-radius: 7px; color: #fff; text-decoration: none; font-size: 9px; font-weight: 800; line-height: 1.1; text-align: center; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.18); transition: transform 0.2s, filter 0.2s; }
     .download-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
     .header-download-links .install-btn { background: linear-gradient(135deg, #059669, #10b981); }
+    .header-download-links #installAppButton { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border-color: rgba(255,255,255,0.4); }
+    .header-download-links .mobile-app-download { background: linear-gradient(110deg, #047857 20%, #10b981 42%, #d1fae5 50%, #10b981 58%, #047857 80%); background-size: 220% 100%; animation: mobileAppShimmer 2.2s ease-in-out infinite; }
+    @keyframes mobileAppShimmer { to { background-position: -220% 0; } }
+    @media (prefers-reduced-motion: reduce) { .header-download-links .mobile-app-download { animation: none; background-position: center; } }
     .header-download-links .pc-guide-btn { background: linear-gradient(135deg, #2563eb, #0891b2); }
     .header-compact-row .academy-tag { margin: 0; font-size: 11px; letter-spacing: 1px; line-height: 1.3; }
     .brand-hero { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 14px auto 20px; padding: 10px 18px; border-radius: 26px; background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
@@ -148,7 +163,7 @@
     .lang-btn.active { background: linear-gradient(135deg, #c026d3, #7e22ce); color: white; border-color: rgba(240, 171, 252, 0.7); box-shadow: 0 0 12px rgba(192, 38, 211, 0.35); }
     #langBnBtn { background: linear-gradient(135deg, #0f766e, #0891b2); color: #fff; }
     #langBnBtn.active { background: linear-gradient(135deg, #0d9488, #06b6d4); border-color: rgba(153, 246, 228, 0.8); box-shadow: 0 0 12px rgba(6, 182, 212, 0.35); }
-    .welcome-banner { width: min(100%, 1000px); margin: 0 auto 18px; padding: 14px; border: 1px solid rgba(125, 211, 252, 0.38); border-radius: 20px; background: linear-gradient(140deg, rgba(8, 47, 73, 0.94), rgba(12, 37, 20, 0.97) 58%, rgba(49, 46, 89, 0.92)); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255,255,255,0.08); }
+    .welcome-banner { position: relative; width: min(100%, 1000px); margin: 0 auto 18px; padding: 14px; border: 1px solid rgba(125, 211, 252, 0.38); border-radius: 20px; background: linear-gradient(140deg, rgba(8, 47, 73, 0.94), rgba(12, 37, 20, 0.97) 58%, rgba(49, 46, 89, 0.92)); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255,255,255,0.08); }
     .welcome-banner-brand { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 12px; }
     .welcome-banner-topline { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .welcome-banner-account { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; }
@@ -176,9 +191,12 @@
     .welcome-banner-profile[hidden] { display: none; }
     .welcome-banner-profile:hover { filter: brightness(1.12); }
     .welcome-banner-profile img { width: 26px; height: 26px; flex: 0 0 26px; border: 1px solid rgba(255,255,255,0.65); border-radius: 50%; object-fit: cover; background: #fff; }
-    .welcome-banner-profile span { overflow: hidden; text-overflow: ellipsis; }
-    .welcome-banner-profile-details { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 9px 11px; padding: 10px 12px; border: 1px solid rgba(125, 211, 252, 0.28); border-radius: 12px; background: rgba(2, 20, 32, 0.48); color: #e0f2fe; }
-    .welcome-banner-profile-details[hidden] { display: none; }
+    .welcome-banner-profile-name { overflow: hidden; text-overflow: ellipsis; }
+    .welcome-banner-verified { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; align-items: center; justify-content: center; border-radius: 50%; background: #2563eb; color: #fff; }
+    .welcome-banner-verified[hidden] { display: none; }
+    .welcome-banner-verified svg { width: 12px; height: 12px; }
+    .welcome-banner-profile-details { position: absolute; top: 72px; right: 12px; z-index: 20; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 9px 11px; width: min(360px, calc(100vw - 32px)); max-height: min(75vh, 620px); overflow-y: auto; padding: 10px 12px; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: rgba(2, 20, 32, 0.97); color: #e0f2fe; box-shadow: 0 12px 32px rgba(0,0,0,0.42); }
+    .welcome-banner-profile-details[hidden] { display: none !important; }
     .welcome-banner-profile-details > img { width: 48px; height: 48px; grid-row: span 2; border: 2px solid rgba(125, 211, 252, 0.6); border-radius: 50%; object-fit: cover; background: #fff; }
     .welcome-banner-profile-copy { display: grid; gap: 3px; min-width: 0; font-size: 11px; }
     .welcome-banner-profile-copy strong { overflow: hidden; color: #fff; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
@@ -204,35 +222,28 @@
     .welcome-banner-profile-stat span { color: #bae6fd; font-size: 8px; font-weight: 800; text-transform: uppercase; }
     .welcome-banner-profile-event { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; }
     .welcome-banner-profile-event-label { min-width: 0; color: #fde68a; font-size: 10px; font-weight: 800; }
-    .welcome-banner-profile-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; gap: 7px; }
+    .welcome-banner-profile-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
     .welcome-banner-profile-join, .welcome-banner-profile-login, .welcome-banner-profile-logout { flex: 0 0 auto; padding: 6px 9px; border: 0; border-radius: 999px; font: inherit; font-size: 10px; font-weight: 900; text-decoration: none; white-space: nowrap; cursor: pointer; }
     .welcome-banner-profile-join { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); color: #111; }
+    .welcome-banner-profile-verify { background: linear-gradient(135deg, #2563eb, #0891b2); color: #fff; }
+    .welcome-banner-profile-view { background: rgba(255,255,255,0.12); color: #e0f2fe; }
     .welcome-banner-profile-login { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; }
     .welcome-banner-profile-logout { background: linear-gradient(135deg, #be123c, #e11d48); color: #fff; }
     .welcome-banner-profile-actions[hidden] { display: none; }
-    .home-top-three { width: min(100%, 720px); margin: 0 auto 12px; padding: 9px 11px; border: 1px solid rgba(250, 204, 21, 0.28); border-radius: 14px; background: linear-gradient(135deg, rgba(17, 30, 22, 0.96), rgba(15, 23, 42, 0.94)); box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
-    .home-top-three-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
-    .home-top-three-title { color: #fde68a; font-size: 13px; font-weight: 900; }
-    .home-top-three-subtitle { display: flex; align-items: center; gap: 7px; color: var(--text-muted); font-size: 9px; white-space: nowrap; }
-    .home-top-three-countdown { color: #e2e8f0; font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .home-top-three { width: fit-content; max-width: 100%; margin: 7px auto 0; padding: 4px; border: 1px solid rgba(250, 204, 21, 0.22); border-radius: 999px; background: rgba(15, 23, 42, 0.58); }
     .home-top-three-join { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(255,255,255,0.28); border-radius: 999px; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); box-shadow: 0 2px 7px rgba(184, 134, 11, 0.28); color: #111; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
     .home-top-three-join:hover { filter: brightness(1.08); }
     .home-top-three-sky { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(125,211,252,0.45); border-radius: 999px; background: linear-gradient(135deg, #0369a1, #0e7490); color: #fff; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
     .home-top-three-sky:hover { filter: brightness(1.12); }
     .home-top-three-racer { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(253,224,71,0.55); border-radius: 999px; background: linear-gradient(135deg, #b91c1c, #ea580c); color: #fff; font-size: 10px; font-weight: 900; line-height: 1.15; text-decoration: none; white-space: nowrap; }
     .home-top-three-racer:hover { filter: brightness(1.12); }
-    .home-top-three-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 7px; }
-    .home-top-player { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 3px; padding: 6px; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: linear-gradient(160deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.8)); color: #fff; text-align: center; text-decoration: none; }
-    .home-top-player[data-rank="1"] { order: 2; border-color: rgba(250, 204, 21, 0.55); background: linear-gradient(160deg, rgba(120, 83, 17, 0.42), rgba(30, 41, 59, 0.88)); }
-    .home-top-player[data-rank="2"] { order: 1; }
-    .home-top-player[data-rank="3"] { order: 3; }
-    .home-top-player-avatar { width: 34px; height: 34px; border: 2px solid rgba(255,255,255,0.65); border-radius: 50%; object-fit: cover; background: #fff; }
-    .home-top-player[data-rank="1"] .home-top-player-avatar { width: 40px; height: 40px; border-color: #facc15; }
-    .home-top-player-rank { color: #fde68a; font-size: 10px; font-weight: 900; }
-    .home-top-player-name { width: 100%; overflow: hidden; font-size: 10px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-    .verified-profile-tick { display: inline-block; width: 23px; height: 23px; margin-left: 3px; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(15, 23, 42, .25)); }
-    .home-top-player-points { color: #6ee7b7; font-size: 9px; font-weight: 800; }
-    .home-top-three-status { padding: 7px 6px; color: var(--text-muted); font-size: 11px; text-align: center; }
+    .home-top-three-list { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .home-top-player { display: inline-flex; min-width: 0; align-items: center; gap: 4px; padding: 3px 6px 3px 3px; border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; background: rgba(30, 41, 59, 0.78); color: #fff; text-decoration: none; }
+    .home-top-player[data-rank="1"] { border-color: rgba(250, 204, 21, 0.55); background: rgba(120, 83, 17, 0.42); }
+    .home-top-player-avatar { width: 25px; height: 25px; border: 1px solid rgba(255,255,255,0.65); border-radius: 50%; object-fit: cover; background: #fff; }
+    .home-top-player[data-rank="1"] .home-top-player-avatar { border-color: #facc15; }
+    .home-top-player-rank { color: #fde68a; font-size: 9px; font-weight: 900; white-space: nowrap; }
+    .home-top-three-status { padding: 4px 7px; color: var(--text-muted); font-size: 10px; text-align: center; }
     .home-top-three-status[hidden], .home-top-three-list[hidden] { display: none; }
     .welcome-image-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
     .welcome-image-action { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: #082f49; box-shadow: 0 5px 14px rgba(0,0,0,0.24); color: #fff; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
@@ -297,7 +308,8 @@
     .typing-panel:fullscreen .typing-zoom-controls, .typing-panel.is-text-fullscreen .typing-zoom-controls { display: none; }
     .typing-panel:fullscreen .text-display, .typing-panel.is-text-fullscreen .text-display { width: min(100%, 1100px); min-height: 0; margin: auto; text-align: center; }
     body.typing-text-fullscreen { overflow: hidden; }
-    body.typing-text-fullscreen > :not(#typingPanel) { display: none !important; }
+    body.typing-text-fullscreen > :not(.container),
+    body.typing-text-fullscreen .container > :not(#typingPanel) { display: none !important; }
     .typing-panel.is-text-fullscreen { position: fixed; inset: 0; z-index: 400001; display: flex; flex-direction: column; align-items: stretch; justify-content: center; width: 100vw; max-width: none; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: clamp(20px, 5vw, 80px); overflow: auto; border: 0; border-radius: 0; background: var(--bg-color); box-shadow: none; }
     .char-correct { color: var(--success) !important; background-color: rgba(16, 185, 129, 0.1) !important; }
     .char-wrong { color: var(--danger) !important; background-color: rgba(239, 68, 68, 0.25) !important; border-bottom: 3px solid var(--danger) !important; }
@@ -323,6 +335,7 @@
     .typing-panel.bengali-mode .text-display { min-height: 180px; padding: 18px; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; background: rgba(4,30,18,0.48); font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; letter-spacing: 0; white-space: pre-wrap; }
     .bengali-typing-box { display: none; }
     .typing-panel.bengali-mode .bengali-typing-box { display: block; width: 100%; min-height: 120px; margin-top: 14px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; background: rgba(4,30,18,0.48); color: var(--text-main); font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-size: 22px; line-height: 1.7; resize: vertical; }
+    .typing-panel.bengali-mode .bengali-typing-box { min-height: 120px; font-size: 20px; touch-action: manipulation; }
     .typing-panel.bengali-mode .bengali-typing-box:focus { border-color: var(--primary); outline: 2px solid rgba(192,38,211,0.22); }
     .keyboard-container.bengali-hidden { display: none; }
     .keyboard-container { width: min(100%, 900px); min-width: 0; margin: 0 auto; background-color: var(--panel-bg); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
@@ -374,32 +387,28 @@
       .flag-red-circle { width: 55px; height: 55px; }
       .welcome-banner { padding: 10px; border-radius: 15px; margin-bottom: 14px; }
       .welcome-banner-brand { gap: 8px; margin-bottom: 9px; }
-      .welcome-banner-topline { flex-wrap: wrap; justify-content: center; gap: 7px; }
-      .welcome-banner-identity { width: 100%; gap: 8px; justify-content: center; }
-      .welcome-banner-account { width: 100%; }
+      .welcome-banner-topline { position: relative; flex-wrap: nowrap; justify-content: flex-start; gap: 7px; padding-right: 38px; }
+      .welcome-banner-identity { width: 100%; gap: 8px; justify-content: flex-start; }
+      .welcome-banner-account { position: absolute; top: 0; right: 0; width: auto; }
       .welcome-banner-logo { width: 58px; height: 58px; flex-basis: 58px; border-radius: 13px; }
       .welcome-banner-identity h1 { min-width: 0; font-size: clamp(18px, 5vw, 24px); }
       .welcome-banner-controls { width: 100%; gap: 8px; flex-wrap: wrap; }
       .welcome-banner-about { margin-left: 0; padding: 6px 9px; font-size: 10px; }
       .welcome-banner-login { padding: 6px 9px; font-size: 10px; }
-      .welcome-banner-profile { max-width: 145px; padding-right: 7px; font-size: 10px; }
-      .welcome-banner-profile img { width: 22px; height: 22px; flex-basis: 22px; }
-      .welcome-banner-profile-details { padding: 8px; }
+      .welcome-banner-profile { width: 34px; height: 34px; max-width: 34px; justify-content: center; padding: 3px; }
+      .welcome-banner-profile img { width: 26px; height: 26px; flex-basis: 26px; }
+      .welcome-banner-profile-name { display: none; }
+      .welcome-banner-profile-details { top: 62px; right: 0; padding: 8px; }
       .welcome-banner-profile-details > img { width: 38px; height: 38px; }
       .welcome-banner-profile-stats { gap: 4px; }
       .welcome-banner-profile-stat { padding: 6px 3px; }
       .welcome-banner-profile-stat strong { font-size: 12px; }
       .welcome-banner-profile-stat span { font-size: 7px; }
       .welcome-banner-profile-event-label, .welcome-banner-profile-join { font-size: 9px; }
-      .home-top-three { padding: 8px; margin-bottom: 10px; }
-      .home-top-three-header { flex-wrap: wrap; justify-content: space-between; gap: 5px; }
-      .home-top-three-title { font-size: 12px; }
-      .home-top-three-subtitle { font-size: 8px; }
-      .home-top-three-countdown { font-size: 9px; }
+      .home-top-three { padding: 3px; margin-bottom: 0; }
       .home-top-three-join { padding: 5px 6px; font-size: 9px; }
       .home-top-three-sky { padding: 5px 6px; font-size: 9px; }
       .home-top-three-racer { padding: 5px 6px; font-size: 9px; }
-      .home-top-three-header .home-top-three-title { flex: 0 0 100%; }
       .home-top-three-list { gap: 5px; }
       .welcome-image-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 9px; }
       .welcome-image-action { border-radius: 9px; }
@@ -411,7 +420,7 @@
       .typing-panel.bengali-mode #lessonSelect { min-width: 0; }
       .typing-panel.bengali-mode .text-display { padding: 12px; min-height: 150px; }
       .typing-panel.bengali-mode .bengali-typing-box { min-height: 100px; padding: 12px; font-size: 18px; }
-      .home-top-player { padding: 5px 3px; }
+      .home-top-player { padding: 2px 5px 2px 2px; }
       .welcome-banner-controls .adu-office-app-widget { padding: 2px 19px 2px 3px; }
       .welcome-banner-controls .adu-office-app-link { font-size: 9px; }
       .welcome-banner-controls .adu-office-app-link img { width: 20px; height: 20px; }
@@ -423,14 +432,26 @@
       .mobile-notice-banner p { font-size: 11px; line-height: 1.55; }
       .mobile-notice-banner .mobile-notice-cta { padding: 8px 10px; font-size: 12px; }
       .header-compact-row { flex-wrap: wrap; gap: 7px; }
+      .header-primary-row { grid-template-columns: minmax(0, 1fr); }
+      .header-primary-row .brand-wrap { flex-direction: row; }
       .header-primary-row { row-gap: 8px; }
-      .header-secondary-row { row-gap: 7px; }
-      .header-download-links { gap: 6px; }
-      .download-btn { padding: 7px 9px; font-size: 10px; }
+      .header-secondary-row { grid-template-columns: minmax(0, 1fr); justify-items: center; row-gap: 7px; }
+      .header-secondary-row .mode-container { flex-wrap: nowrap; gap: 6px; padding: 3px; }
+      .header-secondary-row .lang-btn { min-height: 32px; padding: 6px 12px; font-size: 11px; }
+      .header-download-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 3px; }
+      .download-btn { min-height: 28px; padding: 4px 2px; font-size: 8px; }
       .header-compact-row .academy-tag { font-size: 9px; letter-spacing: 0.6px; }
-      .brand-wrap { width: auto; }
-      .brand-domain { max-width: 100%; font-size: clamp(12px, 3.7vw, 16px); letter-spacing: 0.5px; white-space: nowrap; }
+      .brand-domain-row { gap: 4px; }
+      .brand-domain { max-width: 100%; font-size: clamp(11px, 3.2vw, 14px); letter-spacing: 0; }
+      .share-domain-btn { padding: 4px 6px; font-size: 9px; }
       .facebook-page-link { padding: 6px 8px; font-size: 10px; }
+      .brand-wrap { justify-content: flex-start; gap: 6px; }
+      .brand-wrap .brand-domain { font-size: 11px; }
+      .brand-wrap .share-domain-btn { padding: 4px 5px; font-size: 9px; }
+      .brand-wrap .facebook-page-link { padding: 5px 7px; font-size: 9px; }
+      .brand-wrap .live-activity-bar, .brand-wrap .activity-real-row { flex: 0 0 auto; gap: 5px; padding: 4px 6px; }
+      .brand-wrap .activity-count-item { gap: 2px; font-size: 8px; }
+      .brand-wrap .activity-count-value { font-size: 10px; }
       .brand-hero { max-width: 100%; gap: 8px; padding: 8px; }
       .brand-hero-logo { width: 70px; height: 70px; }
       .dashboard { width: 100%; min-width: 0; justify-content: center; gap: 12px; padding: 12px; }
@@ -475,9 +496,10 @@
         </div>
         <div class="welcome-banner-account">
           <button class="welcome-banner-login" id="welcomeBannerLogin" type="button" onclick="openHomeAuth()" hidden aria-hidden="true">Login / Register</button>
-          <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" hidden>
+          <a class="welcome-banner-profile" id="welcomeBannerProfile" href="typing_Master_Pro.html" aria-label="Open your typing profile" aria-expanded="false" aria-controls="welcomeBannerProfileDetails" hidden>
             <img id="welcomeBannerProfileAvatar" src="logo.png" alt="">
-            <span id="welcomeBannerProfileName"></span>
+            <span class="welcome-banner-profile-name" id="welcomeBannerProfileName"></span>
+            <span class="welcome-banner-verified" id="welcomeBannerVerifiedBadge" role="img" aria-label="Admin verified" title="Admin verified" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3.1 3.1L13 4.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </a>
         </div>
       </div>
@@ -486,10 +508,14 @@
         <div class="welcome-banner-profile-copy">
           <strong id="welcomeBannerDetailsName"></strong>
           <span id="welcomeBannerDetailsId"></span>
+          <span id="welcomeBannerDetailsPhone"></span>
           <span id="welcomeBannerDetailsBio"></span>
         </div>
         <button class="welcome-banner-profile-edit-toggle" id="welcomeBannerEditToggle" type="button" aria-expanded="false" aria-controls="welcomeBannerEditForm">✏️ Edit profile</button>
         <form class="welcome-banner-profile-edit-form" id="welcomeBannerEditForm" onsubmit="saveHomeProfile(event)" hidden>
+          <label for="welcomeBannerEditId">User ID
+            <input id="welcomeBannerEditId" type="text" maxlength="60" autocomplete="username" required>
+          </label>
           <label for="welcomeBannerEditName">Display name
             <input id="welcomeBannerEditName" type="text" maxlength="60" autocomplete="name" required>
           </label>
@@ -502,6 +528,7 @@
           <label for="welcomeBannerEditWhatsapp">WhatsApp number (with country code)
             <input id="welcomeBannerEditWhatsapp" type="tel" maxlength="24" autocomplete="tel" inputmode="tel" placeholder="+8801XXXXXXXXX">
           </label>
+          <a class="welcome-banner-profile-edit-toggle" id="welcomeBannerPhoneVerificationLink" href="profile.html" hidden>Verify a new number on profile page</a>
           <label class="welcome-banner-profile-edit-visibility" for="welcomeBannerEditShowWhatsapp">
             <input id="welcomeBannerEditShowWhatsapp" type="checkbox"> Show my number on my public profile
           </label>
@@ -533,6 +560,8 @@
           <span class="welcome-banner-profile-event-label" id="welcomeBannerEventLabel"></span>
         </div>
         <div class="welcome-banner-profile-actions" id="welcomeBannerProfileActions" hidden>
+          <a class="welcome-banner-profile-verify" id="welcomeBannerVerificationLink" href="profile.html">☑️ Apply for verified badge</a>
+          <a class="welcome-banner-profile-view" id="welcomeBannerFullProfileLink" href="profile.html">View profile</a>
           <a class="welcome-banner-profile-join" href="typing_Master_Pro.html#typing-input">🏆 Join Leaderboard</a>
           <button class="welcome-banner-profile-login" id="welcomeBannerProfileLogin" type="button" onclick="openHomeAuth()" hidden>Login / Register</button>
           <button class="welcome-banner-profile-logout" id="welcomeBannerLogout" type="button" onclick="logoutFromHome()">Log out</button>
@@ -540,9 +569,6 @@
       </div>
       <div class="welcome-banner-controls">
         <a class="welcome-banner-about" href="/about.html">About Us</a>
-        <a class="home-top-three-join" href="typing_Master_Pro.html"><span aria-hidden="true">👑</span>Join Leaderboard - Click Here</a>
-        <a class="home-top-three-sky" href="typing_sky_game.html"><span aria-hidden="true">✈️</span>Typing Sky Game</a>
-        <a class="home-top-three-racer" href="typing_car_racer.html"><span aria-hidden="true">🏎️</span>Typing Car Racer</a>
         <div class="adu-office-app-widget" id="aduOfficeAppWidget">
           <a class="adu-office-app-link" href="https://play.google.com/store/apps/details?id=com.smart.aduoffice" target="_blank" rel="noopener noreferrer" aria-label="Google Play-এ Adu Office অ্যাপ ডাউনলোড করুন">
             <img src="adu-office-logo.png" alt="Adu Office logo">
@@ -557,6 +583,10 @@
           </a>
         </div>
       </div>
+      <section class="home-top-three" aria-label="Top three leaderboard profiles">
+        <div class="home-top-three-status" id="homeTopThreeStatus" role="status" aria-live="polite" hidden>Loading leaderboard...</div>
+        <div class="home-top-three-list" id="homeTopThreeList" hidden></div>
+      </section>
     </div>
     <aside id="mobile-notice-banner" class="mobile-notice-banner" aria-labelledby="mobile-notice-title">
       <button id="mobile-notice-close" type="button" class="mobile-notice-close" aria-label="Close notice" onclick="document.getElementById('mobile-notice-banner').style.display='none'">&times;</button>
@@ -627,44 +657,39 @@
       <div class="header-compact-rows">
         <div class="header-compact-row header-primary-row">
           <div class="header-download-links" aria-label="App installation options">
-            <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()">📲 Install Mobile App</button>
-            <a class="download-btn install-btn" href="/typingmaster.apk" download>📥 Download Android APK</a>
-            <a href="#" onclick="alert('To install the app on a computer or laptop:\n1. Click the plus or install icon on the right side of the address bar in Chrome.\n2. Or, click the three dots and select Save and share -> Create shortcut.'); return false;" class="download-btn pc-guide-btn">💻 PC App Installation Guide</a>
+            <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()" aria-label="Welcome" title="Welcome">Welcome</button>
+            <a class="download-btn install-btn mobile-app-download" href="/typingmaster.apk" download aria-label="Install mobile app APK" title="Install mobile app">📲 Mobile App</a>
+            <a href="#" onclick="alert('To install the app on a computer or laptop:\n1. Click the plus or install icon on the right side of the address bar in Chrome.\n2. Or, click the three dots and select Save and share -> Create shortcut.'); return false;" class="download-btn pc-guide-btn" aria-label="PC app installation guide" title="PC app installation guide">💻 PC Guide</a>
           </div>
           <div class="brand-wrap">
-            <div class="brand-domain">typingmasterproonline<span>.com</span></div>
+            <div class="brand-domain-row">
+              <div class="brand-domain">typingmasterproonline<span>.com</span></div>
+              <button class="share-domain-btn" id="shareDomainButton" type="button" onclick="shareSiteAddress()" aria-label="Share website">↗ Share</button>
+            </div>
             <a class="facebook-page-link" href="https://www.facebook.com/Shorif.Online.Skill.Center" target="_blank" rel="noopener noreferrer" aria-label="Visit Shorif Online Skill Center on Facebook">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.5 21v-8.2h2.8l.4-3.2h-3.2v-2c0-.9.3-1.5 1.6-1.5h1.7V3.2c-.3 0-1.4-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.1H7v3.2h2.8V21h3.7z"/></svg>
               <span>Facebook</span>
             </a>
+            <div class="live-activity-bar" aria-label="Activity counts">
+              <span class="activity-count-item">Views: <span class="activity-count-value" id="demo-viewer-count">150</span></span>
+              <span class="activity-count-item">Typing: <span class="activity-count-value" id="demo-typing-count">100</span></span>
+            </div>
+            <div class="activity-real-row" aria-label="Actual live user counts">
+              <span class="activity-count-item" aria-label="Viewers"><span aria-hidden="true">S</span><span class="activity-count-value" id="live-viewer-count" aria-live="polite">0</span></span>
+              <span class="activity-count-item" aria-label="Typing"><span aria-hidden="true">G</span><span class="activity-count-value" id="live-typing-count" aria-live="polite">0</span></span>
+            </div>
           </div>
         </div>
         <div class="header-compact-row header-secondary-row">
-          <div class="live-activity-bar" aria-label="Activity counts">
-            <span class="activity-count-item">Views: <span class="activity-count-value" id="demo-viewer-count">150</span></span>
-            <span class="activity-count-item">Typing: <span class="activity-count-value" id="demo-typing-count">100</span></span>
-          </div>
-          <div class="activity-real-row" aria-label="Actual live user counts">
-            <span class="activity-count-item" aria-label="Viewers"><span aria-hidden="true">S</span><span class="activity-count-value" id="live-viewer-count" aria-live="polite">0</span></span>
-            <span class="activity-count-item" aria-label="Typing"><span aria-hidden="true">G</span><span class="activity-count-value" id="live-typing-count" aria-live="polite">0</span></span>
-          </div>
           <div class="academy-tag">You are bound to become an expert in typing</div>
+          <div class="mode-container">
+            <button id="langEnBtn" class="lang-btn active" onclick="setLanguage('en')">English Mode</button>
+            <button id="langBnBtn" class="lang-btn" onclick="setLanguage('bn')">বাংলা ৫২ মোড</button>
+          </div>
         </div>
       </div>
     </header>
     <div aria-hidden="true" style="display:none;"></div>
-    <section class="home-top-three" aria-labelledby="home-top-three-title">
-      <div class="home-top-three-header">
-        <h2 class="home-top-three-title" id="home-top-three-title">🏆 Leaderboard Top 3</h2>
-        <div class="home-top-three-subtitle"><span>Monthly points</span><time class="home-top-three-countdown" id="homeTopThreeCountdown" aria-label="Monthly event time remaining"></time></div>
-      </div>
-      <div class="home-top-three-status" id="homeTopThreeStatus" role="status" aria-live="polite">Loading leaderboard...</div>
-      <div class="home-top-three-list" id="homeTopThreeList" hidden></div>
-    </section>
-    <div class="mode-container">
-      <button id="langEnBtn" class="lang-btn active" onclick="setLanguage('en')">English Mode</button>
-      <button id="langBnBtn" class="lang-btn" onclick="setLanguage('bn')">বাংলা ৫২ মোড</button>
-    </div>
     <div id="typingPanel" class="typing-panel" tabindex="0">
       <div class="dashboard">
         <div class="stat-box"><div class="stat-label">Level Select</div><div class="controls"><select id="levelSelect" onchange="populateLessonsDropdown(); loadLesson()"><option value="basic">Basic Level</option><option value="level1">Level 1</option><option value="level2">Level 2</option><option value="level3">Level 3</option><option value="advanced">Advanced Level</option></select></div></div>
@@ -683,7 +708,7 @@
       </div>
       <div id="statusFeedback" class="status-feedback"><span style="color: var(--text-muted)">Press any key to start typing...</span></div>
       <div id="textDisplay" class="text-display" aria-label="লেসনের লেখা"></div>
-      <textarea id="bengaliTypingBox" class="bengali-typing-box" aria-label="বাংলা টাইপিং বক্স" placeholder="এখানে টাইপ করুন..." autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+      <textarea id="bengaliTypingBox" class="bengali-typing-box" aria-label="বাংলা টাইপিং বক্স" placeholder="এখানে ট্যাপ করে বাংলা টাইপ করুন..." inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
       <div id="summaryModal" class="modal"><div class="modal-content"><h2>Exercise Complete! </h2><div class="modal-stats"><div class="modal-stat-line"><span>Speed:</span><strong><span id="modalWpm">0</span> WPM</strong></div><div class="modal-stat-line"><span>Accuracy:</span><strong><span id="modalAccuracy">100</span>%</strong></div><div class="modal-stat-line"><span>Time:</span><strong><span id="modalTime">00:00</span></strong></div><div class="modal-stat-line"><span>Errors:</span><strong><span id="modalErrors" style="color:var(--danger)">0</span></strong></div></div><div class="trainer-tip">Keep typing !</div><button id="nextLessonButton" class="modal-btn" onclick="loadNextLesson()" style="margin-top: 15px; background-color: var(--success);">Next Lesson ➔</button><button class="modal-btn" onclick="closeSummary()" style="margin-top: 10px; background-color: var(--key-bg);">Try good typing </button></div></div>
     </div>
     <div id="bijoyNoticeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="bijoyNoticeTitle" aria-hidden="true">
@@ -807,8 +832,6 @@
       demoTypingDirection = typingDemo.direction;
       setLiveActivityCount("demo-viewer-count", demoViewerCount);
       setLiveActivityCount("demo-typing-count", demoTypingCount);
-      updateHomeTopThreeCountdown();
-      setInterval(updateHomeTopThreeCountdown, 1000);
     }, 1800);
     setLiveActivityCount("demo-viewer-count", demoViewerCount);
     setLiveActivityCount("demo-typing-count", demoTypingCount);
@@ -822,40 +845,6 @@
       const year = parts.find(part => part.type === "year").value;
       const month = parts.find(part => part.type === "month").value;
       return `${year}-${month}`;
-    }
-
-    function updateHomeTopThreeCountdown() {
-      const countdown = document.getElementById("homeTopThreeCountdown");
-      if (!countdown) return;
-      const [year, month] = getHomeCurrentMonthKey().split("-").map(Number);
-      const eventEnd = new Date(Date.UTC(year, month, 1) - 6 * 60 * 60 * 1000);
-      let secondsRemaining = Math.max(0, Math.floor((eventEnd.getTime() - Date.now()) / 1000));
-      const days = Math.floor(secondsRemaining / 86400);
-      secondsRemaining %= 86400;
-      const hours = String(Math.floor(secondsRemaining / 3600)).padStart(2, "0");
-      secondsRemaining %= 3600;
-      const minutes = String(Math.floor(secondsRemaining / 60)).padStart(2, "0");
-      const seconds = String(secondsRemaining % 60).padStart(2, "0");
-      countdown.dateTime = eventEnd.toISOString();
-      countdown.textContent = `Ends in ${days}d ${hours}:${minutes}:${seconds}`;
-    }
-
-    function renderHomeVerifiedBadge(user) {
-      if (user.verifiedBadge !== true) return "";
-      const type = ["profile_star", "gold_check", "winged_check", "blue_seal", "red_seal", "blue_tick_mark"].includes(user.verifiedBadgeType)
-        ? user.verifiedBadgeType
-        : "profile_star";
-      if (type === "blue_tick_mark") {
-        return '<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Blue Tick Mark" title="Blue Tick Mark"><image href="blue-tick-mark-transparent.png" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></svg>';
-      }
-      const icons = {
-        profile_star: '<circle cx="47" cy="47" r="38" fill="#fff" stroke="#2563eb" stroke-width="5"/><circle cx="47" cy="47" r="38" fill="none" stroke="#7c3aed" stroke-width="5" stroke-dasharray="72 167" stroke-dashoffset="-20" stroke-linecap="round"/><circle cx="47" cy="33" r="11" fill="#147cf3"/><path d="M19 75c2-16 13-26 28-26s26 10 28 26v4H19z" fill="#155eef"/><path d="m34 64 9 9 18-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="73" r="20" fill="#2458ed" stroke="#fff" stroke-width="4"/><path d="m73 60 3.8 7.7 8.5 1.2-6.2 6 1.5 8.5-7.6-4-7.6 4 1.5-8.5-6.2-6 8.5-1.2z" fill="#fff"/>',
-        gold_check: '<path d="m50 3 12 9 15-2 7 14 14 7-2 15 9 12-9 12 2 15-14 7-7 14-15-2-12 9-12-9-15 2-7-14-14-7 2-15-9-12 9-12-2-15 14-7 7-14 15 2z" fill="#f59e0b" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="32" fill="#0f1b35" stroke="#fcd34d" stroke-width="5"/><path d="m34 51 11 11 22-25" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
-        winged_check: '<path d="M38 31 12 16q-8-3-8 5l2 16 19 12-17-4q-7-2-4 6l8 13 18 4-13 2q-6 1-2 7l10 9 15-2zM62 31l26-15q8-3 8 5l-2 16-19 12 17-4q7-2 4 6l-8 13-18 4 13 2q6 1 2 7l-10 9-15-2z" fill="#14a8f5"/><circle cx="50" cy="44" r="31" fill="#08264b" stroke="#168ef5" stroke-width="7"/><path d="m37 43 10 10 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 67 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>',
-        blue_seal: '<path d="M0 23h29v12H0zM0 42h24v9H0zM0 58h29v8H0z" fill="#8bd3ff"/><path d="M50 3 60 8l11-2 6 10 11 4-1 12 7 9-6 10 2 11-10 7-3 11-12 1-8 9-10-7-12 3-7-9-12-3-2-12-9-8 4-11-4-11 9-8 3-12 12-2z" fill="#0868ee" stroke="#74c7ff" stroke-width="5" stroke-linejoin="round"/><path d="m32 51 12 12 25-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
-        red_seal: '<path d="M50 3 63 11 78 9 84 23 96 31 93 46 100 59 91 70 90 85 76 91 69 104 54 100 40 106 30 95 15 92 12 77 1 67 5 52 0 39 11 28 14 13 29 11Z" fill="#080808" stroke="#444" stroke-width="3" stroke-linejoin="round"/><path d="M50 11 61 18 74 16 80 28 91 35 88 48 94 59 86 69 85 82 73 87 67 98 54 94 42 100 33 90 20 87 18 74 8 65 12 52 8 41 18 32 21 20 34 18Z" fill="#ed1018" stroke="#b90009" stroke-width="3" stroke-linejoin="round"/><path d="m29 52 13 13 30-34" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff"><path d="m50 12 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m15 55 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m84 57 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="m50 83 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>'
-      };
-      return `<svg class="verified-profile-tick" viewBox="0 0 100 100" role="img" aria-label="Admin verified" title="Admin verified">${icons[type]}</svg>`;
     }
 
     function renderHomeTopThree(users) {
@@ -900,16 +889,7 @@
           avatar.src = "logo.png";
         };
 
-        const name = document.createElement("span");
-        name.className = "home-top-player-name";
-        name.append(document.createTextNode(String(user.name || user.id || "Player")));
-        name.insertAdjacentHTML("beforeend", renderHomeVerifiedBadge(user));
-
-        const points = document.createElement("span");
-        points.className = "home-top-player-points";
-        points.textContent = `${monthlyPoints} monthly pts`;
-
-        card.append(rankLabel, avatar, name, points);
+        card.append(rankLabel, avatar);
         list.append(card);
       });
       let savedUser = null;
@@ -930,6 +910,7 @@
       if (typeof firebase === "undefined" || !firebase.database) {
         console.error("Live activity unavailable: Firebase SDK did not load.");
         const status = document.getElementById("homeTopThreeStatus");
+        status.hidden = false;
         status.textContent = "Leaderboard is unavailable right now.";
         return;
       }
@@ -1126,6 +1107,7 @@
     });
     document.getElementById("typingPanel").addEventListener("pointerdown", event => {
       if (event.pointerType !== "touch") return;
+      if (event.target instanceof Element && event.target.closest("textarea, input, button, select, a, [contenteditable='true']")) return;
       const panel = document.getElementById("typingPanel");
       if (document.fullscreenElement === panel) {
         document.exitFullscreen().then(() => {
@@ -1145,6 +1127,7 @@
       const profileLink = document.getElementById("welcomeBannerProfile");
       const profileName = document.getElementById("welcomeBannerProfileName");
       const profileAvatar = document.getElementById("welcomeBannerProfileAvatar");
+      const verifiedBadge = document.getElementById("welcomeBannerVerifiedBadge");
       const detailsPanel = document.getElementById("welcomeBannerProfileDetails");
       const actionPanel = document.getElementById("welcomeBannerProfileActions");
       const logoutButton = document.getElementById("welcomeBannerLogout");
@@ -1166,8 +1149,9 @@
         }
         if (profileLoginButton) profileLoginButton.hidden = false;
         if (profileLink) profileLink.hidden = true;
-        detailsPanel.hidden = false;
-        actionPanel.hidden = false;
+        if (verifiedBadge) verifiedBadge.hidden = true;
+        detailsPanel.hidden = true;
+        actionPanel.hidden = true;
         if (logoutButton) logoutButton.hidden = true;
         if (editToggle) editToggle.hidden = true;
         if (editForm) editForm.hidden = true;
@@ -1186,9 +1170,9 @@
       if (profileLoginButton) profileLoginButton.hidden = true;
       if (logoutButton) logoutButton.hidden = false;
       if (editToggle) editToggle.hidden = false;
-      detailsPanel.hidden = false;
       actionPanel.hidden = false;
       profileName.textContent = String(user.name || user.id);
+      if (verifiedBadge) verifiedBadge.hidden = user.verifiedBadge !== true;
       profileAvatar.onerror = () => {
         profileAvatar.onerror = null;
         profileAvatar.src = "logo.png";
@@ -1197,6 +1181,9 @@
         ? user.pic
         : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
       profileLink.href = `profile.html?id=${encodeURIComponent(String(user.id))}`;
+      document.getElementById("welcomeBannerFullProfileLink").href = profileLink.href;
+      document.getElementById("welcomeBannerVerificationLink").href =
+        `profile.html?id=${encodeURIComponent(String(user.id))}&open=verification`;
       const detailsAvatar = document.getElementById("welcomeBannerDetailsAvatar");
       detailsAvatar.onerror = () => {
         detailsAvatar.onerror = null;
@@ -1205,8 +1192,10 @@
       detailsAvatar.src = profileAvatar.src;
       document.getElementById("welcomeBannerDetailsName").textContent = String(user.name || user.id);
       document.getElementById("welcomeBannerDetailsId").textContent = `ID: ${String(user.id)}`;
+      document.getElementById("welcomeBannerDetailsPhone").textContent = `Mobile: ${String(user.whatsapp || "Not added")}`;
       document.getElementById("welcomeBannerDetailsBio").textContent = String(user.bio || "Typing profile");
       if (document.getElementById("welcomeBannerEditForm").hidden) {
+        document.getElementById("welcomeBannerEditId").value = String(user.id);
         document.getElementById("welcomeBannerEditName").value = String(user.name || user.id);
         document.getElementById("welcomeBannerEditAvatar").value =
           typeof user.pic === "string" && /^https?:\/\//i.test(user.pic) ? user.pic : "";
@@ -1218,6 +1207,8 @@
         document.getElementById("welcomeBannerEditShowEmail").checked = user.showEmail === true;
         document.getElementById("welcomeBannerEditBio").value = String(user.bio || "");
       }
+      document.getElementById("welcomeBannerPhoneVerificationLink").href =
+        `profile.html?id=${encodeURIComponent(String(user.id))}&open=edit`;
       const currentMonth = getHomeCurrentMonthKey();
       const rankedUsers = [...users].sort((a, b) => {
         const monthlyA = a.monthlyPointsMonth === currentMonth ? Number(a.monthlyPoints) || 0 : 0;
@@ -1400,11 +1391,11 @@
       document.getElementById("keyboardContainer").classList.toggle("bengali-hidden", isBengali);
       populateLessonsDropdown();
       updateKeyboardLayoutDisplay();
-      loadLesson(options);
+      loadLesson({ ...options, focus: options.focus === true });
       const panel = document.getElementById("typingPanel");
-      if (options.focus !== false) {
-        if (isBengali) document.getElementById("bengaliTypingBox").focus();
-        else if (panel) panel.focus();
+      if (options.focus === true) {
+        if (isBengali) document.getElementById("bengaliTypingBox").focus({ preventScroll: true });
+        else if (panel) panel.focus({ preventScroll: true });
       }
     }
     function populateLessonsDropdown() {
@@ -1435,7 +1426,7 @@
       document.getElementById("nextLessonButton").hidden = currentLanguage === "bn" && Number(lessonSelect.value) >= 9;
       resetExercise(options);
     }
-    function resetExercise(options = {}) { if (timerInterval) clearInterval(timerInterval); setLiveTypingPresence(false); currentIndex = 0; userInputs = []; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; document.getElementById("progressVal").innerText = `0 / ${targetText.length} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; document.getElementById("bengaliTypingBox").value = ""; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; if (options.focus === false) return; const panel = document.getElementById("typingPanel"); if (currentLanguage === "bn") document.getElementById("bengaliTypingBox").focus(); else if (panel) panel.focus(); }
+    function resetExercise(options = {}) { if (timerInterval) clearInterval(timerInterval); setLiveTypingPresence(false); currentIndex = 0; userInputs = []; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; const targetLength = currentLanguage === "bn" ? getTypingCharacters(targetText).length : targetText.length; document.getElementById("progressVal").innerText = `0 / ${targetLength} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; document.getElementById("bengaliTypingBox").value = ""; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; if (options.focus === false) return; const panel = document.getElementById("typingPanel"); if (currentLanguage === "bn") document.getElementById("bengaliTypingBox").focus(); else if (panel) panel.focus(); }
     function renderText() {
       const container = document.getElementById("textDisplay");
       if (currentLanguage === "bn") {
@@ -1466,11 +1457,19 @@
         ? `👉 Press: <strong style="color: var(--success); font-size: 18px;">Shift + "${targetChar.toUpperCase()}"</strong>`
         : `👉 Press: <strong style="color: var(--success); font-size: 18px;">"${targetChar}"</strong>`;
     }
-    document.getElementById("bengaliTypingBox").addEventListener("input", event => {
+    const bengaliGraphemeSegmenter = typeof Intl.Segmenter === "function"
+      ? new Intl.Segmenter("bn", { granularity: "grapheme" })
+      : null;
+    function getTypingCharacters(text) {
+      if (bengaliGraphemeSegmenter) {
+        return Array.from(bengaliGraphemeSegmenter.segment(text), item => item.segment);
+      }
+      return Array.from(text);
+    }
+    function updateBengaliTypingProgress(typingBox) {
       if (currentLanguage !== "bn") return;
-      const typingBox = event.currentTarget;
-      const typedChars = Array.from(typingBox.value);
-      const targetChars = Array.from(targetText);
+      const typedChars = getTypingCharacters(typingBox.value);
+      const targetChars = getTypingCharacters(targetText);
       const checkedChars = typedChars.slice(0, targetChars.length);
       const inputs = checkedChars.map((char, index) => {
         const expectedChar = targetChars[index];
@@ -1483,9 +1482,6 @@
       totalKeystrokes = checkedChars.length;
       totalErrors = inputs.filter(input => !input.isMatch).length;
       hasErrorAtCurrent = false;
-      if (typedChars.length > targetChars.length) {
-        typingBox.value = typedChars.slice(0, targetChars.length).join("");
-      }
       if (checkedChars.length && !isStarted) {
         isStarted = true;
         startTimer();
@@ -1502,12 +1498,19 @@
       document.getElementById("accuracyVal").innerText = totalKeystrokes
         ? Math.round(((totalKeystrokes - totalErrors) / totalKeystrokes) * 100) + "%"
         : "100%";
-      document.getElementById("progressVal").innerText = `${currentIndex} / ${targetText.length} (${Math.round((currentIndex / targetText.length) * 100)}%)`;
+      document.getElementById("progressVal").innerText = `${currentIndex} / ${targetChars.length} (${Math.round((currentIndex / targetChars.length) * 100)}%)`;
       document.getElementById("summaryModal").style.display = checkedChars.length === targetChars.length ? "flex" : "none";
       if (checkedChars.length === targetChars.length) {
         clearInterval(timerInterval);
         setLiveTypingPresence(false);
       }
+    }
+    const bengaliTypingBox = document.getElementById("bengaliTypingBox");
+    bengaliTypingBox.addEventListener("input", event => {
+      if (!event.isComposing) updateBengaliTypingProgress(event.currentTarget);
+    });
+    bengaliTypingBox.addEventListener("compositionend", event => {
+      updateBengaliTypingProgress(event.currentTarget);
     });
     function triggerErrorEffect() { const panel = document.getElementById('typingPanel'); const feedback = document.getElementById('statusFeedback'); panel.classList.add('panel-shake'); feedback.style.backgroundColor = "rgba(239, 68, 68, 0.4)"; feedback.innerHTML = `<span style="color: #fff; font-size: 18px;">❌ ভুল হয়েছে! সঠিক কী চাপুন।</span>`; setTimeout(() => { panel.classList.remove('panel-shake'); feedback.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; updateFeedbackPrompt(); }, 400); }
     function startTimer() { timerInterval = setInterval(() => { totalSeconds++; const mins = Math.floor(totalSeconds / 60); const secs = totalSeconds % 60; document.getElementById("timeVal").innerText = `${mins < 10 ? "0":""}${mins}:${secs < 10 ? "0":""}${secs}`; const wpm = Math.round((currentIndex / 5) / (totalSeconds / 60)) || 0; document.getElementById("wpmVal").innerText = wpm < 10 ? "0" + wpm : wpm; }, 1000); }
@@ -1578,6 +1581,23 @@
       document.getElementById("summaryModal").style.display = "none";
     }
     function closeSummary() { document.getElementById("summaryModal").style.display = "none"; resetExercise(); }
+    async function shareSiteAddress() {
+      if (!navigator.share) {
+        alert("এই ব্রাউজারে সরাসরি শেয়ার সুবিধা নেই। ব্রাউজারের Share মেনু ব্যবহার করুন।");
+        return;
+      }
+      try {
+        await navigator.share({
+          title: "TypingMaster Pro Online",
+          text: "TypingMaster Pro Online",
+          url: "https://typingmasterproonline.com"
+        });
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        console.error("Website address share failed:", error);
+        alert("ওয়েবসাইটটি শেয়ার করা যায়নি। আবার চেষ্টা করুন।");
+      }
+    }
     let deferredInstallPrompt = null;
     window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
@@ -1606,6 +1626,27 @@
     }
     updateMobileNoticeLanguage();
     updateWelcomeBannerProfile();
+    const welcomeProfileLink = document.getElementById("welcomeBannerProfile");
+    const welcomeProfileDetails = document.getElementById("welcomeBannerProfileDetails");
+    welcomeProfileLink.addEventListener("click", event => {
+      event.preventDefault();
+      welcomeProfileDetails.hidden = !welcomeProfileDetails.hidden;
+      welcomeProfileLink.setAttribute("aria-expanded", String(!welcomeProfileDetails.hidden));
+    });
+    document.addEventListener("click", event => {
+      if (!welcomeProfileDetails.hidden &&
+          !welcomeProfileDetails.contains(event.target) &&
+          !welcomeProfileLink.contains(event.target)) {
+        welcomeProfileDetails.hidden = true;
+          welcomeProfileLink.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+          welcomeProfileDetails.hidden = true;
+          welcomeProfileLink.setAttribute("aria-expanded", "false");
+      }
+    });
     document.getElementById("welcomeBannerEditToggle").addEventListener("click", () => {
       const button = document.getElementById("welcomeBannerEditToggle");
       const form = document.getElementById("welcomeBannerEditForm");
@@ -1643,6 +1684,8 @@
         return;
       }
 
+      const oldId = String(user.id);
+      const newId = document.getElementById("welcomeBannerEditId").value.trim().toLowerCase();
       const name = document.getElementById("welcomeBannerEditName").value.trim();
       const requestedPic = document.getElementById("welcomeBannerEditAvatar").value.trim();
       const avatarFile = document.getElementById("welcomeBannerEditAvatarFile").files[0] || null;
@@ -1653,8 +1696,12 @@
       const hasWhatsApp = document.getElementById("welcomeBannerEditHasWhatsapp").checked;
       const showEmail = document.getElementById("welcomeBannerEditShowEmail").checked;
       const bio = document.getElementById("welcomeBannerEditBio").value.trim();
-      if (!name) {
-        status.textContent = "Please enter a display name.";
+      if (!newId || !name) {
+        status.textContent = "Please enter both your User ID and display name.";
+        return;
+      }
+      if (/[.#$\/\[\]]/.test(newId)) {
+        status.textContent = "User ID cannot contain . # $ / [ or ].";
         return;
       }
       if (requestedPic && !avatarFile) {
@@ -1669,6 +1716,16 @@
       const whatsappDigits = whatsapp.replace(/\D/g, "");
       if (whatsapp && (whatsappDigits.length < 8 || whatsappDigits.length > 15)) {
         status.textContent = "Enter a valid WhatsApp number with country code.";
+        return;
+      }
+      const currentWhatsappDigits = String(user.whatsapp || "").replace(/\D/g, "");
+      const verifiedPhoneDigits = String(user.verifiedPhone || "").replace(/\D/g, "");
+      if (whatsapp && whatsappDigits !== currentWhatsappDigits &&
+          !(user.phoneVerified === true && verifiedPhoneDigits === whatsappDigits)) {
+        const verificationLink = document.getElementById("welcomeBannerPhoneVerificationLink");
+        verificationLink.href = `profile.html?id=${encodeURIComponent(oldId)}&open=edit`;
+        verificationLink.hidden = false;
+        status.textContent = "Verify your new mobile number on your profile page before saving.";
         return;
       }
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -1694,14 +1751,28 @@
 
       saveButton.disabled = true;
       status.textContent = "Saving profile...";
-      const updates = { name, pic, bio, whatsapp, email, showWhatsApp, hasWhatsApp, showEmail };
+      const updates = { id: newId, name, pic, bio, whatsapp, email, showWhatsApp, hasWhatsApp, showEmail };
       try {
         if (avatarFile) updates.pic = await compressHomeProfileAvatar(avatarFile);
-        await activityDatabase.ref(`users/${user.id}`).update(updates);
         const updatedUser = { ...user, ...updates };
+        if (newId !== oldId) {
+          const usersSnapshot = await activityDatabase.ref("users").once("value");
+          const users = usersSnapshot.val() || {};
+          const existingId = Object.keys(users).find(id => id.toLowerCase() === newId);
+          if (existingId && existingId.toLowerCase() !== oldId.toLowerCase()) {
+            throw new Error("That User ID is already in use.");
+          }
+          await activityDatabase.ref().update({
+            [`users/${newId}`]: updatedUser,
+            [`users/${oldId}`]: null
+          });
+        } else {
+          await activityDatabase.ref(`users/${oldId}`).update(updates);
+        }
         localStorage.setItem("currentUser", JSON.stringify(updatedUser));
         updateWelcomeBannerProfile(updatedUser, homeLeaderboardUsers);
         status.textContent = "Profile updated successfully.";
+        document.getElementById("welcomeBannerPhoneVerificationLink").hidden = true;
       } catch (error) {
         console.error("Homepage profile update failed:", error);
         status.textContent = error.message || "Profile could not be saved. Check your connection and try again.";
