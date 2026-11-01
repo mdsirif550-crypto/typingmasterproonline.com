@@ -9,6 +9,7 @@
     gtag('js', new Date());
     gtag('config', 'G-0LGMNWJX19');
   </script>
+
   <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Typing Master Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
@@ -363,8 +364,6 @@
             const progressbar = loader.querySelector('[role="progressbar"]');
             const progressBar = document.getElementById('page-loader-progress-bar');
             const percentLabel = document.getElementById('page-loader-percent');
-            const openingMessages = new URLSearchParams(window.location.search).get('openMessages') === '1';
-            if (openingMessages) loader.classList.add('is-hidden');
             let progress = 1;
             let loaderFinished = false;
             let loaderCompleted = false;
@@ -873,7 +872,6 @@
         const EMPTY_ANNOUNCEMENT_VIDEOS = Array.from({ length: 5 }, () => null);
 
         let loggedInUser = null;
-        let shouldOpenMessagesAfterLogin = false;
         let allUsers = [];
         let allLessons = [];
         const supplementaryEnglishPoems = [
@@ -1871,8 +1869,7 @@
             processPendingTypingScores();
             listenHelp();
             listenConversations();
-            if (shouldOpenMessagesAfterLogin || new URLSearchParams(window.location.search).get('openMessages') === '1') {
-                shouldOpenMessagesAfterLogin = false;
+            if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
                 const url = new URL(window.location.href);
                 url.searchParams.delete('openMessages');
                 history.replaceState(null, '', url);
@@ -3381,13 +3378,10 @@
         function init() {
             const queryParams = new URLSearchParams(window.location.search);
             const openLoginOnLoad = queryParams.get('openLogin') === '1';
-            const openMessagesOnLoad = queryParams.get('openMessages') === '1';
-            shouldOpenMessagesAfterLogin = openMessagesOnLoad;
             pendingProfileId = queryParams.get('profile');
-            if (openLoginOnLoad || openMessagesOnLoad || pendingProfileId) {
+            if (openLoginOnLoad || pendingProfileId) {
                 const cleanUrl = new URL(window.location.href);
                 cleanUrl.searchParams.delete('openLogin');
-                cleanUrl.searchParams.delete('openMessages');
                 cleanUrl.searchParams.delete('profile');
                 history.replaceState(null, '', cleanUrl);
             }
@@ -3441,11 +3435,6 @@
                             localStorage.removeItem('currentUser');
                             loggedInUser = null;
                             updateNav();
-                            if (openMessagesOnLoad) {
-                                shouldOpenMessagesAfterLogin = false;
-                                closeMessages();
-                                openAuth();
-                            }
                         }
                     }).catch(err => {
                         console.error('Session restore failed:', err);
@@ -3456,11 +3445,10 @@
                     localStorage.removeItem('currentUser');
                     loggedInUser = null;
                     updateNav();
-                    if (openMessagesOnLoad) openAuth();
                 }
             } else {
                 updateNav();
-                if (openLoginOnLoad || openMessagesOnLoad) openAuth();
+                if (openLoginOnLoad) openAuth();
             }
 
             // Typing input
@@ -3620,21 +3608,12 @@
                 }
             });
             
-            if (openMessagesOnLoad) {
-            if (loggedInUser) {
-                setTimeout(() => {
-                    if (shouldOpenMessagesAfterLogin && loggedInUser) openMessages();
-                }, 0);
-            } else {
-                openAuth();
-            }
-            }
             console.log('✅ App initialized');
             window.finishPageLoader();
         }
 
         window.onload = init;
     </script>
-        <script src="floating-messages.js"></script>
+    <script src="../../floating-messages.js"></script>
 </body>
 </html>
