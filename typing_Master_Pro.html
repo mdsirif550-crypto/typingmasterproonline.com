@@ -232,8 +232,9 @@
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
-        html.messages-only #practice-fullscreen-shell,
+        html.messages-only #practice-fullscreen-shell > :not(#messages-modal):not(#auth-modal),
         html.messages-only #page-loader { display: none !important; }
+        html.embedded-messages #messages-modal .direct-messages-modal > .flex.items-center.justify-between > .flex.items-center.gap-2 > button[aria-label="Close messages"] { display: none; }
         .modal-box { background: white; border-radius: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
         #time-up-modal .time-up-result-box { max-width: 560px; padding: 28px; border: 2px solid #c4b5fd; background: linear-gradient(145deg, #ffffff, #f5f3ff 55%, #eff6ff); box-shadow: 0 28px 80px rgba(30, 27, 75, 0.38); }
         #time-up-modal .time-up-result-title { margin-bottom: 5px; color: #312e81; font-size: 22px; letter-spacing: 0.02em; }
@@ -349,6 +350,9 @@
         }
     </style>
     <script>
+        if (window.parent !== window) {
+            document.documentElement.classList.add('embedded-messages');
+        }
         if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
             document.documentElement.classList.add('messages-only');
         }
@@ -2514,15 +2518,19 @@
         }
 
         function closeMessages() {
+            if (window.parent !== window) {
+                const targetOrigin = window.location.origin === 'null' ? '*' : window.location.origin;
+                window.parent.postMessage({ type: 'typingmaster:close-floating-messages' }, targetOrigin);
+                return;
+            }
             if (directMessagesRef) {
                 directMessagesRef.off();
                 directMessagesRef = null;
             }
             selectedDirectRecipient = null;
             document.getElementById('messages-modal').classList.remove('active');
-            if (window.parent !== window) {
-                const targetOrigin = window.location.origin === 'null' ? '*' : window.location.origin;
-                window.parent.postMessage({ type: 'typingmaster:close-floating-messages' }, targetOrigin);
+            if (document.documentElement.classList.contains('messages-only')) {
+                document.documentElement.classList.remove('messages-only');
             }
         }
 
