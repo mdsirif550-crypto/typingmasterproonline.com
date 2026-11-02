@@ -17,6 +17,8 @@
     #floating-messages-panel{position:fixed;inset:0;z-index:2147483000;display:none;background:#f1f5f9}
     #floating-messages-panel.is-visible{display:block}
     #floating-messages-frame{width:100%;height:100%;border:0;background:#f1f5f9}
+    #floating-messages-close{position:absolute;top:12px;right:14px;z-index:1;width:42px;height:42px;border:0;border-radius:999px;background:#0f172a;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px #0f172a55;cursor:pointer}
+    #floating-messages-close:hover{background:#1e293b}
     #floating-messages-toast{display:none;width:min(330px,calc(100vw - 32px));padding:12px 14px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(145deg,#fff,#eff6ff);color:#0f172a;text-align:left;box-shadow:0 10px 30px #102e5040;cursor:pointer}
     #floating-messages-toast.is-visible{display:block;animation:floating-message-in .2s ease-out}
     #floating-messages-toast strong{display:block;margin-bottom:4px;color:#1d4ed8;font-size:13px}
@@ -39,6 +41,7 @@
   panel.setAttribute("aria-label", "Messages");
   panel.setAttribute("aria-modal", "true");
   panel.innerHTML = `
+    <button id="floating-messages-close" type="button" aria-label="Close messages and return to the previous page">×</button>
     <iframe id="floating-messages-frame" title="Messages inbox"></iframe>
   `;
   document.body.appendChild(panel);
@@ -76,6 +79,7 @@
     panel.classList.remove("is-visible");
     document.body.style.overflow = previousBodyOverflow;
   };
+  panel.querySelector("#floating-messages-close").addEventListener("click", closeInbox);
   window.addEventListener("message", event => {
     const frame = panel.querySelector("#floating-messages-frame");
     const isExpectedOrigin = event.origin === window.location.origin ||
