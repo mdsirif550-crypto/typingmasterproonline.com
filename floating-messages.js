@@ -16,7 +16,6 @@
     #floating-messages-widget{position:fixed;right:18px;bottom:18px;z-index:29;display:grid;justify-items:end;gap:10px;font-family:Arial,Helvetica,sans-serif}
     #floating-messages-panel{position:fixed;inset:0;z-index:2147483000;display:none;background:#f1f5f9}
     #floating-messages-panel.is-visible{display:block}
-    #floating-messages-panel-close{position:absolute;top:12px;right:14px;z-index:1;width:42px;height:42px;border:0;border-radius:999px;background:#0f172a;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px #0f172a55;cursor:pointer}
     #floating-messages-frame{width:100%;height:100%;border:0;background:#f1f5f9}
     #floating-messages-toast{display:none;width:min(330px,calc(100vw - 32px));padding:12px 14px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(145deg,#fff,#eff6ff);color:#0f172a;text-align:left;box-shadow:0 10px 30px #102e5040;cursor:pointer}
     #floating-messages-toast.is-visible{display:block;animation:floating-message-in .2s ease-out}
@@ -40,7 +39,6 @@
   panel.setAttribute("aria-label", "Messages");
   panel.setAttribute("aria-modal", "true");
   panel.innerHTML = `
-    <button id="floating-messages-panel-close" type="button" aria-label="Close messages">×</button>
     <iframe id="floating-messages-frame" title="Messages inbox"></iframe>
   `;
   document.body.appendChild(panel);
@@ -78,6 +76,14 @@
     panel.classList.remove("is-visible");
     document.body.style.overflow = previousBodyOverflow;
   };
+  window.addEventListener("message", event => {
+    const frame = panel.querySelector("#floating-messages-frame");
+    const isExpectedOrigin = event.origin === window.location.origin ||
+      (window.location.protocol === "file:" && event.origin === "null");
+    if (event.source !== frame.contentWindow || !isExpectedOrigin ||
+        !event.data || event.data.type !== "typingmaster:close-floating-messages") return;
+    closeInbox();
+  });
   const button = widget.querySelector("#floating-messages-button");
   const badge = widget.querySelector("#floating-messages-badge");
   const toast = widget.querySelector("#floating-messages-toast");
@@ -86,7 +92,6 @@
   const status = widget.querySelector("#floating-messages-status");
   button.addEventListener("click", openInbox);
   toast.addEventListener("click", openInbox);
-  panel.querySelector("#floating-messages-panel-close").addEventListener("click", closeInbox);
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && panel.classList.contains("is-visible")) closeInbox();
   });
