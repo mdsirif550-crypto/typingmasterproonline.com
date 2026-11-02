@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ADMIN - Typing Master</title>
+    <link rel="icon" type="image/png" sizes="518x518" href="app-icon-192.png">
+    <link rel="apple-touch-icon" href="app-icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -138,6 +140,7 @@
                             <option value="bn">🇧🇩 বাংলা</option>
                         </select>
                     </div>
+                    <input id="lesson-title" class="slim-input mb-2" maxlength="80" placeholder="Lesson name (optional, e.g. Lesson 1)">
                     <textarea id="lesson-text" class="slim-input mb-2 h-20" placeholder="Type lesson text here..."></textarea>
                     <button onclick="addLesson()" class="btn btn-primary">Add Lesson</button>
                 </div>
@@ -256,6 +259,8 @@
                 <option value="en">English</option>
                 <option value="bn">বাংলা</option>
             </select>
+            <label for="edit-ltitle" class="text-xs font-bold text-slate-500">Lesson name</label>
+            <input id="edit-ltitle" class="slim-input mb-2" maxlength="80" placeholder="Leave blank to use the default name">
             <label class="text-xs font-bold text-slate-500">Text</label>
             <textarea id="edit-ltext" class="slim-input mb-3 h-20"></textarea>
             <div class="flex gap-2">
@@ -677,7 +682,8 @@
                 <div class="lesson-item">
                     <div>
                         <span class="lang-tag ${l.language || 'en'}">${l.language === 'bn' ? '🇧🇩 বাংলা' : '🇬🇧 English'}</span>
-                        <span class="font-medium text-sm ml-2">${l.text}</span>
+                        <span class="font-medium text-sm ml-2">${escapeLessonHtml(l.title || 'Unnamed lesson')}</span>
+                        <p class="text-xs text-slate-500 mt-1">${escapeLessonHtml(l.text || '')}</p>
                     </div>
                     <div class="flex gap-1">
                         <button onclick="openEditLesson('${l.id}')" class="btn btn-primary btn-sm">Edit</button>
@@ -687,13 +693,28 @@
             `).join('');
         }
 
+        function escapeLessonHtml(value) {
+            return String(value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
         function addLesson() {
             const text = document.getElementById('lesson-text').value.trim();
             const lang = document.getElementById('lesson-lang').value;
+            const title = document.getElementById('lesson-title').value.trim();
             if (!text) return alert('Enter lesson text');
-            db.ref('lessons').push({ text, language: lang, createdAt: Date.now() }).then(() => {
+            db.ref('lessons').push({ title, text, language: lang, createdAt: Date.now() }).then(() => {
+                document.getElementById('lesson-title').value = '';
                 document.getElementById('lesson-text').value = '';
                 alert('✅ Lesson added!');
+            }).catch(error => {
+                console.error('Lesson add failed:', error);
+                alert('Could not add lesson. Please try again.');
             });
         }
 
@@ -701,6 +722,7 @@
             const l = allLessons.find(x => x.id === id);
             if (!l) return;
             document.getElementById('edit-lid').value = l.id;
+            document.getElementById('edit-ltitle').value = l.title || '';
             document.getElementById('edit-ltext').value = l.text || '';
             document.getElementById('edit-llang').value = l.language || 'en';
             document.getElementById('edit-lesson-modal').classList.add('active');
@@ -708,12 +730,16 @@
 
         function saveLessonEdit() {
             const id = document.getElementById('edit-lid').value;
+            const title = document.getElementById('edit-ltitle').value.trim();
             const text = document.getElementById('edit-ltext').value.trim();
             const language = document.getElementById('edit-llang').value;
             if (!text) return alert('Enter text');
-            db.ref('lessons/' + id).update({ text, language }).then(() => {
+            db.ref('lessons/' + id).update({ title, text, language }).then(() => {
                 document.getElementById('edit-lesson-modal').classList.remove('active');
                 alert('✅ Lesson updated!');
+            }).catch(error => {
+                console.error('Lesson update failed:', error);
+                alert('Could not update lesson. Please try again.');
             });
         }
 
@@ -949,5 +975,6 @@
             });
         });
     </script>
+        <script src="floating-messages.js"></script>
 </body>
 </html>
