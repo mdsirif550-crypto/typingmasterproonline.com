@@ -55,6 +55,41 @@
   }
 }
 </script>
+<script>
+  try {
+    if (localStorage.getItem("typingMasterTheme") === "dark") {
+      document.documentElement.dataset.theme = "dark";
+    }
+  } catch (error) {
+    console.error("Could not load the saved color theme:", error);
+  }
+
+  function toggleNightMode() {
+    const root = document.documentElement;
+    const isDark = root.dataset.theme !== "dark";
+    root.dataset.theme = isDark ? "dark" : "light";
+    const button = document.getElementById("car-theme-toggle");
+    if (button) {
+      button.textContent = isDark ? "☀️ Light Mode" : "🌙 Night Mode";
+      button.setAttribute("aria-pressed", String(isDark));
+      button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to night mode");
+    }
+    try {
+      localStorage.setItem("typingMasterTheme", isDark ? "dark" : "light");
+    } catch (error) {
+      console.error("Could not save the selected color theme:", error);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("car-theme-toggle");
+    if (!button) return;
+    const isDark = document.documentElement.dataset.theme === "dark";
+    button.textContent = isDark ? "☀️ Light Mode" : "🌙 Night Mode";
+    button.setAttribute("aria-pressed", String(isDark));
+    button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to night mode");
+  });
+</script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 window.GameLeaderboard = window.GameLeaderboard || {
@@ -74,12 +109,34 @@ const safeGameLeaderboard = (methodName, ...args) => {
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eaf4ff;color:#122344;overflow-x:hidden}html{scroll-behavior:auto}header{background:linear-gradient(110deg,#101d3b,#1456a8);color:#fff;padding:18px 12px;position:relative}.header-inner{max-width:1050px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.header-left,.header-right{display:flex;align-items:center;min-width:120px}.header-center{text-align:center;flex:1}.header-home{display:inline-flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;background:rgba(255,255,255,.08);padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:10px;font-weight:700}.header-home:hover{background:rgba(255,255,255,.14)}h1{margin:0;font-size:clamp(25px,4vw,38px)}header p{margin:8px 0 0;color:#d6e8ff}.profile-chip{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(0,0,0,.12)}.profile-chip[hidden]{display:none}.profile-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid rgba(255,255,255,.28)}.profile-meta{text-align:left;line-height:1.15}.profile-meta strong{display:block;font-size:12px;white-space:nowrap}.profile-meta small{display:block;font-size:10px;color:#dfeeff;opacity:.85}.wrap{max-width:1050px;margin:18px auto;padding:0 13px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}.stat{background:#fff;border:1px solid #d9e6f5;border-radius:13px;padding:12px 6px;text-align:center;box-shadow:0 3px 12px #102e5010}.stat span{display:block;font-size:11px;color:#687992;font-weight:bold;text-transform:uppercase;margin-bottom:6px}.stat b{font-size:clamp(17px,3vw,25px);color:#145fc7}
 .track{height:440px;position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(#91d9ff 0 25%,#83c77c 25% 32%,#4a5360 32% 100%);border:3px solid white;box-shadow:0 8px 24px #153b641b}.sun{position:absolute;right:7%;top:12px;background:#ffe88a;width:38px;height:38px;border-radius:50%;box-shadow:0 0 0 8px #fff4b344}.track-dashboard{position:absolute;z-index:9;top:10px;left:12px;right:12px;display:flex;flex-direction:column;align-items:center;gap:7px}.start-overlay{position:absolute;inset:0;z-index:12;display:grid;place-items:center;background:radial-gradient(ellipse at center,#101d3b36 0%,#101d3b08 72%)}.start-overlay #start{min-width:220px;padding:15px 26px;border:2px solid #ffffffd9;border-radius:16px;background:linear-gradient(135deg,#12a76c,#087bcb 58%,#5946d5);box-shadow:0 7px 0 #123a75,0 13px 26px #0e234b80;color:white;font-size:clamp(18px,3vw,24px);text-shadow:0 2px 3px #142b5590}.start-overlay #start:active{transform:translateY(4px);box-shadow:0 3px 0 #123a75,0 6px 14px #0e234b80}.track-dashboard .stats{width:100%;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:0}.track-dashboard .stat{padding:8px 5px;background:#ffffffed;border-radius:11px}.track-dashboard .stat span{font-size:10px;margin-bottom:3px}.track-dashboard .stat b{font-size:clamp(15px,2.4vw,22px)}.track-options{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px}.track-options .note{margin:0}.track-options select,.track-options button{padding:8px 10px;font-size:12px}.track-options select:disabled{opacity:1;color:#1658b6}.road{position:absolute;left:0;right:0;bottom:0;height:68%;background:#353c48;border-top:5px solid white;border-bottom:5px solid white;overflow:hidden}.roadline{position:absolute;left:0;right:0;top:50%;height:5px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#fff 0 42px,transparent 42px 78px);animation:roadmove .6s linear infinite;animation-play-state:paused}@keyframes roadmove{to{background-position:-78px 0}}.car{position:absolute;font-size:clamp(32px,5vw,48px);line-height:1;z-index:3;filter:drop-shadow(0 4px 2px #10172266);transition:left .15s linear}.car-icon{display:inline-block;transform:scaleX(-1)}.car-label{position:absolute;top:-19px;left:0;white-space:nowrap;font-size:10px;font-weight:bold;color:white;background:#14213a;padding:3px 6px;border-radius:5px}.player{left:8%;top:70%;z-index:5}.rival1{left:18%;top:43%}.rival2{left:28%;top:56%}.rival3{left:38%;top:43%}.speedTag{position:absolute;left:12px;bottom:12px;background:#ffffffdf;color:#15345d;padding:8px 11px;border-radius:20px;font-weight:bold;font-size:12px;z-index:8}.finish{position:absolute;right:5%;top:0;bottom:0;width:12px;background:repeating-linear-gradient(0deg,#fff 0 8px,#1c2535 8px 16px);z-index:2}.panel{background:white;border:1px solid #dce8f5;border-radius:17px;padding:17px;margin-top:13px;box-shadow:0 4px 16px #153b6410}.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}h2{font-size:20px;margin:0 0 10px}.target{font-size:clamp(21px,3.5vw,30px);font-weight:800;line-height:1.6;overflow-wrap:anywhere;letter-spacing:.4px}.done{color:#13a56c}.current{background:#ffe38b;border-radius:4px;box-shadow:0 0 0 2px #ffd04a}.wrong{background:#ffe3e3;color:#b42318;border-radius:4px;box-shadow:0 0 0 2px #f7b7b7}.future{color:#9caabd}textarea{width:100%;min-height:84px;border:2px solid #cbd9e9;border-radius:12px;padding:13px;font:19px Arial;resize:vertical;outline:none}textarea:focus{border-color:#2476ef;box-shadow:0 0 0 3px #2476ef20}button,select{padding:11px 15px;border:0;border-radius:10px;font-weight:bold;cursor:pointer;font-size:14px}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:#236ff0;color:white}.secondary{background:#eaf2ff;color:#1658b6}.note{font-size:13px;color:#667891;line-height:1.5}.feedback{min-height:22px;color:#137d57;font-weight:bold;font-size:14px}.bar{height:8px;background:#dce8f6;border-radius:20px;overflow:hidden;margin:12px 0}.bar div{height:100%;width:0;background:linear-gradient(90deg,#13b47e,#d9e84e);transition:width .25s}.results{display:none;text-align:center;background:#fff8db;border-color:#ffe08a}.results strong{font-size:30px;color:#165fc7}footer{text-align:center;padding:22px;color:#687992;font-size:12px}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#52647b;margin-top:8px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rule{border:1px solid #dce8f5;border-radius:10px;padding:10px;font-size:13px}.rule b{display:block;color:#145fc7;margin-bottom:3px}@media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:span 2}.track-dashboard .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.track-dashboard .stat:last-child{grid-column:1/-1}.track-options{gap:4px}.track-options select,.track-options button{padding:6px 8px;font-size:11px}.track{height:500px}.car{font-size:31px}.player{top:76%}.rival1{top:48%}.rival2{top:62%}.rival3{top:48%}.rules{grid-template-columns:1fr}}
+html[data-theme="dark"] body{background:linear-gradient(145deg,#101827 0%,#111827 48%,#1d1930 100%);color:#e2e8f0}
+html[data-theme="dark"] .stat,html[data-theme="dark"] .panel,html[data-theme="dark"] .close-screen-card{background:#1e293b;border-color:#475569;color:#e2e8f0}
+html[data-theme="dark"] .stat span,html[data-theme="dark"] .note,html[data-theme="dark"] footer,html[data-theme="dark"] .legend,html[data-theme="dark"] .feedback{color:#cbd5e1}
+html[data-theme="dark"] .track-options{border-color:#475569;background:linear-gradient(145deg,#1e293b,#26364d);box-shadow:0 4px 0 #334e68,0 8px 14px #0005}
+html[data-theme="dark"] .track-options .note{background:#334155;color:#e2e8f0}
+html[data-theme="dark"] .track-options select,html[data-theme="dark"] textarea{border-color:#475569;background:#0f172a;color:#e2e8f0}
+html[data-theme="dark"] .rule{border-color:#475569;background:linear-gradient(145deg,#1e293b,#26364d);color:#e2e8f0}
+html[data-theme="dark"] .rule b,html[data-theme="dark"] h2{color:#bfdbfe}
+html[data-theme="dark"] .results{background:#352f1c;border-color:#78652a;color:#fef3c7}
+html[data-theme="dark"] .race-results-card{background:#1e293b;border-color:#475569;color:#e2e8f0}
+html[data-theme="dark"] .race-results-card h2{color:#e2e8f0}
+html[data-theme="dark"] .race-results-card>p,html[data-theme="dark"] .result-metric span{color:#cbd5e1}
+html[data-theme="dark"] .result-metric{border-color:#475569;background:#263449}
+html[data-theme="dark"] .close-screen{background:linear-gradient(145deg,#101827,#1e293b)}
+html[data-theme="dark"] .game-leaderboard{border-color:#475569;background:#1e293b;color:#e2e8f0}
+html[data-theme="dark"] .game-leaderboard-status,html[data-theme="dark"] .game-live-status,html[data-theme="dark"] .game-live-empty,html[data-theme="dark"] .game-leaderboard-empty{color:#cbd5e1}
+html[data-theme="dark"] .game-leaderboard-entry,html[data-theme="dark"] .game-live-entry{border-color:#475569;background:#263449}
+html[data-theme="dark"] .game-my-rank{border-color:#3b82f6;background:#1e3a5f}
+.car-theme-toggle{padding:7px 10px;border:1px solid #ffffff72;border-radius:999px;background:#ffffff20;color:#fff;font-size:11px;font-weight:850;white-space:nowrap;box-shadow:0 3px 0 #09245e80}
+.car-theme-toggle:hover{background:#ffffff35}
+@media(max-width:620px){.header-inner{gap:6px}.header-left,.header-right{min-width:0}.header-right{flex-direction:column;align-items:flex-end}.car-theme-toggle{padding:5px 7px;font-size:10px}}
 </style></head><body>
 <header>
   <div class="header-inner">
     <div class="header-left"><a class="header-home" data-game-home href="#">🏠 হোমে ফিরুন</a></div>
     <div class="header-center"><h1>🏎️ Typing Car Racer</h1><p>Type faster to overtake rival cars and win the race!</p></div>
     <div class="header-right">
+      <button class="car-theme-toggle" id="car-theme-toggle" type="button" onclick="toggleNightMode()" aria-pressed="false" aria-label="Switch to night mode">🌙 Night Mode</button>
       <div id="profileChip" class="profile-chip" hidden>
         <img id="profileAvatar" class="profile-avatar" src="app-icon-192.png" alt="Profile avatar">
         <div class="profile-meta"><strong id="profileName">Player</strong><small id="profileStatus">Logged in</small></div>
@@ -228,7 +285,7 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
   function ensureLeaderboard() {
     if (document.querySelector("[data-game-leaderboard]")) return;
     const style = document.createElement("style");
-    style.textContent = ".game-leaderboard{max-width:1050px;margin:18px auto;padding:18px;border:1px solid #d7e4f2;border-radius:18px;background:#fff;box-shadow:0 5px 18px #17406a12;font-family:Arial,Helvetica,sans-serif;color:#17365d}.game-leaderboard h2,.game-leaderboard h3{margin:0 0 8px}.game-leaderboard-status,.game-live-status{margin:0 0 12px;color:#65758e;font-size:13px}.game-leaderboard-error{color:#bd3348}.game-leaderboard-list,.game-live-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0;margin:0;list-style:none}.game-live-list{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:8px}.game-leaderboard-entry,.game-live-entry{display:flex;align-items:center;gap:8px;min-width:0;padding:12px;border:1px solid #d8e8f5;border-radius:13px;background:#f7fbff}.game-leaderboard-entry img{width:38px;height:38px;flex:none;border-radius:50%;object-fit:cover}.game-leaderboard-name,.game-live-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}.game-leaderboard-score{margin-left:auto;white-space:nowrap;color:#1677ef;font-size:12px;font-weight:800}.game-live-entry{flex-direction:column;align-items:flex-start;gap:4px}.game-live-entry.is-typing{border-color:#98d2a8;background:#effdf5}.game-live-meta{display:flex;justify-content:space-between;width:100%;gap:6px}.game-live-score{color:#1677ef;font-size:12px;font-weight:800}.game-my-rank{display:flex;align-items:center;gap:10px;margin:12px 0 18px;padding:12px;border:2px solid #8bb9ff;border-radius:14px;background:#eff6ff;color:inherit;text-decoration:none}.game-my-rank[hidden]{display:none}.game-my-rank img{width:44px;height:44px;border-radius:50%;object-fit:cover}.game-my-rank-name{font-weight:800}.game-my-rank-values{margin-left:auto;text-align:right;color:#1658b6;font-size:12px;font-weight:800}.game-live-empty,.game-leaderboard-empty{grid-column:1/-1;color:#65758e}@media(max-width:650px){.game-leaderboard{margin:14px 12px;padding:14px}.game-leaderboard-list,.game-live-list{grid-template-columns:1fr}.game-my-rank{font-size:12px}.game-my-rank-values{font-size:11px}}";
+    style.textContent = ".game-leaderboard{max-width:1050px;margin:8px auto;padding:8px 12px;border:1px solid #d7e4f2;border-radius:14px;background:#fff;box-shadow:0 5px 18px #17406a12;font-family:Arial,Helvetica,sans-serif;color:#17365d}.game-leaderboard h2,.game-leaderboard h3{margin:0 0 5px;font-size:16px}.game-leaderboard-status,.game-live-status{margin:0 0 6px;color:#65758e;font-size:11px}.game-leaderboard-error{color:#bd3348}.game-leaderboard-list,.game-live-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0;margin:0;list-style:none}.game-live-list{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:5px}.game-leaderboard-entry,.game-live-entry{display:flex;align-items:center;gap:6px;min-width:0;padding:5px 7px;border:1px solid #d8e8f5;border-radius:10px;background:#f7fbff}.game-leaderboard-entry img{width:26px;height:26px;flex:none;border-radius:50%;object-fit:cover}.game-leaderboard-name,.game-live-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800}.game-leaderboard-score{margin-left:auto;white-space:nowrap;color:#1677ef;font-size:10px;font-weight:800}.game-live-entry{flex-direction:column;align-items:flex-start;gap:3px}.game-live-entry.is-typing{border-color:#98d2a8;background:#effdf5}.game-live-meta{display:flex;justify-content:space-between;width:100%;gap:6px}.game-live-score{color:#1677ef;font-size:11px;font-weight:800}.game-my-rank{display:flex;align-items:center;gap:7px;margin:6px 0;padding:6px;border:1px solid #8bb9ff;border-radius:10px;background:#eff6ff;color:inherit;text-decoration:none}.game-my-rank[hidden]{display:none}.game-my-rank img{width:28px;height:28px;border-radius:50%;object-fit:cover}.game-my-rank-name{font-size:12px;font-weight:800}.game-my-rank-values{margin-left:auto;text-align:right;color:#1658b6;font-size:10px;font-weight:800}.game-live-empty,.game-leaderboard-empty{grid-column:1/-1;color:#65758e}@media(max-width:650px){.game-leaderboard{margin:6px 12px;padding:7px 8px}.game-leaderboard-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.game-leaderboard-entry{flex-wrap:wrap;gap:4px;padding:5px}.game-leaderboard-entry img{width:22px;height:22px}.game-leaderboard-name{font-size:10px}.game-leaderboard-score{width:100%;margin-left:26px;font-size:9px}.game-live-list{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.game-my-rank{font-size:11px}.game-my-rank-values{font-size:10px}}";
     document.head.appendChild(style);
     const panel = document.createElement("section");
     panel.className = "game-leaderboard";
@@ -257,9 +314,9 @@ button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #184da
     liveList.className = "game-live-list";
     liveList.setAttribute("data-game-live-list", "");
     panel.append(heading, status, list, mine, liveHeading, liveStatus, liveList);
-    const footer = document.querySelector("footer");
-    if (footer) footer.before(panel);
-    else document.body.appendChild(panel);
+    const header = document.querySelector("header");
+    if (header) header.after(panel);
+    else document.body.prepend(panel);
   }
 
   function renderLeaderboard() {
@@ -641,4 +698,4 @@ $("raceDuration").addEventListener("change",()=>{if(!running){raceDuration=Numbe
 $("raceResults").addEventListener("click",event=>{if(event.target===$("raceResults")){event.preventDefault();event.stopPropagation()}});
 $("raceResults").addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();event.stopPropagation();return}if(event.key==="Tab"){let focusable=Array.from($("raceResultsCard").querySelectorAll('a[href],button:not(:disabled)')),first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
 $("start").addEventListener("click",startRace);$("reset").addEventListener("click",reset);$("again").addEventListener("click",startRace);$("raceAgain").addEventListener("click",startRace);$("closeGame").addEventListener("click",closeGame);$("soundToggle").addEventListener("click",()=>setSoundEnabled(!soundEnabled));$("newText").addEventListener("click",()=>{chooseText();if(running)activateRaceInput();});$("difficulty").addEventListener("change",()=>{if(!running)chooseText();stats()});$("closeGameNow").addEventListener("click",closeGame);document.addEventListener("visibilitychange",()=>{if(document.hidden)safeGameLeaderboard("setTypingStatus", false)});window.addEventListener("storage",syncProfileChip);syncProfileChip();chooseText();safeGameLeaderboard("init");
-</script><script src="floating-messages.js"></script></body></html>
+</script></body></html>
