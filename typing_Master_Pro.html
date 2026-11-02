@@ -207,7 +207,9 @@
         .conversation-item:hover { border-color: #93c5fd; background: #eff6ff; }
         .conversation-avatar { width: 44px; height: 44px; flex: 0 0 44px; border: 2px solid #dbeafe; border-radius: 50%; object-fit: cover; background: white; }
         .conversation-item-details { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
-        .conversation-item-name { overflow: hidden; font-size: 12px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+        .conversation-item-name { display: flex; min-width: 0; align-items: center; gap: 4px; overflow: hidden; font-size: 12px; font-weight: 900; }
+        .conversation-item-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .conversation-item-name .verified-profile-tick { width: 16px; height: 16px; flex-basis: 16px; margin-left: 0; }
         .conversation-item-preview { overflow: hidden; color: #64748b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
         .direct-chat-thread { display: flex; min-height: 0; flex: 1; flex-direction: column; }
         #direct-chat-thread.hidden { display: none; }
@@ -364,6 +366,8 @@
             const progressbar = loader.querySelector('[role="progressbar"]');
             const progressBar = document.getElementById('page-loader-progress-bar');
             const percentLabel = document.getElementById('page-loader-percent');
+            const openingMessages = new URLSearchParams(window.location.search).get('openMessages') === '1';
+            if (openingMessages) loader.classList.add('is-hidden');
             let progress = 1;
             let loaderFinished = false;
             let loaderCompleted = false;
@@ -872,6 +876,7 @@
         const EMPTY_ANNOUNCEMENT_VIDEOS = Array.from({ length: 5 }, () => null);
 
         let loggedInUser = null;
+        let shouldOpenMessagesAfterLogin = false;
         let allUsers = [];
         let allLessons = [];
         const supplementaryEnglishPoems = [
@@ -983,6 +988,7 @@
         let lastTypingPresenceUpdateAt = 0;
         let conversationListRef = null;
         let conversationListCallback = null;
+        let currentConversations = {};
         let conversationListenerUserId = null;
         let conversationMessageMarkers = Object.create(null);
         let conversationSnapshotInitialized = false;
@@ -1460,6 +1466,7 @@
                 if (Object.keys(updates).length > 0) {
                     db.ref().update(updates).catch(err => console.error('Monthly reset failed:', err));
                 }
+                if (conversationListRef) renderConversationList(currentConversations);
                 renderLeaderboard(allUsers);
                 updateBannerRotation();
                 updateMonthlyCountdown();
@@ -1869,7 +1876,8 @@
             processPendingTypingScores();
             listenHelp();
             listenConversations();
-            if (new URLSearchParams(window.location.search).get('openMessages') === '1') {
+            if (shouldOpenMessagesAfterLogin || new URLSearchParams(window.location.search).get('openMessages') === '1') {
+                shouldOpenMessagesAfterLogin = false;
                 const url = new URL(window.location.href);
                 url.searchParams.delete('openMessages');
                 history.replaceState(null, '', url);
@@ -2274,6 +2282,7 @@
             }
             conversationListRef = null;
             conversationListCallback = null;
+            currentConversations = {};
             conversationListenerUserId = null;
             conversationMessageMarkers = Object.create(null);
             conversationSnapshotInitialized = false;
@@ -2303,6 +2312,7 @@
             conversationListRef = db.ref(`user_conversations/${userKey}`);
             conversationListCallback = snapshot => {
                 const conversations = snapshot.val() || {};
+                currentConversations = conversations;
                 Object.entries(conversations).forEach(([conversationKey, conversation]) => {
                     if (!conversation || !conversation.otherId) return;
                     const marker = String(conversation.lastMessageId || conversation.lastMessageAt || '');
@@ -2454,7 +2464,11 @@
                 );
                 const name = document.createElement('span');
                 name.className = 'conversation-item-name';
-                name.textContent = conversation.otherName || conversation.otherId;
+                const nameText = document.createElement('span');
+                nameText.className = 'conversation-item-name-text';
+                nameText.textContent = otherUser?.name || conversation.otherName || conversation.otherId;
+                name.appendChild(nameText);
+                if (otherUser) name.insertAdjacentHTML('beforeend', renderVerifiedBadge(otherUser));
                 const preview = document.createElement('span');
                 preview.className = 'conversation-item-preview';
                 preview.textContent = conversation.lastMessage || conversation.otherId;
@@ -3378,10 +3392,13 @@
         function init() {
             const queryParams = new URLSearchParams(window.location.search);
             const openLoginOnLoad = queryParams.get('openLogin') === '1';
+            const openMessagesOnLoad = queryParams.get('openMessages') === '1';
+            shouldOpenMessagesAfterLogin = openMessagesOnLoad;
             pendingProfileId = queryParams.get('profile');
-            if (openLoginOnLoad || pendingProfileId) {
+            if (openLoginOnLoad || openMessagesOnLoad || pendingProfileId) {
                 const cleanUrl = new URL(window.location.href);
                 cleanUrl.searchParams.delete('openLogin');
+                cleanUrl.searchParams.delete('openMessages');
                 cleanUrl.searchParams.delete('profile');
                 history.replaceState(null, '', cleanUrl);
             }
@@ -3435,6 +3452,11 @@
                             localStorage.removeItem('currentUser');
                             loggedInUser = null;
                             updateNav();
+                            if (openMessagesOnLoad) {
+                                shouldOpenMessagesAfterLogin = false;
+                                closeMessages();
+                                openAuth();
+                            }
                         }
                     }).catch(err => {
                         console.error('Session restore failed:', err);
@@ -3445,10 +3467,11 @@
                     localStorage.removeItem('currentUser');
                     loggedInUser = null;
                     updateNav();
+                    if (openMessagesOnLoad) openAuth();
                 }
             } else {
                 updateNav();
-                if (openLoginOnLoad) openAuth();
+                if (openLoginOnLoad || openMessagesOnLoad) openAuth();
             }
 
             // Typing input
@@ -3608,12 +3631,21 @@
                 }
             });
             
+            if (openMessagesOnLoad) {
+            if (loggedInUser) {
+                setTimeout(() => {
+                    if (shouldOpenMessagesAfterLogin && loggedInUser) openMessages();
+                }, 0);
+            } else {
+                openAuth();
+            }
+            }
             console.log('✅ App initialized');
             window.finishPageLoader();
         }
 
         window.onload = init;
     </script>
-    <script src="../../floating-messages.js"></script>
+        <script src="floating-messages.js"></script>
 </body>
 </html>
