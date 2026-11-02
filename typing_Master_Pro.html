@@ -259,6 +259,7 @@
         .conversation-item-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .conversation-item-name .verified-profile-tick { width: 16px; height: 16px; flex-basis: 16px; margin-left: 0; }
         .conversation-item-preview { overflow: hidden; color: #64748b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .conversation-unread-count { display: inline-flex; min-width: 20px; height: 20px; flex: 0 0 auto; align-items: center; justify-content: center; margin-left: auto; padding: 0 6px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 10px; font-weight: 900; }
         .direct-chat-thread { display: flex; min-height: 0; flex: 1; flex-direction: column; }
         #direct-chat-thread.hidden { display: none; }
         .direct-chat-header { display: flex; min-width: 0; align-items: center; gap: 12px; margin-bottom: 12px; }
@@ -1119,8 +1120,9 @@
         let currentConversations = {};
         let conversationListenerUserId = null;
         let conversationMessageMarkers = Object.create(null);
+        let conversationUnreadStateMarkers = Object.create(null);
         let conversationSnapshotInitialized = false;
-        let unreadDirectMessageCount = 0;
+        let unreadDirectMessageCounts = Object.create(null);
         let messageNotificationRegistration = null;
         let directMessagesRef = null;
         let selectedDirectRecipient = null;
@@ -1918,6 +1920,7 @@
                         timeUpNoticeCharacters = Number(document.getElementById('live-chars').textContent) || 0;
                     }
                     saveTypingScore({ final: true, automatic: true });
+                    resetTyping({ preserveDraft: true, advanceLesson: true });
                     if (typingLang === 'en') {
                         const hasPendingSessionScore = loggedInUser &&
                             readPendingTypingScores(loggedInUser.id).some(entry => entry.sessionId === timeUpNoticeSessionId);
@@ -2436,8 +2439,9 @@
             currentConversations = {};
             conversationListenerUserId = null;
             conversationMessageMarkers = Object.create(null);
+            conversationUnreadStateMarkers = Object.create(null);
             conversationSnapshotInitialized = false;
-            unreadDirectMessageCount = 0;
+            unreadDirectMessageCounts = Object.create(null);
             updateMessageButton();
             if (directMessagesRef) {
                 directMessagesRef.off();
@@ -2452,8 +2456,9 @@
             if (conversationListenerUserId !== currentUserId) {
                 conversationListenerUserId = currentUserId;
                 conversationMessageMarkers = Object.create(null);
+                conversationUnreadStateMarkers = Object.create(null);
                 conversationSnapshotInitialized = false;
-                unreadDirectMessageCount = 0;
+                unreadDirectMessageCounts = Object.create(null);
                 updateMessageButton();
             }
             if (conversationListRef && conversationListCallback) {
@@ -2463,17 +2468,27 @@
             conversationListRef = db.ref(`user_conversations/${userKey}`);
             conversationListCallback = snapshot => {
                 const conversations = snapshot.val() || {};
+                const isInitialSnapshot = !conversationSnapshotInitialized;
                 currentConversations = conversations;
                 Object.entries(conversations).forEach(([conversationKey, conversation]) => {
                     if (!conversation || !conversation.otherId) return;
                     const marker = String(conversation.lastMessageId || conversation.lastMessageAt || '');
-                    if (conversationSnapshotInitialized &&
+                    const readMarker = String(conversation.lastReadMessageId || '');
+                    const isNewIncomingMessage = conversationSnapshotInitialized &&
                         marker &&
                         marker !== conversationMessageMarkers[conversationKey] &&
-                        String(conversation.lastMessageFrom || '') === String(conversation.otherId)) {
-                        unreadDirectMessageCount += 1;
-                        updateMessageButton();
-                        showDirectMessageNotification(conversation, conversationKey);
+                        String(conversation.lastMessageFrom || '') === String(conversation.otherId);
+                    if (!readMarker && marker &&
+                        (isInitialSnapshot || String(conversation.lastMessageFrom || '') === String(loggedInUser.id))) {
+                        conversation.lastReadMessageId = marker;
+                        db.ref(`user_conversations/${userKey}/${conversationKey}/lastReadMessageId`)
+                            .set(marker)
+                            .catch(error => console.error('Could not initialize the message read marker:', error));
+                    }
+                    const unreadStateMarker = `${marker}|${readMarker}`;
+                    if (unreadStateMarker !== conversationUnreadStateMarkers[conversationKey]) {
+                        refreshConversationUnreadCount(conversationKey, conversation, userKey, isNewIncomingMessage);
+                        conversationUnreadStateMarkers[conversationKey] = unreadStateMarker;
                     }
                     if (marker) conversationMessageMarkers[conversationKey] = marker;
                 });
@@ -2491,16 +2506,92 @@
         function updateMessageButton() {
             const button = document.getElementById('nav-messages-button');
             if (!button) return;
-            button.textContent = unreadDirectMessageCount > 0
-                ? `💬 Messages (${unreadDirectMessageCount})`
+            const totalUnread = Object.values(unreadDirectMessageCounts).reduce((total, count) => total + count, 0);
+            button.textContent = totalUnread > 0
+                ? `💬 Messages (${totalUnread})`
                 : '💬 Messages';
         }
 
-        function showDirectMessageNotification(conversation, conversationKey) {
+        function setConversationUnreadCount(conversationKey, count) {
+            if (count > 0) unreadDirectMessageCounts[conversationKey] = count;
+            else delete unreadDirectMessageCounts[conversationKey];
+            updateMessageButton();
+            const conversationList = document.getElementById('conversation-list');
+            if (conversationList && !conversationList.classList.contains('hidden')) {
+                renderConversationList(currentConversations);
+            }
+        }
+
+        async function refreshConversationUnreadCount(conversationKey, conversation, userKey, shouldNotify = false) {
+            if (!loggedInUser || safeDatabaseKey(loggedInUser.id) !== userKey ||
+                !conversation || !conversation.otherId) return;
+            const latestMessageId = String(conversation.lastMessageId || '');
+            const readMarker = String(conversation.lastReadMessageId || '');
+            const activeThread = document.getElementById('direct-chat-thread');
+            if (activeThread && !activeThread.classList.contains('hidden') &&
+                selectedDirectRecipient &&
+                String(selectedDirectRecipient.id) === String(conversation.otherId)) {
+                if (latestMessageId && latestMessageId !== readMarker) {
+                    markConversationAsRead(conversationKey, latestMessageId, userKey);
+                } else {
+                    setConversationUnreadCount(conversationKey, 0);
+                }
+                return;
+            }
+
+            try {
+                const snapshot = await db.ref(`direct_messages/${conversationKey}`).limitToLast(100).once('value');
+                if (!loggedInUser || safeDatabaseKey(loggedInUser.id) !== userKey) return;
+                const currentConversation = currentConversations[conversationKey];
+                if (!currentConversation ||
+                    String(currentConversation.lastMessageId || '') !== latestMessageId ||
+                    String(currentConversation.lastReadMessageId || '') !== readMarker) return;
+                const unreadCount = Object.entries(snapshot.val() || {}).reduce((count, [messageId, message]) => {
+                    if (message && String(message.from || '') === String(conversation.otherId) &&
+                        (!readMarker || messageId > readMarker)) return count + 1;
+                    return count;
+                }, 0);
+                setConversationUnreadCount(conversationKey, unreadCount);
+                if (shouldNotify && unreadCount > 0) {
+                    showDirectMessageNotification(conversation, conversationKey, unreadCount);
+                }
+            } catch (error) {
+                console.error('Could not count unread direct messages:', error);
+                document.getElementById('message-notification-status').textContent =
+                    'Could not count unread messages. Check your connection and try again.';
+            }
+        }
+
+        function markConversationAsRead(conversationKey, messageId, userKey = safeDatabaseKey(loggedInUser.id)) {
+            if (!loggedInUser || !messageId) return;
+            const conversation = currentConversations[conversationKey];
+            if (conversation && String(conversation.lastReadMessageId || '') === String(messageId)) {
+                setConversationUnreadCount(conversationKey, 0);
+                return;
+            }
+            db.ref(`user_conversations/${userKey}/${conversationKey}/lastReadMessageId`)
+                .set(messageId)
+                .then(() => {
+                    if (currentConversations[conversationKey]) {
+                        currentConversations[conversationKey].lastReadMessageId = String(messageId);
+                    }
+                    conversationUnreadStateMarkers[conversationKey] =
+                        `${String(currentConversations[conversationKey]?.lastMessageId || '')}|${String(messageId)}`;
+                    setConversationUnreadCount(conversationKey, 0);
+                })
+                .catch(error => {
+                    console.error('Could not mark direct messages as read:', error);
+                    document.getElementById('direct-chat-status').textContent =
+                        'Messages are open, but their unread status could not be updated.';
+                });
+        }
+
+        function showDirectMessageNotification(conversation, conversationKey, unreadCount) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
-            const title = `New message from ${conversation.otherName || conversation.otherId}`;
+            const senderName = conversation.otherName || conversation.otherId;
+            const title = `New message from ${senderName}`;
             const options = {
-                body: String(conversation.lastMessage || 'You received a new message.'),
+                body: `You have ${unreadCount} unread message${unreadCount === 1 ? '' : 's'} from ${senderName}. ${String(conversation.lastMessage || '')}`.trim(),
                 icon: new URL('app-icon-192.png', window.location.href).href,
                 tag: `direct-message-${conversationKey}`,
                 data: { conversationKey }
@@ -2602,7 +2693,7 @@
                 return;
             }
 
-            entries.forEach(([, conversation]) => {
+            entries.forEach(([conversationKey, conversation]) => {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'conversation-item';
@@ -2627,6 +2718,14 @@
                 details.className = 'conversation-item-details';
                 details.append(name, preview);
                 button.append(avatar, details);
+                const unreadCount = unreadDirectMessageCounts[conversationKey] || 0;
+                if (unreadCount > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'conversation-unread-count';
+                    badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+                    badge.setAttribute('aria-label', `${unreadCount} unread messages`);
+                    button.appendChild(badge);
+                }
                 container.appendChild(button);
             });
         }
@@ -2648,8 +2747,6 @@
 
         function openMessages() {
             if (!loggedInUser) return openAuth();
-            unreadDirectMessageCount = 0;
-            updateMessageButton();
             document.getElementById('messages-modal').classList.add('active');
             document.getElementById('messages-modal-title').textContent = '💬 Messages';
             document.getElementById('message-notification-status').textContent = getMessageNotificationStatus();
@@ -2730,7 +2827,10 @@
             const conversationKey = getDirectConversationKey(loggedInUser.id, recipient.id);
             directMessagesRef = db.ref(`direct_messages/${conversationKey}`).limitToLast(100);
             directMessagesRef.on('value', snapshot => {
-                renderDirectMessages(snapshot.val() || {});
+                const messages = snapshot.val() || {};
+                renderDirectMessages(messages);
+                const latestMessageId = Object.keys(messages).sort().pop();
+                if (latestMessageId) markConversationAsRead(conversationKey, latestMessageId);
             }, error => {
                 console.error('Direct messages listener failed:', error);
                 document.getElementById('direct-chat-status').textContent = 'Could not load messages. Check your connection and try again.';
@@ -2806,30 +2906,38 @@
                     to: recipient.id,
                     message,
                     timestamp
-                },
-                [`user_conversations/${senderKey}/${conversationKey}`]: {
-                    otherId: recipient.id,
-                    otherName: recipientName,
-                    otherPic: recipient.pic || DEFAULT_AVATAR,
-                    lastMessage: preview,
-                    lastMessageAt: timestamp,
-                    lastMessageId: messageRef.key,
-                    lastMessageFrom: loggedInUser.id
-                },
-                [`user_conversations/${recipientKey}/${conversationKey}`]: {
-                    otherId: loggedInUser.id,
-                    otherName: senderName,
-                    otherPic: loggedInUser.pic || DEFAULT_AVATAR,
-                    lastMessage: preview,
-                    lastMessageAt: timestamp,
-                    lastMessageId: messageRef.key,
-                    lastMessageFrom: loggedInUser.id
                 }
             };
+            const senderConversation = {
+                otherId: recipient.id,
+                otherName: recipientName,
+                otherPic: recipient.pic || DEFAULT_AVATAR,
+                lastMessage: preview,
+                lastMessageAt: timestamp,
+                lastMessageId: messageRef.key,
+                lastMessageFrom: loggedInUser.id,
+                lastReadMessageId: messageRef.key
+            };
+            const recipientConversation = {
+                otherId: loggedInUser.id,
+                otherName: senderName,
+                otherPic: loggedInUser.pic || DEFAULT_AVATAR,
+                lastMessage: preview,
+                lastMessageAt: timestamp,
+                lastMessageId: messageRef.key,
+                lastMessageFrom: loggedInUser.id
+            };
+            Object.entries(senderConversation).forEach(([field, value]) => {
+                updates[`user_conversations/${senderKey}/${conversationKey}/${field}`] = value;
+            });
+            Object.entries(recipientConversation).forEach(([field, value]) => {
+                updates[`user_conversations/${recipientKey}/${conversationKey}/${field}`] = value;
+            });
             try {
                 await db.ref().update(updates);
                 input.value = '';
                 status.textContent = '';
+                setConversationUnreadCount(conversationKey, 0);
             } catch (error) {
                 console.error('Direct message send failed:', error);
                 status.textContent = 'Message not sent. Check your connection or database permissions.';
