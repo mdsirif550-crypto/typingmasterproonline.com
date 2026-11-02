@@ -248,8 +248,12 @@
         .verified-profile-tick { display: inline-block; width: 24px; height: 24px; flex: 0 0 24px; margin-left: 4px; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(15, 23, 42, .25)); }
         .all-users-player-id { max-width: 190px; overflow: hidden; overflow-wrap: normal; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
         .all-users-table th, .all-users-table td { padding: 5px 6px; }
-        #messages-modal { padding: 0; background: #f8fafc; backdrop-filter: none; }
-        #messages-modal .direct-messages-modal { display: flex; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; flex-direction: column; overflow: hidden; border-radius: 0; padding: clamp(14px, 3vw, 32px); box-shadow: none; }
+        #messages-modal { padding: 16px; background: rgba(15, 23, 42, 0.58); backdrop-filter: blur(3px); }
+        #messages-modal .direct-messages-modal { display: flex; width: min(920px, calc(100vw - 32px)); max-width: 920px; height: min(78vh, 760px); height: min(78dvh, 760px); max-height: calc(100dvh - 32px); flex-direction: column; overflow: hidden; border-radius: 18px; padding: clamp(14px, 2.5vw, 28px); box-shadow: 0 25px 70px rgba(0,0,0,0.38); }
+        #messages-modal.is-fullscreen { padding: 0; }
+        #messages-modal.is-fullscreen .direct-messages-modal { width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; }
+        #messages-fullscreen-toggle { display: inline-flex; width: 32px; height: 32px; flex: 0 0 32px; align-items: center; justify-content: center; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; color: #1e293b; font-size: 18px; line-height: 1; cursor: pointer; }
+        #messages-fullscreen-toggle:hover { background: #e2e8f0; }
         .conversation-list { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 8px; overflow-y: auto; }
         .conversation-item { display: flex; min-width: 0; flex-direction: row; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #0f172a; text-align: left; cursor: pointer; }
         .conversation-item:hover { border-color: #93c5fd; background: #eff6ff; }
@@ -372,7 +376,9 @@
             .stat-pill { font-size: 9px; padding: 4px 10px; }
             .stat-pill .num { font-size: 13px; }
             .modal-box { padding: 16px; }
-            #messages-modal .direct-messages-modal { padding: 14px; }
+            #messages-modal { padding: 10px; }
+            #messages-modal .direct-messages-modal { width: calc(100vw - 20px); height: min(84vh, 720px); height: min(84dvh, 720px); max-height: calc(100dvh - 20px); padding: 14px; border-radius: 14px; }
+            #messages-modal.is-fullscreen .direct-messages-modal { width: 100%; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; }
             .conversation-avatar { width: 40px; height: 40px; flex-basis: 40px; }
             .direct-chat-avatar { width: 44px; height: 44px; flex-basis: 44px; }
             .leader-img { width: 32px; height: 32px; }
@@ -450,6 +456,9 @@
         html[data-theme="dark"] .conjunct-table code { background: #334155; color: #f1f5f9; }
         html[data-theme="dark"] .leader-img { border-color: #475569; }
         html[data-theme="dark"] #messages-modal { background: #0b1220; }
+        html[data-theme="dark"] #messages-modal:not(.is-fullscreen) { background: rgba(2, 6, 23, 0.72); }
+        html[data-theme="dark"] #messages-fullscreen-toggle { border-color: #475569; background: #1e293b; color: #f1f5f9; }
+        html[data-theme="dark"] #messages-fullscreen-toggle:hover { background: #334155; }
         html[data-theme="dark"] .conversation-item,
         html[data-theme="dark"] .direct-chat-messages { background: #111827; border-color: #334155; color: #e2e8f0; }
         html[data-theme="dark"] .conversation-item:hover { background: #1e293b; }
@@ -856,6 +865,7 @@
                 <h2 id="messages-modal-title" class="mb-0">💬 Messages</h2>
                 <div class="flex items-center gap-2">
                     <button id="enable-message-notifications" type="button" onclick="enableMessageNotifications()" class="rounded-lg bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-700">Enable notifications</button>
+                    <button id="messages-fullscreen-toggle" type="button" onclick="toggleMessagesFullscreen()" aria-label="Expand messages" aria-pressed="false" title="Expand messages">⛶</button>
                     <button type="button" onclick="closeMessages()" class="text-2xl font-bold text-red-500" aria-label="Close messages">×</button>
                 </div>
             </div>
@@ -2773,8 +2783,24 @@
             return avatar;
         }
 
+        function setMessagesFullscreen(isFullscreen) {
+            const modal = document.getElementById('messages-modal');
+            const button = document.getElementById('messages-fullscreen-toggle');
+            modal.classList.toggle('is-fullscreen', isFullscreen);
+            button.setAttribute('aria-pressed', String(isFullscreen));
+            button.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen messages' : 'Expand messages');
+            button.title = isFullscreen ? 'Exit fullscreen' : 'Expand messages';
+            button.textContent = isFullscreen ? '⤡' : '⛶';
+        }
+
+        function toggleMessagesFullscreen() {
+            const modal = document.getElementById('messages-modal');
+            setMessagesFullscreen(!modal.classList.contains('is-fullscreen'));
+        }
+
         function openMessages() {
             if (!loggedInUser) return openAuth();
+            setMessagesFullscreen(false);
             document.getElementById('messages-modal').classList.add('active');
             document.getElementById('messages-modal-title').textContent = '💬 Messages';
             document.getElementById('message-notification-status').textContent = getMessageNotificationStatus();
@@ -2794,6 +2820,7 @@
             }
             selectedDirectRecipient = null;
             document.getElementById('messages-modal').classList.remove('active');
+            setMessagesFullscreen(false);
             if (document.documentElement.classList.contains('messages-only')) {
                 document.documentElement.classList.remove('messages-only');
             }
@@ -2833,6 +2860,8 @@
                 return;
             }
 
+            const messagesModal = document.getElementById('messages-modal');
+            if (!messagesModal.classList.contains('active')) setMessagesFullscreen(false);
             pendingDirectRecipientId = null;
             closePreview();
             closeAllUsers();
