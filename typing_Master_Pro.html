@@ -195,6 +195,12 @@
             #practice-fullscreen-shell:fullscreen #practice-stats, #practice-fullscreen-shell:-webkit-full-screen #practice-stats { gap: 5px; padding: 6px; }
             #practice-fullscreen-shell:fullscreen #practice-stats .stat-pill, #practice-fullscreen-shell:-webkit-full-screen #practice-stats .stat-pill { padding: 3px 6px; }
         }
+        @media (max-width: 640px) {
+            #typing-controls { display: grid; width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+            #typing-controls > div { min-width: 0; max-width: 100%; }
+            #typing-controls > div:nth-child(2) { flex: initial; }
+            #typing-controls .control-select { width: 100%; min-width: 0; max-width: 100%; }
+        }
         
         .stat-pill { background: white; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: inline-flex; align-items: center; gap: 4px; }
         .stat-pill .num { font-size: 16px; }
