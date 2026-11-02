@@ -275,6 +275,17 @@
         #messages-modal .direct-message { max-width: 85%; overflow-wrap: anywhere; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 12px; background: #e2e8f0; color: #0f172a; font-size: 12px; white-space: pre-wrap; }
         #messages-modal .direct-message.mine { align-self: flex-end; border-color: #1d4ed8; background: #1d4ed8; color: #fff; }
         .direct-message-sender { display: block; margin-bottom: 3px; font-size: 9px; font-weight: 900; opacity: 0.8; }
+        .direct-message-context { margin-bottom: 6px; padding: 5px 7px; border-left: 2px solid #64748b; border-radius: 4px; background: rgba(15, 23, 42, 0.08); font-size: 10px; white-space: pre-wrap; }
+        .direct-message.mine .direct-message-context { border-left-color: #bfdbfe; background: rgba(15, 23, 42, 0.22); }
+        .direct-message-context-label { display: block; margin-bottom: 2px; font-size: 9px; font-weight: 900; }
+        .direct-message-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 5px; }
+        .direct-message-action { padding: 2px 0; border: 0; background: transparent; color: #1d4ed8; font: inherit; font-size: 9px; font-weight: 900; cursor: pointer; }
+        .direct-message.mine .direct-message-action { color: #dbeafe; }
+        .direct-message-action:hover { text-decoration: underline; }
+        .direct-reply-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding: 7px 10px; border-left: 3px solid #2563eb; border-radius: 8px; background: #eff6ff; color: #1e3a8a; }
+        .direct-reply-preview[hidden] { display: none; }
+        .direct-reply-preview-copy { min-width: 0; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .direct-reply-cancel { flex: 0 0 auto; border: 0; background: transparent; color: #1d4ed8; font-size: 16px; cursor: pointer; }
         .direct-message-time { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 4px; font-size: 8px; opacity: 0.72; text-align: right; }
         .direct-message-status { color: #cbd5e1; font-size: 12px; font-weight: 900; line-height: 1; letter-spacing: -3px; }
         .direct-message-status.delivered { color: #e2e8f0; }
@@ -466,6 +477,10 @@
         html[data-theme="dark"] .sprint-wpm { color: #cbd5e1; }
         html[data-theme="dark"] #messages-modal .direct-message { border-color: #475569; background: #334155; color: #f1f5f9; }
         html[data-theme="dark"] #messages-modal .direct-message.mine { border-color: #1d4ed8; background: #1d4ed8; color: #fff; }
+        html[data-theme="dark"] .direct-message-context { border-left-color: #94a3b8; background: rgba(2, 6, 23, 0.32); }
+        html[data-theme="dark"] .direct-message.mine .direct-message-context { border-left-color: #bfdbfe; background: rgba(2, 6, 23, 0.3); }
+        html[data-theme="dark"] .direct-reply-preview { border-color: #60a5fa; background: #172554; color: #dbeafe; }
+        html[data-theme="dark"] .direct-reply-cancel { color: #bfdbfe; }
         html[data-theme="dark"] .banner-winner-card { background: rgba(15, 23, 42, 0.9); border-color: rgba(250, 204, 21, 0.3); color: #f1f5f9; }
         html[data-theme="dark"] .banner-winner-name { color: #f1f5f9; }
         html[data-theme="dark"] .banner-toggle-button { background: #1e293b; border-color: #475569; color: #f1f5f9; }
@@ -878,6 +893,10 @@
                     <h3 id="direct-chat-recipient" class="min-w-0 text-sm font-black text-slate-800"></h3>
                 </div>
                 <div id="direct-chat-messages" class="direct-chat-messages" aria-live="polite"></div>
+                <div id="direct-reply-preview" class="direct-reply-preview" hidden>
+                    <span id="direct-reply-preview-copy" class="direct-reply-preview-copy"></span>
+                    <button type="button" class="direct-reply-cancel" onclick="clearDirectReply()" aria-label="Cancel reply">×</button>
+                </div>
                 <label class="sr-only" for="direct-chat-input">Write a message</label>
                 <textarea id="direct-chat-input" class="slim-input mt-3 h-20 resize-none" maxlength="1000" placeholder="Write a message..."></textarea>
                 <div class="mt-2 flex items-center justify-between gap-2">
@@ -885,6 +904,23 @@
                     <button id="direct-chat-send" type="button" onclick="sendDirectMessage()" class="btn btn-primary">Send</button>
                 </div>
             </section>
+        </div>
+    </div>
+
+    <div id="forward-message-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="forward-message-title">
+        <div class="modal-box">
+            <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 id="forward-message-title" class="mb-0">↗ Forward message</h2>
+                <button type="button" onclick="closeForwardMessage()" class="text-2xl font-bold text-red-500" aria-label="Close forward dialog">×</button>
+            </div>
+            <p id="forward-message-preview" class="mb-3 max-h-24 overflow-y-auto rounded-lg bg-slate-100 p-3 text-xs text-slate-700"></p>
+            <label for="forward-message-recipient" class="mb-1 block text-xs font-bold text-slate-600">Choose a player</label>
+            <select id="forward-message-recipient" class="control-select mb-2 w-full"></select>
+            <p id="forward-message-status" class="min-h-5 text-xs text-slate-500" role="status" aria-live="polite"></p>
+            <div class="mt-2 flex justify-end gap-2">
+                <button type="button" onclick="closeForwardMessage()" class="btn btn-outline">Cancel</button>
+                <button id="forward-message-submit" type="button" onclick="confirmForwardMessage()" class="btn btn-primary">Forward</button>
+            </div>
         </div>
     </div>
 
@@ -1140,6 +1176,8 @@
         let messageNotificationRegistration = null;
         let directMessagesRef = null;
         let selectedDirectRecipient = null;
+        let replyingToDirectMessage = null;
+        let pendingForwardMessage = null;
         let pendingDirectRecipientId = null;
         let currentProfileUserId = null;
         let pendingProfileId = null;
@@ -2831,6 +2869,7 @@
                 directMessagesRef.off();
                 directMessagesRef = null;
             }
+            clearDirectReply();
             selectedDirectRecipient = null;
             document.getElementById('direct-chat-thread').classList.add('hidden');
             document.getElementById('conversation-list').classList.remove('hidden');
@@ -2862,6 +2901,7 @@
 
             const messagesModal = document.getElementById('messages-modal');
             if (!messagesModal.classList.contains('active')) setMessagesFullscreen(false);
+            clearDirectReply();
             pendingDirectRecipientId = null;
             closePreview();
             closeAllUsers();
@@ -2900,7 +2940,9 @@
             container.replaceChildren();
             const entries = Object.entries(messages)
                 .filter(([, message]) => message && typeof message === 'object')
-                .sort(([, a], [, b]) => (a.timestamp || 0) - (b.timestamp || 0));
+                .sort(([idA, a], [idB, b]) =>
+                    (Number(a.timestamp) || 0) - (Number(b.timestamp) || 0) || (idA < idB ? -1 : idA > idB ? 1 : 0)
+                );
             entries.forEach(([messageId, message]) => {
                 const isMine = Boolean(loggedInUser && message.from === loggedInUser.id);
                 const senderUser = isMine
@@ -2916,6 +2958,27 @@
                 const sender = document.createElement('span');
                 sender.className = 'direct-message-sender';
                 sender.textContent = isMine ? 'You' : (message.fromName || (selectedDirectRecipient && (selectedDirectRecipient.name || selectedDirectRecipient.id)) || 'Player');
+                bubble.appendChild(sender);
+                if (message.forwardedFrom && typeof message.forwardedFrom === 'object') {
+                    const forwardedContext = document.createElement('div');
+                    forwardedContext.className = 'direct-message-context';
+                    const forwardedLabel = document.createElement('span');
+                    forwardedLabel.className = 'direct-message-context-label';
+                    forwardedLabel.textContent = `↗ Forwarded from ${message.forwardedFrom.name || message.forwardedFrom.id || 'Player'}`;
+                    forwardedContext.appendChild(forwardedLabel);
+                    bubble.appendChild(forwardedContext);
+                }
+                if (message.replyTo && typeof message.replyTo === 'object') {
+                    const replyContext = document.createElement('div');
+                    replyContext.className = 'direct-message-context';
+                    const replyLabel = document.createElement('span');
+                    replyLabel.className = 'direct-message-context-label';
+                    replyLabel.textContent = `↩ Reply to ${message.replyTo.fromName || message.replyTo.from || 'Player'}`;
+                    const replyText = document.createElement('span');
+                    replyText.textContent = String(message.replyTo.message || '');
+                    replyContext.append(replyLabel, replyText);
+                    bubble.appendChild(replyContext);
+                }
                 const text = document.createElement('span');
                 text.textContent = String(message.message || '');
                 const time = document.createElement('span');
@@ -2937,7 +3000,21 @@
                     messageStatus.dataset.messageId = messageId;
                     time.appendChild(messageStatus);
                 }
-                bubble.append(sender, text, time);
+                bubble.append(text, time);
+                const actions = document.createElement('div');
+                actions.className = 'direct-message-actions';
+                const replyButton = document.createElement('button');
+                replyButton.type = 'button';
+                replyButton.className = 'direct-message-action';
+                replyButton.textContent = 'Reply';
+                replyButton.addEventListener('click', () => setDirectReply(messageId, message));
+                const forwardButton = document.createElement('button');
+                forwardButton.type = 'button';
+                forwardButton.className = 'direct-message-action';
+                forwardButton.textContent = 'Forward';
+                forwardButton.addEventListener('click', () => openForwardMessage(message));
+                actions.append(replyButton, forwardButton);
+                bubble.appendChild(actions);
                 row.appendChild(bubble);
                 container.appendChild(row);
             });
@@ -2950,21 +3027,112 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        async function sendDirectMessage() {
-            if (!loggedInUser || !selectedDirectRecipient) return;
-            const input = document.getElementById('direct-chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-            if (message.length > 1000) {
-                document.getElementById('direct-chat-status').textContent = 'Messages must be 1,000 characters or less.';
+        function setDirectReply(messageId, message) {
+            const senderName = String(message.fromName ||
+                (String(message.from) === String(loggedInUser && loggedInUser.id)
+                    ? 'You'
+                    : selectedDirectRecipient && (selectedDirectRecipient.name || selectedDirectRecipient.id)) ||
+                'Player');
+            replyingToDirectMessage = {
+                messageId,
+                from: String(message.from || ''),
+                fromName: senderName,
+                message: String(message.message || '').slice(0, 160)
+            };
+            const preview = document.getElementById('direct-reply-preview');
+            document.getElementById('direct-reply-preview-copy').textContent =
+                `Replying to ${senderName}: ${replyingToDirectMessage.message}`;
+            preview.hidden = false;
+            document.getElementById('direct-chat-input').focus();
+        }
+
+        function clearDirectReply() {
+            replyingToDirectMessage = null;
+            document.getElementById('direct-reply-preview').hidden = true;
+            document.getElementById('direct-reply-preview-copy').textContent = '';
+        }
+
+        function openForwardMessage(message) {
+            if (!loggedInUser) return openAuth();
+            pendingForwardMessage = {
+                message: String(message.message || '').trim(),
+                from: String(message.from || ''),
+                fromName: String(message.fromName || ''),
+                forwardedFrom: message.forwardedFrom && typeof message.forwardedFrom === 'object'
+                    ? {
+                        id: String(message.forwardedFrom.id || message.from || ''),
+                        name: String(message.forwardedFrom.name || message.fromName || '')
+                    }
+                    : null
+            };
+            const select = document.getElementById('forward-message-recipient');
+            select.replaceChildren();
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select a player';
+            select.appendChild(placeholder);
+            allUsers
+                .filter(user => String(user.id) !== String(loggedInUser.id))
+                .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)))
+                .forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = String(user.id);
+                    option.textContent = `${user.name || user.id} · ${user.id}`;
+                    select.appendChild(option);
+                });
+            document.getElementById('forward-message-preview').textContent = pendingForwardMessage.message;
+            document.getElementById('forward-message-status').textContent = '';
+            document.getElementById('forward-message-submit').disabled = false;
+            document.getElementById('forward-message-modal').classList.add('active');
+            if (select.options.length === 1) {
+                document.getElementById('forward-message-status').textContent = 'No other players are available to forward this message to.';
+                document.getElementById('forward-message-submit').disabled = true;
+            } else {
+                select.focus();
+            }
+        }
+
+        function closeForwardMessage() {
+            document.getElementById('forward-message-modal').classList.remove('active');
+            pendingForwardMessage = null;
+        }
+
+        async function confirmForwardMessage() {
+            if (!loggedInUser || !pendingForwardMessage) return;
+            const recipientId = document.getElementById('forward-message-recipient').value;
+            const recipient = allUsers.find(user => String(user.id) === recipientId);
+            const status = document.getElementById('forward-message-status');
+            if (!recipient) {
+                status.textContent = 'Choose a player to continue.';
+                return;
+            }
+            if (!pendingForwardMessage.message) {
+                status.textContent = 'This message has no text to forward.';
                 return;
             }
 
-            const button = document.getElementById('direct-chat-send');
-            const status = document.getElementById('direct-chat-status');
+            const button = document.getElementById('forward-message-submit');
             button.disabled = true;
-            status.textContent = 'Sending…';
-            const recipient = selectedDirectRecipient;
+            status.textContent = 'Forwarding…';
+            const originalSender = pendingForwardMessage.forwardedFrom || {
+                id: pendingForwardMessage.from,
+                name: pendingForwardMessage.fromName
+            };
+            try {
+                await writeDirectMessage(recipient, pendingForwardMessage.message, {
+                    forwardedFrom: originalSender
+                });
+                closeForwardMessage();
+                document.getElementById('direct-chat-status').textContent =
+                    `Message forwarded to ${recipient.name || recipient.id}.`;
+            } catch (error) {
+                console.error('Direct message forwarding failed:', error);
+                status.textContent = 'Message not forwarded. Check your connection or database permissions.';
+                button.disabled = false;
+            }
+        }
+
+        async function writeDirectMessage(recipient, message, metadata = {}) {
             const senderKey = safeDatabaseKey(loggedInUser.id);
             const recipientKey = safeDatabaseKey(recipient.id);
             const conversationKey = getDirectConversationKey(loggedInUser.id, recipient.id);
@@ -2979,7 +3147,8 @@
                     fromName: senderName,
                     to: recipient.id,
                     message,
-                    timestamp
+                    timestamp,
+                    ...metadata
                 }
             };
             const senderConversation = {
@@ -3007,10 +3176,31 @@
             Object.entries(recipientConversation).forEach(([field, value]) => {
                 updates[`user_conversations/${recipientKey}/${conversationKey}/${field}`] = value;
             });
+            await db.ref().update(updates);
+            return conversationKey;
+        }
+
+        async function sendDirectMessage() {
+            if (!loggedInUser || !selectedDirectRecipient) return;
+            const input = document.getElementById('direct-chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            if (message.length > 1000) {
+                document.getElementById('direct-chat-status').textContent = 'Messages must be 1,000 characters or less.';
+                return;
+            }
+
+            const button = document.getElementById('direct-chat-send');
+            const status = document.getElementById('direct-chat-status');
+            button.disabled = true;
+            status.textContent = 'Sending…';
+            const recipient = selectedDirectRecipient;
+            const metadata = replyingToDirectMessage ? { replyTo: { ...replyingToDirectMessage } } : {};
             try {
-                await db.ref().update(updates);
+                const conversationKey = await writeDirectMessage(recipient, message, metadata);
                 input.value = '';
                 status.textContent = '';
+                clearDirectReply();
                 setConversationUnreadCount(conversationKey, 0);
             } catch (error) {
                 console.error('Direct message send failed:', error);
