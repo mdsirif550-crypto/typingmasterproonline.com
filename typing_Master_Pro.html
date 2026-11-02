@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="bng">
+<html lang="bn">
 <head>
+  <meta charset="UTF-8">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LGMNWJX19"></script>
   <script>
@@ -10,28 +11,60 @@
     gtag('config', 'G-0LGMNWJX19');
   </script>
 
-  <!-- প্রো পেজের জন্য আলাদা কাস্টম মেটা ট্যাগ ও লোগো লিংক সমূহ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Typing Master Pro online Board - Premium English &amp; Bijoy 52 Practice</title>
-  <meta name="description" content="Start your premium typing practice on TypingMaster Pro Board. Improve your typing speed in English &amp; Bangla Bijoy 52 without any distraction.">
-  <meta name="keywords" content="typing master pro board, online typing board, bangla typing practice, english typing master pro, wpm booster, typing pro version">
+  <title>Free Online Typing Practice &amp; Leaderboard | TypingMaster Pro</title>
+  <meta name="description" content="Practice English and Bijoy 52 typing, follow guided lessons, track your WPM and accuracy, and view the live TypingMaster Pro leaderboard.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="TypingMaster Pro Online">
-  <link rel="canonical" href="https://typingmasterproonline.com">
+  <link rel="canonical" href="https://typingmasterproonline.com/typing_Master_Pro.html">
   
-  <!-- সোশ্যাল মিডিয়া ও গুগলে আসল লোগো দেখানোর লিংকসমূহ -->
-  <meta property="og:title" content="TypingMaster Pro Board ⌨️🔥 - Test Your Speed">
-  <meta property="og:description" content="Advance Typing Practice Mode - Live WPM &amp; Accuracy Tracker">
-  <meta property="og:url" content="https://typingmasterproonline.com">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TypingMaster Pro Online">
+  <meta property="og:title" content="Free Online Typing Practice &amp; Leaderboard | TypingMaster Pro">
+  <meta property="og:description" content="Practice English and Bijoy 52 typing, follow guided lessons, track your WPM and accuracy, and view the live TypingMaster Pro leaderboard.">
+  <meta property="og:url" content="https://typingmasterproonline.com/typing_Master_Pro.html">
   <meta property="og:image" content="https://typingmasterproonline.com/app-icon-192.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="518">
   <meta property="og:image:height" content="518">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="518x518" href="app-icon-192.png">
+  <script>
+    try {
+      if (localStorage.getItem("typingMasterTheme") === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    } catch (error) {
+      console.error("Could not load the saved color theme:", error);
+    }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> Thanks for the leaderboard! </title>
+    function toggleNightMode() {
+      const root = document.documentElement;
+      const isDark = root.dataset.theme !== "dark";
+      root.dataset.theme = isDark ? "dark" : "light";
+      const button = document.getElementById("theme-toggle");
+      if (button) {
+        button.textContent = isDark ? "☀️ Light Mode" : "🌙 Night Mode";
+        button.setAttribute("aria-pressed", String(isDark));
+        button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to night mode");
+      }
+      try {
+        localStorage.setItem("typingMasterTheme", isDark ? "dark" : "light");
+      } catch (error) {
+        console.error("Could not save the selected color theme:", error);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const button = document.getElementById("theme-toggle");
+      if (!button) return;
+      const isDark = document.documentElement.dataset.theme === "dark";
+      button.textContent = isDark ? "☀️ Light Mode" : "🌙 Night Mode";
+      button.setAttribute("aria-pressed", String(isDark));
+      button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to night mode");
+    });
+  </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -126,7 +159,11 @@
         
         #practice-stage { display: flex; flex-direction: column; position: relative; }
         #display-box { height: 360px; overflow-y: auto; padding: 24px; background: white; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 1.45rem; line-height: 1.9; }
-        #typing-input { border: 2px solid #2563eb; border-radius: 0 0 20px 20px; outline: none; padding: 20px; height: 220px; resize: none; overflow-y: auto; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; margin-top: -10px; }
+        #practice-stage.practice-locked #display-box { overflow: hidden; overscroll-behavior: auto; touch-action: pan-y; user-select: none; }
+        #start-typing-button { align-self: center; margin: 10px 0; padding: 10px 28px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; font-size: 1rem; font-weight: 800; box-shadow: 0 4px 12px #2563eb40; cursor: pointer; }
+        #start-typing-button:hover { filter: brightness(1.08); }
+        #start-typing-button:focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
+        #typing-input { border: 2px solid #2563eb; border-radius: 16px; outline: none; padding: 20px; height: 220px; resize: none; overflow-y: auto; font-size: 1.2rem; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; background: white; width: 100%; }
         #practice-stage.bengali-mode #typing-input { font-weight: 600; }
         #typing-input:disabled { background: #f1f5f9; cursor: not-allowed; }
         #practice-fullscreen-shell:fullscreen, #practice-fullscreen-shell:-webkit-full-screen { display: flex; flex-direction: column; height: var(--practice-viewport-height, 100vh); height: var(--practice-viewport-height, 100dvh); width: 100vw; overflow: hidden; background: #f1f5f9; }
@@ -136,8 +173,9 @@
         #practice-fullscreen-shell:fullscreen .practice-page-content > :not(#typing-controls):not(#practice-stage):not(#practice-stats),
         #practice-fullscreen-shell:-webkit-full-screen .practice-page-content > :not(#typing-controls):not(#practice-stage):not(#practice-stats) { display: none; }
         #practice-fullscreen-shell:fullscreen #typing-controls, #practice-fullscreen-shell:-webkit-full-screen #typing-controls { flex-shrink: 0; }
-        #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { flex: 1; min-height: 0; gap: 12px; overflow: hidden; }
+        #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { flex: 1; min-height: 0; gap: 8px; overflow: hidden; }
         #practice-fullscreen-shell:fullscreen #display-box, #practice-fullscreen-shell:-webkit-full-screen #display-box { height: auto; min-height: 0; flex: 1.2 1 0; padding: 56px 3vw 24px; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.9; }
+        #practice-fullscreen-shell:fullscreen #start-typing-button, #practice-fullscreen-shell:-webkit-full-screen #start-typing-button { flex: 0 0 auto; margin: 0; }
         #practice-fullscreen-shell:fullscreen #typing-input, #practice-fullscreen-shell:-webkit-full-screen #typing-input { height: auto; min-height: 25vh; flex: 0.8 1 0; margin-top: 0; border-radius: 18px; font-size: clamp(1.2rem, 2vw, 1.7rem); }
         #practice-fullscreen-shell:fullscreen #practice-stats, #practice-fullscreen-shell:-webkit-full-screen #practice-stats { margin: 0; border-radius: 16px; }
         #practice-fullscreen-shell:fullscreen #fullscreen-timer, #practice-fullscreen-shell:-webkit-full-screen #fullscreen-timer { display: inline-flex; }
@@ -147,8 +185,9 @@
             #practice-fullscreen-shell:fullscreen > nav, #practice-fullscreen-shell:-webkit-full-screen > nav { display: none; }
             #practice-fullscreen-shell:fullscreen > .practice-page-content, #practice-fullscreen-shell:-webkit-full-screen > .practice-page-content { padding: 6px 8px; gap: 6px; }
             #practice-fullscreen-shell:fullscreen #typing-controls, #practice-fullscreen-shell:-webkit-full-screen #typing-controls { gap: 5px; margin: 0; }
-            #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+            #practice-fullscreen-shell:fullscreen #practice-stage, #practice-fullscreen-shell:-webkit-full-screen #practice-stage { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; }
             #practice-fullscreen-shell:fullscreen #display-box, #practice-fullscreen-shell:-webkit-full-screen #display-box { box-sizing: border-box; flex: 1 1 0; min-height: 0; max-height: none; padding: 30px 12px 10px; font-size: 1rem; line-height: 1.6; }
+            #practice-fullscreen-shell:fullscreen #start-typing-button, #practice-fullscreen-shell:-webkit-full-screen #start-typing-button { padding: 7px 18px; font-size: 0.9rem; }
             #practice-fullscreen-shell:fullscreen #typing-input, #practice-fullscreen-shell:-webkit-full-screen #typing-input { box-sizing: border-box; flex: 1 1 0; min-height: 0; padding: 10px 12px; font-size: 16px; line-height: 1.6; }
             #practice-fullscreen-shell:fullscreen #practice-stats, #practice-fullscreen-shell:-webkit-full-screen #practice-stats { gap: 5px; padding: 6px; }
             #practice-fullscreen-shell:fullscreen #practice-stats .stat-pill, #practice-fullscreen-shell:-webkit-full-screen #practice-stats .stat-pill { padding: 3px 6px; }
@@ -278,7 +317,7 @@
         .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #475569; }
         .btn-outline:hover { background: #f1f5f9; }
 
-        .help-button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #dcfce7; border-radius: 50%; color: white; background: radial-gradient(circle at 35% 25%, #4ade80, #25d366 48%, #128c4a); box-shadow: 0 4px 0 #0f7a40, 0 7px 12px rgba(15, 23, 42, 0.25); font-size: 18px; font-weight: 900; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
+        .help-button { min-width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; border: 2px solid #dcfce7; border-radius: 999px; color: white; background: radial-gradient(circle at 35% 25%, #4ade80, #25d366 48%, #128c4a); box-shadow: 0 4px 0 #0f7a40, 0 7px 12px rgba(15, 23, 42, 0.25); font-size: 9px; font-weight: 900; white-space: nowrap; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
         .help-button:hover { transform: translateY(-1px); }
         .help-button:active { transform: translateY(3px); box-shadow: 0 1px 0 #0f7a40, 0 3px 6px rgba(15, 23, 42, 0.2); }
         .help-button:focus-visible { outline: 3px solid #86efac; outline-offset: 3px; }
@@ -348,6 +387,72 @@
             #leaderboard-section .sprint-wpm { font-size: 6px; }
             #leaderboard-section .lvl-badge { padding: 1px 5px; font-size: 8px; }
         }
+        html[data-theme="dark"] { color-scheme: dark; }
+        html[data-theme="dark"] body { background: #0b1220; color: #e2e8f0; }
+        html[data-theme="dark"] #practice-fullscreen-shell:fullscreen,
+        html[data-theme="dark"] #practice-fullscreen-shell:-webkit-full-screen { background: #0b1220; }
+        html[data-theme="dark"] nav.bg-white { background: #111827 !important; border-color: #334155 !important; }
+        html[data-theme="dark"] #display-box { background: #111827; border-color: #334155; }
+        html[data-theme="dark"] .char,
+        html[data-theme="dark"] #practice-stage.bengali-mode .char { color: #94a3b8; }
+        html[data-theme="dark"] .current { background: #1e3a5f; }
+        html[data-theme="dark"] #typing-input,
+        html[data-theme="dark"] #typing-input:disabled,
+        html[data-theme="dark"] .control-select,
+        html[data-theme="dark"] #lang-switcher,
+        html[data-theme="dark"] #search-box,
+        html[data-theme="dark"] .slim-input { background: #1e293b !important; border-color: #475569; color: #f1f5f9; }
+        html[data-theme="dark"] .control-select option { background: #1e293b; color: #f1f5f9; }
+        html[data-theme="dark"] #typing-input::placeholder,
+        html[data-theme="dark"] #search-box::placeholder,
+        html[data-theme="dark"] .slim-input::placeholder { color: #94a3b8; }
+        html[data-theme="dark"] #start-typing-button { background: linear-gradient(135deg, #1d4ed8, #6d28d9); }
+        html[data-theme="dark"] #practice-stats { background: linear-gradient(90deg, #1e293b, #172033) !important; border-color: #334155 !important; }
+        html[data-theme="dark"] .stat-pill { background: #0f172a; color: #e2e8f0; }
+        html[data-theme="dark"] #leaderboard-section,
+        html[data-theme="dark"] .modal-box { background: #111827 !important; border-color: #334155 !important; color: #e2e8f0; }
+        html[data-theme="dark"] .modal-box h2 { color: #f1f5f9; }
+        html[data-theme="dark"] #leaderboard-section .bg-white,
+        html[data-theme="dark"] .bg-white,
+        html[data-theme="dark"] [class~="bg-white/70"] { background-color: #1e293b !important; color: #e2e8f0; }
+        html[data-theme="dark"] .bg-slate-50,
+        html[data-theme="dark"] .bg-slate-100,
+        html[data-theme="dark"] .chat-bubble.user { background-color: #1e293b !important; color: #e2e8f0; }
+        html[data-theme="dark"] .bg-blue-50 { background-color: #172554 !important; }
+        html[data-theme="dark"] .text-slate-900,
+        html[data-theme="dark"] .text-slate-800,
+        html[data-theme="dark"] .text-slate-700 { color: #e2e8f0 !important; }
+        html[data-theme="dark"] .text-slate-600,
+        html[data-theme="dark"] .text-slate-500,
+        html[data-theme="dark"] .text-slate-400 { color: #94a3b8 !important; }
+        html[data-theme="dark"] .leaderboard-player-name,
+        html[data-theme="dark"] .all-users-player-name { color: #0f172a !important; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55); }
+        html[data-theme="dark"] .border-slate-100,
+        html[data-theme="dark"] .border-slate-200,
+        html[data-theme="dark"] .border-slate-300,
+        html[data-theme="dark"] .conjunct-table-wrap,
+        html[data-theme="dark"] .conjunct-table th,
+        html[data-theme="dark"] .conjunct-table td { border-color: #334155 !important; }
+        html[data-theme="dark"] .conjunct-table th { background: #1e293b; color: #bfdbfe; }
+        html[data-theme="dark"] .conjunct-table code { background: #334155; color: #f1f5f9; }
+        html[data-theme="dark"] .leader-img { border-color: #475569; }
+        html[data-theme="dark"] #messages-modal { background: #0b1220; }
+        html[data-theme="dark"] .conversation-item,
+        html[data-theme="dark"] .direct-chat-messages { background: #111827; border-color: #334155; color: #e2e8f0; }
+        html[data-theme="dark"] .conversation-item:hover { background: #1e293b; }
+        html[data-theme="dark"] .conversation-item-preview,
+        html[data-theme="dark"] .sprint-wpm { color: #cbd5e1; }
+        html[data-theme="dark"] .direct-message { background: #334155; color: #f1f5f9; }
+        html[data-theme="dark"] .banner-winner-card { background: rgba(15, 23, 42, 0.9); border-color: rgba(250, 204, 21, 0.3); color: #f1f5f9; }
+        html[data-theme="dark"] .banner-winner-name { color: #f1f5f9; }
+        html[data-theme="dark"] .banner-toggle-button { background: #1e293b; border-color: #475569; color: #f1f5f9; }
+        html[data-theme="dark"] #banner.is-collapsed .banner-toggle-button { background: #1e293b; color: #f1f5f9; }
+        html[data-theme="dark"] .btn-outline { border-color: #475569; color: #e2e8f0; }
+        html[data-theme="dark"] .btn-outline:hover { background: #334155; }
+        .theme-toggle { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; color: #1e293b; font-size: 9px; font-weight: 900; white-space: nowrap; cursor: pointer; }
+        .theme-toggle:hover { background: #e2e8f0; }
+        html[data-theme="dark"] .theme-toggle { border-color: #475569; background: #1e293b; color: #f1f5f9; }
+        html[data-theme="dark"] .theme-toggle:hover { background: #334155; }
     </style>
     <script>
         if (window.parent !== window) {
@@ -417,7 +522,7 @@
 
     <!-- Marquee -->
     <div id="practice-fullscreen-shell">
-    <div class="marquee"><span>🏆 JOIN THE CHALLENGE • PRACTICE DAILY • WIN GREAT PRIZES • 5 CHARS = 1 PT • $1,000 POOL LIVE! 🏆</span></div>
+    <div class="marquee"><span>🏆 STAY CONNECTED • JOIN OUR MONTHLY EVENTS • WIN EXCITING PRIZES! 🏆</span></div>
 
     <!-- Navbar -->
     <nav class="bg-white shadow-md p-2 sticky top-[38px] z-50 border-b border-slate-200">
@@ -432,11 +537,12 @@
                 <span class="live-typing-pill" title="Logged-in users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
                 <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
                 <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
-                <button type="button" onclick="openHelp()" class="help-button" aria-label="Help" title="Help"><span class="help-chat-icon" aria-hidden="true"><span></span><span></span><span></span></span></button>
+                <button type="button" onclick="openHelp()" class="help-button" aria-label="Help Line" title="Help Line"><span class="help-chat-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Help Line</span></button>
                 <select id="lang-switcher" onchange="setLanguage(this.value)" class="border border-slate-300 rounded-lg px-2 py-1 text-[9px] font-bold uppercase bg-white outline-none">
                     <option value="en">EN</option>
                     <option value="bn">BN</option>
                 </select>
+                <button id="theme-toggle" class="theme-toggle" type="button" onclick="toggleNightMode()" aria-pressed="false" aria-label="Switch to night mode">🌙 Night Mode</button>
                 <div id="nav-user" class="hidden flex items-center gap-2">
                     <button id="nav-messages-button" type="button" onclick="openMessages()" class="rounded-lg bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-700">💬 Messages</button>
                     <span id="nav-name" class="text-xs font-bold uppercase text-slate-700 truncate max-w-[80px]"></span>
@@ -520,10 +626,11 @@
         </div>
 
         <!-- Display Box -->
-        <div id="practice-stage">
+        <div id="practice-stage" class="practice-locked">
             <button type="button" onclick="togglePracticeFullscreen()" class="practice-fullscreen-exit btn btn-outline text-xs">⛶ Exit full screen</button>
             <div id="display-box"></div>
-            <textarea id="typing-input" placeholder="Start typing to improve your skills..."></textarea>
+            <button type="button" id="start-typing-button" onclick="startTypingPractice()" aria-controls="typing-input">▶ Start Typing</button>
+            <textarea id="typing-input" placeholder="Start typing to improve your skills..." disabled></textarea>
         </div>
 
         <!-- Stats -->
@@ -979,9 +1086,10 @@
             }
         ];
         let currentLessonId = null;
+        let displayLessonSnapshot = null;
         let typingLang = 'en';
         let currentLanguage = 'en';
-        let isStarted = false, startTime = null, sessionMistakes = 0, correctChars = 0;
+        let isStarted = false, isPracticeReady = false, startTime = null, sessionMistakes = 0, correctChars = 0;
         let timeLeft = 300, timerInterval = null, isTimeOver = false;
         let helpListener = null;
         let helpListenerCallback = null;
@@ -1397,7 +1505,8 @@
                     await document.exitFullscreen();
                 } else if (!document.fullscreenElement && shell.requestFullscreen) {
                     await shell.requestFullscreen();
-                    document.getElementById('typing-input').focus({ preventScroll: true });
+                    const input = document.getElementById('typing-input');
+                    (input.disabled ? document.getElementById('start-typing-button') : input).focus({ preventScroll: true });
                 } else {
                     alert('Full screen is not available in this browser.');
                 }
@@ -1507,11 +1616,11 @@
                         document.getElementById('lesson-selector').value = currentLessonId;
                     }
                 }
-                generateDisplay();
+                if (!displayLessonSnapshot) generateDisplay();
             }, err => {
                 console.error('Lessons listener failed:', err);
                 populateLessonDropdown();
-                generateDisplay();
+                if (!displayLessonSnapshot) generateDisplay();
             });
         }
 
@@ -1550,7 +1659,7 @@
             currentLessonId = lessonId;
             isCustomMode = false;
             customTextContent = '';
-            resetTyping();
+            resetTyping({ refreshLesson: true });
         }
 
         function getCurrentLesson() {
@@ -1595,7 +1704,7 @@
             isCustomMode = true;
             customTextContent = text;
             closeCustomModal();
-            resetTyping();
+            resetTyping({ refreshLesson: true });
             const select = document.getElementById('lesson-selector');
             // Add custom option if not exists
             if (!select.querySelector('option[value="custom"]')) {
@@ -1645,17 +1754,23 @@
             document.getElementById('conjunct-notice-button').focus();
         }
 
-        function generateDisplay() {
+        function generateDisplay(refreshLesson = false) {
+            if (displayLessonSnapshot && !refreshLesson) return;
             const lesson = getCurrentLesson();
-            let text;
-            if (lesson) {
-                text = lesson.text;
-            } else {
-                text = typingLang === 'bn' ? 'বাংলা টাইপিং অনুশীলন করুন' : 'Practice typing in English';
+            if (lesson && (refreshLesson || !displayLessonSnapshot)) {
+                displayLessonSnapshot = {
+                    text: lesson.text,
+                    isCustom: isCustomMode,
+                    language: typingLang
+                };
             }
+            const displayLesson = displayLessonSnapshot;
+            let text = displayLesson
+                ? displayLesson.text
+                : typingLang === 'bn' ? 'বাংলা টাইপিং অনুশীলন করুন' : 'Practice typing in English';
             text = text.replace(/\s*\n\s*/g, ' ');
             
-            if (isCustomMode) {
+            if (displayLesson ? displayLesson.isCustom : isCustomMode) {
                 const select = document.getElementById('lesson-selector');
                 if (!select.querySelector('option[value="custom"]')) {
                     const opt = document.createElement('option');
@@ -1671,7 +1786,7 @@
             
             const chars = splitGraphemes(full);
             let html = `<div class="text-right text-xs text-slate-400 font-bold uppercase mb-1">
-                ${isCustomMode ? '✏️ Custom Text' : (typingLang === 'bn' ? '📖 বাংলা' : '📖 English')}
+                ${displayLesson ? displayLesson.isCustom ? '✏️ Custom Text' : displayLesson.language === 'bn' ? '📖 বাংলা' : '📖 English' : (typingLang === 'bn' ? '📖 বাংলা' : '📖 English')}
             </div>`;
             html += `<div class="practice-text-flow">${chars.map(c => `<span class="char">${c}</span>`).join('')}</div>`;
             const displayBox = document.getElementById('display-box');
@@ -1692,6 +1807,7 @@
             document.getElementById('typing-lang').value = lang;
             isCustomMode = false;
             customTextContent = '';
+            displayLessonSnapshot = null;
             populateLessonDropdown();
             const filtered = getFilteredLessons();
             if (filtered.length > 0) {
@@ -1706,7 +1822,7 @@
                 input.setAttribute('dir', 'ltr');
                 input.style.imeMode = 'active';
             }
-            resetTyping();
+            resetTyping({ refreshLesson: true });
         }
 
         function resetTyping(options = {}) {
@@ -1722,7 +1838,7 @@
             scoreSessionId = createTypingScoreSessionId();
             scoreSessionSequence = 0;
             scoreCheckpoint = { typedChars: 0, correctChars: 0, mistakes: 0 };
-            if (!isCustomMode) {
+            if (options.advanceLesson && !isCustomMode) {
                 const nextLessonId = getNextLessonId();
                 if (nextLessonId) {
                     currentLessonId = nextLessonId;
@@ -1732,7 +1848,10 @@
             }
             input.value = '';
             previousTypedChars = [];
-            input.disabled = false;
+            input.disabled = true;
+            isPracticeReady = false;
+            document.getElementById('practice-stage').classList.add('practice-locked');
+            document.getElementById('start-typing-button').hidden = false;
             isStarted = false;
             isTimeOver = false;
             startTime = null;
@@ -1748,8 +1867,18 @@
             document.getElementById('live-wpm').textContent = '0';
             document.getElementById('score-save-status').textContent = '';
             document.getElementById('submit-btn').classList.add('hidden');
-            generateDisplay();
+            generateDisplay(options.refreshLesson === true || options.advanceLesson === true);
             document.getElementById('display-box').scrollTop = 0;
+        }
+
+        function startTypingPractice() {
+            if (isPracticeReady || isTimeOver) return;
+            isPracticeReady = true;
+            document.getElementById('practice-stage').classList.remove('practice-locked');
+            const input = document.getElementById('typing-input');
+            input.disabled = false;
+            document.getElementById('start-typing-button').hidden = true;
+            input.focus({ preventScroll: true });
         }
 
         function startTimer() {
@@ -1767,6 +1896,8 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     isTimeOver = true;
+                    isPracticeReady = false;
+                    document.getElementById('practice-stage').classList.add('practice-locked');
                     setTypingStatus(false);
                     document.getElementById('typing-input').disabled = true;
                     document.getElementById('submit-btn').classList.remove('hidden');
@@ -1820,7 +1951,7 @@
         function closeTimeUpNotice() {
             document.getElementById('time-up-modal').classList.remove('active');
             resetTyping({ preserveDraft: true });
-            document.getElementById('typing-input').focus();
+            document.getElementById('start-typing-button').focus();
         }
 
         // ============================================
@@ -3330,7 +3461,7 @@
                         if (scoreEntry.sessionId === scoreSessionId &&
                             !document.getElementById('time-up-modal').classList.contains('active')) {
                             document.getElementById('submit-btn').classList.add('hidden');
-                            resetTyping();
+                            resetTyping({ advanceLesson: true });
                         }
                         setScoreSaveStatus('স্কোর অটো-সেভ হয়েছে');
                     } else {
@@ -3441,7 +3572,7 @@
             listenTypingCount();
             trackViewerPresence();
             listenViewerCount();
-            resetTyping();
+            resetTyping({ refreshLesson: true });
             updateMonthlyCountdown();
             setInterval(updateMonthlyCountdown, 1000);
 
@@ -3502,6 +3633,11 @@
             });
 
             const typingInput = document.getElementById('typing-input');
+            document.getElementById('display-box').addEventListener('wheel', event => {
+                if (!document.getElementById('practice-stage').classList.contains('practice-locked')) return;
+                event.preventDefault();
+                window.scrollBy({ left: event.deltaX, top: event.deltaY, behavior: 'auto' });
+            }, { passive: false });
             const isMobileKeyboardVisible = () =>
                 window.visualViewport && window.visualViewport.height < window.innerHeight * 0.75;
             let typingScrollPosition = null;
@@ -3565,6 +3701,10 @@
                 }
             }, { passive: true });
             typingInput.addEventListener('input', function() {
+                if (!isPracticeReady) {
+                    this.value = '';
+                    return;
+                }
                 if (!loggedInUser) {
                     this.value = '';
                     openAuth();
