@@ -13,24 +13,29 @@
   const inboxUrl = new URL("typing_Master_Pro.html?openMessages=1", new URL(".", scriptUrl)).href;
   const style = document.createElement("style");
   style.textContent = `
-    #floating-messages-widget{position:fixed;right:18px;bottom:18px;z-index:29;display:grid;justify-items:end;gap:10px;font-family:Arial,Helvetica,sans-serif}
+    #floating-messages-widget{position:fixed;right:18px;bottom:18px;z-index:10000;display:none;justify-items:end;gap:10px;font-family:Arial,Helvetica,sans-serif}
+    #floating-messages-widget.has-unread{display:grid}
     #floating-messages-panel{position:fixed;inset:0;z-index:2147483000;display:none;background:#f1f5f9}
     #floating-messages-panel.is-visible{display:block}
     #floating-messages-frame{width:100%;height:100%;border:0;background:#f1f5f9}
     #floating-messages-close{position:absolute;top:12px;right:14px;z-index:1;width:42px;height:42px;border:0;border-radius:999px;background:#0f172a;color:#fff;font-size:28px;line-height:1;box-shadow:0 3px 12px #0f172a55;cursor:pointer}
     #floating-messages-close:hover{background:#1e293b}
-    #floating-messages-toast{display:none;width:min(330px,calc(100vw - 32px));padding:12px 14px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(145deg,#fff,#eff6ff);color:#0f172a;text-align:left;box-shadow:0 10px 30px #102e5040;cursor:pointer}
+    #floating-messages-toast{position:relative;display:none;width:min(330px,calc(100vw - 32px));padding:12px 38px 12px 14px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(145deg,#fff,#eff6ff);color:#0f172a;text-align:left;box-shadow:0 10px 30px #102e5040;cursor:grab;touch-action:none}
     #floating-messages-toast.is-visible{display:block;animation:floating-message-in .2s ease-out}
     #floating-messages-toast strong{display:block;margin-bottom:4px;color:#1d4ed8;font-size:13px}
     #floating-messages-toast span{display:-webkit-box;overflow:hidden;font-size:12px;line-height:1.45;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3}
-    #floating-messages-button{position:relative;display:inline-flex;min-width:54px;height:54px;align-items:center;justify-content:center;padding:0 14px;border:2px solid #fff;border-radius:999px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:24px;box-shadow:0 5px 0 #1e3a8a,0 9px 22px #17255455;cursor:pointer}
+    #floating-messages-toast-close{position:absolute;top:7px;right:7px;display:grid;width:26px;height:26px;place-items:center;padding:0;border:0;border-radius:50%;background:#dbeafe;color:#1e3a8a;font-size:18px;line-height:1;cursor:pointer}
+    #floating-messages-toast-close:hover{background:#bfdbfe}
+    #floating-messages-button{position:relative;display:inline-flex;width:40px;height:40px;min-width:40px;align-items:center;justify-content:center;padding:0;border:2px solid #fff;border-radius:999px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:18px;font-weight:800;box-shadow:0 3px 0 #1e3a8a,0 5px 12px #17255455;cursor:grab;touch-action:none}
+    #floating-messages-button>span:not([aria-hidden="true"]):not(#floating-messages-badge){display:none}
+    #floating-messages-button [aria-hidden="true"]{font-size:18px;line-height:1}
     #floating-messages-button:hover{filter:brightness(1.08);transform:translateY(-1px)}
     #floating-messages-button:active{transform:translateY(3px);box-shadow:0 2px 0 #1e3a8a}
     #floating-messages-badge{position:absolute;top:-5px;right:-5px;display:none;min-width:21px;height:21px;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff;border-radius:999px;background:#ef4444;color:#fff;font-size:10px;font-weight:900}
     #floating-messages-badge.is-visible{display:inline-flex}
     #floating-messages-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     @keyframes floating-message-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @media(max-width:600px){#floating-messages-widget{right:12px;bottom:max(12px,env(safe-area-inset-bottom))}#floating-messages-button{min-width:50px;height:50px;font-size:22px}#floating-messages-toast{width:min(300px,calc(100vw - 24px))}}
+    @media(max-width:600px){#floating-messages-widget{right:12px;bottom:max(12px,env(safe-area-inset-bottom))}#floating-messages-button{width:38px;height:38px;min-width:38px;font-size:17px}#floating-messages-button [aria-hidden="true"]{font-size:17px}#floating-messages-toast{width:min(300px,calc(100vw - 24px))}}
     @media(prefers-reduced-motion:reduce){#floating-messages-toast.is-visible{animation:none}}
   `;
   document.head.appendChild(style);
@@ -56,6 +61,7 @@
     </button>
     <button id="floating-messages-button" type="button" aria-label="Open messages" title="Messages">
       <span aria-hidden="true">💬</span>
+      <span>Messages</span>
       <span id="floating-messages-badge" aria-live="polite"></span>
     </button>
     <span id="floating-messages-status" role="status" aria-live="polite"></span>
@@ -65,6 +71,7 @@
   const inboxPath = new URL(inboxUrl).pathname;
   let previousBodyOverflow = "";
   const openInbox = () => {
+    dismissNotifications();
     if (window.location.pathname === inboxPath && typeof window.openMessages === "function") {
       window.openMessages();
       return;
@@ -91,11 +98,82 @@
   const button = widget.querySelector("#floating-messages-button");
   const badge = widget.querySelector("#floating-messages-badge");
   const toast = widget.querySelector("#floating-messages-toast");
+  const toastClose = document.createElement("button");
+  toastClose.id = "floating-messages-toast-close";
+  toastClose.type = "button";
+  toastClose.setAttribute("aria-label", "Dismiss new message notification");
+  toastClose.textContent = "×";
+  toast.appendChild(toastClose);
   const toastTitle = widget.querySelector("#floating-messages-toast-title");
   const toastBody = widget.querySelector("#floating-messages-toast-body");
   const status = widget.querySelector("#floating-messages-status");
   button.addEventListener("click", openInbox);
   toast.addEventListener("click", openInbox);
+  toastClose.addEventListener("click", event => {
+    event.stopPropagation();
+    dismissNotifications();
+  });
+
+  function dismissNotifications() {
+    clearTimeout(toastTimer);
+    toast.classList.remove("is-visible");
+  }
+
+  function makeDraggable(element) {
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    let moved = false;
+    let suppressClick = false;
+
+    element.addEventListener("pointerdown", event => {
+      if (event.button !== 0 || toastClose.contains(event.target)) return;
+      const rect = widget.getBoundingClientRect();
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      moved = false;
+      element.setPointerCapture(pointerId);
+    });
+
+    element.addEventListener("pointermove", event => {
+      if (event.pointerId !== pointerId) return;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      if (!moved && Math.hypot(deltaX, deltaY) < 6) return;
+      moved = true;
+      widget.style.left = `${Math.max(0, Math.min(innerWidth - widget.offsetWidth, startLeft + deltaX))}px`;
+      widget.style.top = `${Math.max(0, Math.min(innerHeight - widget.offsetHeight, startTop + deltaY))}px`;
+      widget.style.right = "auto";
+      widget.style.bottom = "auto";
+    });
+
+    const finishDrag = event => {
+      if (event.pointerId !== pointerId) return;
+      if (moved) {
+        event.preventDefault();
+        event.stopPropagation();
+        suppressClick = true;
+      }
+      pointerId = null;
+    };
+    element.addEventListener("pointerup", finishDrag);
+    element.addEventListener("pointercancel", finishDrag);
+    element.addEventListener("click", event => {
+      if (suppressClick) {
+        event.preventDefault();
+        event.stopPropagation();
+        suppressClick = false;
+      }
+    }, true);
+  }
+
+  makeDraggable(button);
+  makeDraggable(toast);
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && panel.classList.contains("is-visible")) closeInbox();
   });
@@ -105,7 +183,9 @@
   let userId = null;
   let snapshotInitialized = false;
   let messageMarkers = Object.create(null);
-  let unreadCount = 0;
+  let unreadStateMarkers = Object.create(null);
+  let currentConversations = {};
+  let unreadCounts = Object.create(null);
   let toastTimer = null;
 
   function safeDatabaseKey(value) {
@@ -115,18 +195,29 @@
   }
 
   function updateUnreadCount() {
+    const unreadCount = Object.values(unreadCounts).reduce((total, count) => total + count, 0);
+    widget.classList.toggle("has-unread", unreadCount > 0);
     badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
     badge.classList.toggle("is-visible", unreadCount > 0);
     button.setAttribute("aria-label", unreadCount > 0 ? `Open messages, ${unreadCount} new` : "Open messages");
     status.textContent = unreadCount > 0 ? `${unreadCount} new message${unreadCount === 1 ? "" : "s"}` : "";
   }
 
-  function showMessageToast(conversation) {
-    toastTitle.textContent = `💬 ${conversation.otherName || conversation.otherId || "New message"}`;
-    toastBody.textContent = String(conversation.lastMessage || "You received a new message.");
+  function setConversationUnreadCount(conversationKey, count) {
+    if (count > 0) unreadCounts[conversationKey] = count;
+    else delete unreadCounts[conversationKey];
+    updateUnreadCount();
+    const totalUnread = Object.values(unreadCounts).reduce((total, unread) => total + unread, 0);
+    if (totalUnread === 0) dismissNotifications();
+  }
+
+  function showMessageToast(conversation, count) {
+    const senderName = conversation.otherName || conversation.otherId || "New message";
+    toastTitle.textContent = `💬 ${senderName}`;
+    toastBody.textContent = `You have ${count} unread message${count === 1 ? "" : "s"} from ${senderName}. ${String(conversation.lastMessage || "")}`.trim();
     toast.classList.add("is-visible");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 8000);
+    toastTimer = setTimeout(dismissNotifications, 8000);
   }
 
   function stopListening() {
@@ -137,8 +228,34 @@
     conversationCallback = null;
     snapshotInitialized = false;
     messageMarkers = Object.create(null);
-    unreadCount = 0;
+    unreadStateMarkers = Object.create(null);
+    currentConversations = {};
+    unreadCounts = Object.create(null);
     updateUnreadCount();
+  }
+
+  async function refreshConversationUnreadCount(database, key, conversation, shouldNotify, ownerId) {
+    const latestMessageId = String(conversation.lastMessageId || "");
+    const readMarker = String(conversation.lastReadMessageId || "");
+    if (userId !== ownerId) return;
+    try {
+      const snapshot = await database.ref(`direct_messages/${key}`).limitToLast(100).once("value");
+      if (userId !== ownerId) return;
+      const currentConversation = currentConversations[key];
+      if (!currentConversation ||
+          String(currentConversation.lastMessageId || "") !== latestMessageId ||
+          String(currentConversation.lastReadMessageId || "") !== readMarker) return;
+      const unreadCount = Object.entries(snapshot.val() || {}).reduce((count, [messageId, message]) => {
+        if (message && String(message.from || "") === String(conversation.otherId) &&
+            (!readMarker || messageId > readMarker)) return count + 1;
+        return count;
+      }, 0);
+      setConversationUnreadCount(key, unreadCount);
+      if (shouldNotify && unreadCount > 0) showMessageToast(conversation, unreadCount);
+    } catch (error) {
+      console.error("Could not count unread floating messages:", error);
+      status.textContent = "Could not count unread messages. Check your connection.";
+    }
   }
 
   function listenToUserConversations(database, nextUserId) {
@@ -154,18 +271,28 @@
     conversationRef = database.ref(`user_conversations/${safeDatabaseKey(nextUserId)}`);
     conversationCallback = snapshot => {
       const conversations = snapshot.val() || {};
+      const isInitialSnapshot = !snapshotInitialized;
+      currentConversations = conversations;
       Object.entries(conversations).forEach(([key, conversation]) => {
         if (!conversation || !conversation.otherId) return;
         const marker = String(conversation.lastMessageId || conversation.lastMessageAt || "");
-        if (
+        const readMarker = String(conversation.lastReadMessageId || "");
+        const isNewIncomingMessage =
           snapshotInitialized &&
           marker &&
           marker !== messageMarkers[key] &&
-          String(conversation.lastMessageFrom || "") === String(conversation.otherId)
-        ) {
-          unreadCount += 1;
-          updateUnreadCount();
-          showMessageToast(conversation);
+          String(conversation.lastMessageFrom || "") === String(conversation.otherId);
+        if (!readMarker && marker &&
+            (isInitialSnapshot || String(conversation.lastMessageFrom || "") === String(nextUserId))) {
+          conversation.lastReadMessageId = marker;
+          database.ref(`user_conversations/${safeDatabaseKey(nextUserId)}/${key}/lastReadMessageId`)
+            .set(marker)
+            .catch(error => console.error("Could not initialize the floating message read marker:", error));
+        }
+        const unreadStateMarker = `${marker}|${readMarker}`;
+        if (unreadStateMarker !== unreadStateMarkers[key]) {
+          refreshConversationUnreadCount(database, key, conversation, isNewIncomingMessage, nextUserId);
+          unreadStateMarkers[key] = unreadStateMarker;
         }
         if (marker) messageMarkers[key] = marker;
       });
