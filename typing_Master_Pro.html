@@ -271,7 +271,10 @@
         .direct-message { max-width: 85%; overflow-wrap: anywhere; padding: 9px 12px; border-radius: 12px; background: #e2e8f0; color: #0f172a; font-size: 12px; white-space: pre-wrap; }
         .direct-message.mine { align-self: flex-end; background: #2563eb; color: white; }
         .direct-message-sender { display: block; margin-bottom: 3px; font-size: 9px; font-weight: 900; opacity: 0.8; }
-        .direct-message-time { display: block; margin-top: 4px; font-size: 8px; opacity: 0.72; text-align: right; }
+        .direct-message-time { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 4px; font-size: 8px; opacity: 0.72; text-align: right; }
+        .direct-message-status { color: #cbd5e1; font-size: 12px; font-weight: 900; line-height: 1; letter-spacing: -3px; }
+        .direct-message-status.delivered { color: #e2e8f0; }
+        .direct-message-status.read { display: inline-flex; width: 15px; height: 15px; align-items: center; justify-content: center; border-radius: 50%; background: #dbeafe; color: #2563eb; font-size: 9px; letter-spacing: -2px; opacity: 1; }
         .typing-signal { width: auto; height: auto; border-radius: 999px; padding: 2px 6px; color: #fff; font-size: 8px; font-weight: 900; line-height: 1.3; white-space: nowrap; }
         .typing-signal.hidden { display: none; }
         @media (prefers-reduced-motion: reduce) { .sprint-runner { animation: none; left: calc(100% - 20px); } }
@@ -2546,7 +2549,9 @@
                 if (!currentConversation ||
                     String(currentConversation.lastMessageId || '') !== latestMessageId ||
                     String(currentConversation.lastReadMessageId || '') !== readMarker) return;
-                const unreadCount = Object.entries(snapshot.val() || {}).reduce((count, [messageId, message]) => {
+                const messages = snapshot.val() || {};
+                markIncomingMessagesDelivered(conversationKey, messages);
+                const unreadCount = Object.entries(messages).reduce((count, [messageId, message]) => {
                     if (message && String(message.from || '') === String(conversation.otherId) &&
                         (!readMarker || messageId > readMarker)) return count + 1;
                     return count;
@@ -2560,6 +2565,28 @@
                 document.getElementById('message-notification-status').textContent =
                     'Could not count unread messages. Check your connection and try again.';
             }
+        }
+
+        function markIncomingMessagesDelivered(conversationKey, messages, markAsRead = false) {
+            if (!loggedInUser) return;
+            const updates = {};
+            Object.entries(messages).forEach(([messageId, message]) => {
+                if (!message || String(message.to || '') !== String(loggedInUser.id)) return;
+                if (!message.deliveredAt) {
+                    updates[`direct_messages/${conversationKey}/${messageId}/deliveredAt`] =
+                        firebase.database.ServerValue.TIMESTAMP;
+                }
+                if (markAsRead && !message.readAt) {
+                    updates[`direct_messages/${conversationKey}/${messageId}/readAt`] =
+                        firebase.database.ServerValue.TIMESTAMP;
+                }
+            });
+            if (Object.keys(updates).length === 0) return;
+            db.ref().update(updates).catch(error => {
+                console.error('Could not update direct message delivery status:', error);
+                document.getElementById('direct-chat-status').textContent =
+                    'Message status could not be updated. Check your connection or database permissions.';
+            });
         }
 
         function markConversationAsRead(conversationKey, messageId, userKey = safeDatabaseKey(loggedInUser.id)) {
@@ -2829,6 +2856,7 @@
             directMessagesRef.on('value', snapshot => {
                 const messages = snapshot.val() || {};
                 renderDirectMessages(messages);
+                markIncomingMessagesDelivered(conversationKey, messages, true);
                 const latestMessageId = Object.keys(messages).sort().pop();
                 if (latestMessageId) markConversationAsRead(conversationKey, latestMessageId);
             }, error => {
@@ -2840,10 +2868,10 @@
         function renderDirectMessages(messages) {
             const container = document.getElementById('direct-chat-messages');
             container.replaceChildren();
-            const entries = Object.values(messages)
-                .filter(message => message && typeof message === 'object')
-                .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-            entries.forEach(message => {
+            const entries = Object.entries(messages)
+                .filter(([, message]) => message && typeof message === 'object')
+                .sort(([, a], [, b]) => (a.timestamp || 0) - (b.timestamp || 0));
+            entries.forEach(([messageId, message]) => {
                 const isMine = Boolean(loggedInUser && message.from === loggedInUser.id);
                 const senderUser = isMine
                     ? loggedInUser
@@ -2862,7 +2890,23 @@
                 text.textContent = String(message.message || '');
                 const time = document.createElement('span');
                 time.className = 'direct-message-time';
-                time.textContent = message.timestamp ? new Date(message.timestamp).toLocaleString() : 'Sending…';
+                const timestamp = document.createElement('span');
+                timestamp.textContent = message.timestamp ? new Date(message.timestamp).toLocaleString() : 'Sending…';
+                time.appendChild(timestamp);
+                if (isMine) {
+                    const messageStatus = document.createElement('span');
+                    const isRead = Boolean(message.readAt);
+                    const isDelivered = Boolean(message.deliveredAt);
+                    messageStatus.className = `direct-message-status${isRead ? ' read' : isDelivered ? ' delivered' : ''}`;
+                    messageStatus.textContent = isRead || isDelivered ? '✓✓' : '✓';
+                    messageStatus.setAttribute(
+                        'aria-label',
+                        isRead ? 'Seen' : isDelivered ? 'Delivered' : 'Sent'
+                    );
+                    messageStatus.title = isRead ? 'Seen' : isDelivered ? 'Delivered' : 'Sent';
+                    messageStatus.dataset.messageId = messageId;
+                    time.appendChild(messageStatus);
+                }
                 bubble.append(sender, text, time);
                 row.appendChild(bubble);
                 container.appendChild(row);
