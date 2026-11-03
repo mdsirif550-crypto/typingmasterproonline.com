@@ -396,6 +396,7 @@ html[data-theme="dark"] .lesson-label{color:#f1f5f9!important;background:#1e293b
   <div class="header-tools">
     <div class="pill">🌤️ Beginner Flight School</div>
     <button class="sky-theme-toggle" id="sky-theme-toggle" type="button" onclick="toggleNightMode()" aria-pressed="false" aria-label="Switch to night mode">🌙 Night Mode</button>
+    <button class="sky-theme-toggle" id="sky-audio-toggle" type="button" onclick="toggleGameAudio()" aria-pressed="true" aria-label="Turn game sounds off">🔊 Sound On</button>
   </div>
 </header>
 <div class="leaderboard-sync" role="status" aria-live="polite">
@@ -659,7 +660,7 @@ const safeGameLeaderboard = (methodName, ...args) => {
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 let activeSkyLesson=null,skySentenceDeck=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;let skyLeaderboardLoadState="loading";
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0,gameAudioEnabled=true,gameEngineNodes=[];let skyLeaderboardLoadState="loading";
 const $=id=>document.getElementById(id);
 function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
  const oscillator=context.createOscillator(),gain=context.createGain();
@@ -668,28 +669,52 @@ function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
  oscillator.connect(gain);gain.connect(context.destination);oscillator.start(startAt);oscillator.stop(startAt+duration+.02)
 }
 function playGameMusicStep(){
- const context=gameAudioContext;if(!context||context.state!=="running")return;
+ const context=gameAudioContext;if(!context||context.state!=="running"||!gameAudioEnabled)return;
  const melody=[523.25,659.25,783.99,659.25,587.33,698.46,783.99,698.46],startAt=context.currentTime+.03;
- playGameTone(context,melody[gameAudioStep%melody.length],startAt,.31,.11,"triangle");
- if(gameAudioStep%4===0)playGameTone(context,gameAudioStep%8===0?261.63:349.23,startAt,.95,.07);
+ playGameTone(context,melody[gameAudioStep%melody.length],startAt,.31,.095,"triangle");
+ if(gameAudioStep%4===0)playGameTone(context,gameAudioStep%8===0?261.63:349.23,startAt,.95,.055);
  gameAudioStep++
 }
 function startGameMusic(){
- const AudioContextConstructor=window.AudioContext;
- if(!AudioContextConstructor){console.error("Web Audio API is not supported; game music cannot play.");return false}
+ if(!gameAudioEnabled)return false;
+ const AudioContextConstructor=window.AudioContext||window.webkitAudioContext;
+ if(!AudioContextConstructor){console.error("Web Audio API is not supported; game audio cannot play.");return false}
  try{
+  if(gameAudioContext&&gameAudioContext.state!=="closed")return true;
   gameAudioContext=new AudioContextConstructor();gameAudioStep=0;
   const context=gameAudioContext;
-  const beginMusic=()=>{if(gameAudioContext!==context||context.state!=="running")return;playGameMusicStep();gameAudioTimer=window.setInterval(playGameMusicStep,360)};
-  if(context.state==="running")beginMusic();
-  else context.resume().then(beginMusic).catch(error=>console.error("Could not start game music:",error));
+  const beginAudio=()=>{
+   if(gameAudioContext!==context||context.state!=="running"||!gameAudioEnabled)return;
+   // Gentle aircraft-engine hum generated locally; no MP3 file is required.
+   const engine=context.createOscillator(),engineGain=context.createGain(),lfo=context.createOscillator(),lfoGain=context.createGain();
+   engine.type="sawtooth";engine.frequency.setValueAtTime(92,context.currentTime);
+   engineGain.gain.setValueAtTime(.012,context.currentTime);
+   lfo.type="sine";lfo.frequency.setValueAtTime(7,context.currentTime);lfoGain.gain.setValueAtTime(2.5,context.currentTime);
+   lfo.connect(lfoGain);lfoGain.connect(engine.frequency);engine.connect(engineGain);engineGain.connect(context.destination);
+   engine.start();lfo.start();gameEngineNodes=[engine,engineGain,lfo,lfoGain];
+   playGameMusicStep();gameAudioTimer=window.setInterval(playGameMusicStep,360);
+  };
+  if(context.state==="running")beginAudio();
+  else context.resume().then(beginAudio).catch(error=>console.error("Could not start game audio:",error));
   return true
- }catch(error){console.error("Could not initialize game music:",error);return false}
+ }catch(error){console.error("Could not initialize game audio:",error);return false}
 }
 function stopGameMusic(){
  if(gameAudioTimer!==null){clearInterval(gameAudioTimer);gameAudioTimer=null}
- const context=gameAudioContext;gameAudioContext=null;
- if(context&&context.state!=="closed")context.close().catch(error=>console.error("Could not stop game music:",error))
+ const context=gameAudioContext;gameAudioContext=null;gameEngineNodes=[];
+ if(context&&context.state!=="closed")context.close().catch(error=>console.error("Could not stop game audio:",error))
+}
+function updateGameAudioButton(){
+ const button=$("sky-audio-toggle");if(!button)return;
+ button.textContent=gameAudioEnabled?"🔊 Sound On":"🔇 Sound Off";
+ button.setAttribute("aria-pressed",String(gameAudioEnabled));
+ button.setAttribute("aria-label",gameAudioEnabled?"Turn game sounds off":"Turn game sounds on");
+}
+function toggleGameAudio(){
+ gameAudioEnabled=!gameAudioEnabled;
+ try{localStorage.setItem("typingSkyAudioEnabled",String(gameAudioEnabled))}catch(error){}
+ updateGameAudioButton();
+ if(startedAt&&!finished){if(gameAudioEnabled)startGameMusic();else stopGameMusic()}
 }
 function scheduleCrashSound(context){
  try{
@@ -995,7 +1020,7 @@ function updateStats(){
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`Sentence complete! Start the next one • Correct ${correct} • Incorrect ${wrong} • Time left ${timeText()}`}
 }
 function finishGame(reason="time"){
- if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");if(reason==="crash")playCrashSound();else stopGameMusic();$("typing").disabled=true;
+ if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");if(reason==="crash"&&gameAudioEnabled)playCrashSound();else stopGameMusic();$("typing").disabled=true;
  $("duration").disabled=false;
  updateCountdown();
  if(reason==="crash"){$("flightStatus").textContent="💥 Plane crashed!";$("againBtn").textContent="🔁 Try Again";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
@@ -1035,6 +1060,8 @@ window.addEventListener("storage",event=>{if(event.key==="currentUser")listenFor
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){listenForGameAccount();processPendingSkyScores()}});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)safeGameLeaderboard("setTypingStatus", false)});
 window.addEventListener("online",processPendingSkyScores);
+try{gameAudioEnabled=localStorage.getItem("typingSkyAudioEnabled")!=="false"}catch(error){}
+updateGameAudioButton();
 setPassage();
 initializeSkyLeaderboard();
 // Enable the buttons only after the game and its first passage are ready.
