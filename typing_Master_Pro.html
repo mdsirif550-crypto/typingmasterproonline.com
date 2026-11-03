@@ -515,6 +515,38 @@
         html[data-theme="dark"] #banner.is-collapsed .banner-toggle-button { background: #1e293b; color: #f1f5f9; }
         html[data-theme="dark"] .btn-outline { border-color: #475569; color: #e2e8f0; }
         html[data-theme="dark"] .btn-outline:hover { background: #334155; }
+        /* Keep the Monthly Typing Event banner readable in Night Mode. */
+        html[data-theme="dark"] #monthly-event-panel {
+            background: linear-gradient(135deg, #1e293b, #312e1e) !important;
+            border-color: #a16207 !important;
+            color: #f8fafc !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+        }
+        html[data-theme="dark"] #monthly-event-panel #monthly-event-title,
+        html[data-theme="dark"] #monthly-event-panel .text-amber-800 {
+            color: #fcd34d !important;
+        }
+        html[data-theme="dark"] #monthly-event-panel p,
+        html[data-theme="dark"] #monthly-event-panel #monthly-event-dates {
+            color: #e2e8f0 !important;
+        }
+        html[data-theme="dark"] #monthly-event-panel #monthly-event-participants {
+            color: #93c5fd !important;
+        }
+        html[data-theme="dark"] #monthly-event-panel .bg-green-100 {
+            background: #14532d !important;
+            color: #bbf7d0 !important;
+        }
+        html[data-theme="dark"] #monthly-event-panel #monthly-event-previous-winner {
+            background: rgba(15, 23, 42, 0.82) !important;
+            color: #fde68a !important;
+        }
+        html[data-theme="dark"] #monthly-reset-banner {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+            color: #e2e8f0 !important;
+        }
+        html[data-theme="dark"] #monthly-reset-countdown { color: #93c5fd !important; }
         .theme-toggle { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; color: #1e293b; font-size: 9px; font-weight: 900; white-space: nowrap; cursor: pointer; }
         .theme-toggle:hover { background: #e2e8f0; }
         html[data-theme="dark"] .theme-toggle { border-color: #475569; background: #1e293b; color: #f1f5f9; }
