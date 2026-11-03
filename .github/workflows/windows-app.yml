@@ -18,6 +18,10 @@ on:
       - "*.jpg"
       - "*.webp"
 
+concurrency:
+  group: typingmaster-windows-installer
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
