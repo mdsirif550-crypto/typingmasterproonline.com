@@ -762,6 +762,12 @@
             chatListListener = db.ref('chat_messages').orderByChild('timestamp').on('value', snap => {
                 const data = snap.val() || {};
                 chatMessages = data;
+                // Mark incoming user messages as delivered when they reach the admin inbox.
+                Object.entries(data).forEach(([key, msg]) => {
+                    if (msg && msg.to === 'admin' && !msg.deliveredAt) {
+                        db.ref('chat_messages/' + key).update({ deliveredAt: Date.now() });
+                    }
+                });
                 renderChatList();
                 if (currentChatUser) {
                     renderMessages(currentChatUser);
@@ -863,8 +869,8 @@
             // Mark messages as read
             Object.keys(chatMessages).forEach(key => {
                 const msg = chatMessages[key];
-                if (msg.from === userId && msg.to === 'admin' && !msg.read) {
-                    db.ref('chat_messages/' + key).update({ read: true });
+                if (msg.from === userId && msg.to === 'admin' && (!msg.read || !msg.readAt)) {
+                    db.ref('chat_messages/' + key).update({ read: true, readAt: Date.now() });
                 }
             });
 
