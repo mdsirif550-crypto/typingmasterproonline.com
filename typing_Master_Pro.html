@@ -134,9 +134,16 @@
         #banner.is-collapsed .banner-toggle-button { padding: 8px 14px; background: #fff; border-color: #facc15; color: #713f12; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12); }
         #banner.is-collapsed #banner-content { display: none; }
         .banner-featured-user { min-height: 38px; }
-        .banner-monthly-winners { display: flex; width: 100%; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 8px; padding: 6px 0 2px; }
-        .banner-winner-card { display: flex; align-items: center; gap: 7px; min-width: 150px; max-width: 260px; padding: 6px 10px; border: 1px solid rgba(180, 83, 9, 0.25); border-radius: 14px; background: rgba(255, 255, 255, 0.82); color: #0f172a; box-shadow: 0 2px 6px rgba(120, 53, 15, 0.12); cursor: pointer; text-align: left; }
-        .banner-winner-card img { width: 38px; height: 38px; border: 2px solid #facc15; border-radius: 50%; object-fit: cover; }
+        .banner-monthly-winners { display: grid; width: 100%; max-width: 460px; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: center; align-items: stretch; gap: 6px 8px; padding: 8px 0 2px; margin: 0 auto; }
+        .banner-winner-card { display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 0; width: 100%; padding: 6px 8px; border: 1px solid rgba(180, 83, 9, 0.25); border-radius: 12px; background: rgba(255, 255, 255, 0.82); color: #0f172a; box-shadow: none; cursor: pointer; text-align: left; }
+        .banner-winner-card:first-child { grid-column: 1 / -1; justify-self: center; width: min(78%, 320px); padding: 9px 12px; }
+        .banner-winner-card img { width: 32px; height: 32px; border: 2px solid #facc15; border-radius: 50%; object-fit: cover; }
+        .banner-winner-card:first-child img { width: 46px; height: 46px; border-width: 3px; }
+        .banner-winner-card:first-child .banner-winner-rank { font-size: 10px; }
+        .banner-winner-card:first-child .banner-winner-name { max-width: 220px; font-size: 13px; }
+        .banner-winner-card:first-child .banner-winner-score { font-size: 9px; }
+        .banner-winner-card:not(:first-child) .banner-winner-name { max-width: 135px; font-size: 9px; }
+        .banner-winner-card:not(:first-child) .banner-winner-score { font-size: 7px; }
         .banner-winner-details { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
         .banner-winner-rank { color: #92400e; font-size: 8px; font-weight: 900; text-transform: uppercase; }
         .banner-winner-name { max-width: 180px; overflow: hidden; color: #0f172a; font-size: 10px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
@@ -366,12 +373,12 @@
         .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #475569; }
         .btn-outline:hover { background: #f1f5f9; }
 
-        .help-button { min-width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; border: 2px solid #dcfce7; border-radius: 999px; color: white; background: radial-gradient(circle at 35% 25%, #4ade80, #25d366 48%, #128c4a); box-shadow: 0 4px 0 #0f7a40, 0 7px 12px rgba(15, 23, 42, 0.25); font-size: 9px; font-weight: 900; white-space: nowrap; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
-        .help-button:hover { transform: translateY(-1px); }
-        .help-button:active { transform: translateY(3px); box-shadow: 0 1px 0 #0f7a40, 0 3px 6px rgba(15, 23, 42, 0.2); }
-        .help-button:focus-visible { outline: 3px solid #86efac; outline-offset: 3px; }
-        .help-chat-icon { width: 19px; height: 14px; display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; border: 2px solid white; border-radius: 5px; }
-        .help-chat-icon::after { content: ""; position: absolute; left: 2px; bottom: -5px; border-top: 4px solid white; border-right: 4px solid transparent; }
+        .help-button { min-width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 8px; border: 1px solid #16a34a; border-radius: 999px; color: white; background: #22c55e; box-shadow: none; font-size: 8px; font-weight: 800; white-space: nowrap; cursor: pointer; transition: background-color 0.15s; }
+        .help-button:hover { background: #16a34a; }
+        .help-button:active { transform: none; box-shadow: none; }
+        .help-button:focus-visible { outline: 2px solid #86efac; outline-offset: 2px; }
+        .help-chat-icon { width: 15px; height: 11px; display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; border: 1.5px solid white; border-radius: 4px; }
+        .help-chat-icon::after { content: ""; position: absolute; left: 2px; bottom: -4px; border-top: 3px solid white; border-right: 3px solid transparent; }
         .help-chat-icon span { width: 2px; height: 2px; border-radius: 50%; background: white; }
         
         .online-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
