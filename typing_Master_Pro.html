@@ -560,17 +560,28 @@
         html[data-theme="dark"] #leaderboard-section .leaderboard-table th,
         html[data-theme="dark"] #leaderboard-section .leaderboard-table td,
         html[data-theme="dark"] #leaderboard-section .leaderboard-table td::before,
-        html[data-theme="dark"] #leaderboard-section .leaderboard-player-id,
         html[data-theme="dark"] #leaderboard-section .sprint-wpm,
         html[data-theme="dark"] #leaderboard-section .lvl-badge {
             color: #e2e8f0 !important;
         }
-        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td {
+        html[data-theme="dark"] #leaderboard-section .leaderboard-player-name,
+        html[data-theme="dark"] #leaderboard-section .all-users-player-name {
+            color: #f8fafc !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-player-id,
+        html[data-theme="dark"] #leaderboard-section .all-users-player-id {
+            border-color: hsl(var(--id-hue) 55% 55%) !important;
+            background: hsl(var(--id-hue) 45% 20%) !important;
+            color: hsl(var(--id-hue) 90% 88%) !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td:not(.leaderboard-player-cell) {
             background: #1e293b !important;
             border-color: #475569 !important;
         }
+        /* Keep each player's own banner background and design in Night Mode. */
         html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td.leaderboard-player-cell {
-            background: transparent !important;
+            border-color: #475569 !important;
         }
         html[data-theme="dark"] #leaderboard-section input,
         html[data-theme="dark"] #leaderboard-section select,
