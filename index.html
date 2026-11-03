@@ -2120,6 +2120,12 @@
       }
     });
     window.addEventListener("DOMContentLoaded", () => {
+      // Initialize the default English lesson immediately so the lesson list and typing text are ready on entry, including offline use.
+      try {
+        setLanguage("en", { focus: false });
+      } catch (error) {
+        console.error("Initial typing lesson setup failed:", error);
+      }
       // Failsafe: never leave visitors stuck on the loading overlay if startup code fails.
       window.setTimeout(() => {
         const loader = document.getElementById("loadingScreen");
