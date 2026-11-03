@@ -114,6 +114,10 @@ h1{font-size:clamp(23px,4vw,34px);margin:0;color:#124d8b}.sub{color:#5c7895;font
 .sky-leaderboard-live-status{color:#64809a;font-size:10px;font-weight:700;white-space:nowrap}
 .sky-leaderboard-live-status.is-error{color:#bb273c}
 .sky-leaderboard-status{margin:0;color:#6a819a;font-size:11px;text-align:center}
+.sky-leaderboard-status.is-loading{display:flex;align-items:center;justify-content:center;gap:8px;color:#3975ad;font-weight:750}
+.sky-leaderboard-status.is-loading::before{content:"";width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sky-leaderboard-spin .7s linear infinite}
+@keyframes sky-leaderboard-spin{to{transform:rotate(360deg)}}
+html[data-theme="dark"] .sky-leaderboard-status.is-loading{color:#93c5fd}
 .sky-leaderboard-status[hidden],.sky-leaderboard-list[hidden]{display:none}
 .sky-leaderboard-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .sky-top-player{display:flex;min-width:0;align-items:center;gap:6px;padding:5px 7px;border:1px solid #d7eaf9;border-radius:10px;background:linear-gradient(135deg,#fff,#f2f8ff);color:#17365d;text-decoration:none}
@@ -655,7 +659,7 @@ const safeGameLeaderboard = (methodName, ...args) => {
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 let activeSkyLesson=null,skySentenceDeck=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;let skyLeaderboardEmptyTimer=null;
 const $=id=>document.getElementById(id);
 function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
  const oscillator=context.createOscillator(),gain=context.createGain();
@@ -724,6 +728,17 @@ function setLeaderboardStatus(message,isError=false,showLogin=false){
 function getGameMonthKey(){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit"}).formatToParts(new Date());return `${parts.find(part=>part.type==="year").value}-${parts.find(part=>part.type==="month").value}`}
 function renderSkyTopThree(users){
  skyLeaderboardUsers=users;
+ const list=$("skyLeaderboardList"),status=$("skyLeaderboardStatus");
+ if(!users.length){
+  status.textContent="Loading players…";status.hidden=false;status.classList.add("is-loading");list.hidden=true;
+  if(!skyLeaderboardEmptyTimer)skyLeaderboardEmptyTimer=setTimeout(()=>{
+   if(!skyLeaderboardUsers.length){status.textContent="No players yet.";status.classList.remove("is-loading");}
+   skyLeaderboardEmptyTimer=null;
+  },10000);
+  renderSkyCurrentPlayer(users);return;
+ }
+ if(skyLeaderboardEmptyTimer){clearTimeout(skyLeaderboardEmptyTimer);skyLeaderboardEmptyTimer=null;}
+ status.classList.remove("is-loading");
  const list=$("skyLeaderboardList"),status=$("skyLeaderboardStatus"),month=getGameMonthKey();
  const ranked=[...users].sort((a,b)=>{
   const pointsA=a.monthlyPointsMonth===month?Number(a.monthlyPoints)||0:0;
@@ -731,7 +746,7 @@ function renderSkyTopThree(users){
   return pointsB-pointsA||(Number(b.points)||0)-(Number(a.points)||0);
  }).slice(0,3);
  list.replaceChildren();
- if(!ranked.length){status.textContent="No leaderboard profiles yet.";status.hidden=false;list.hidden=true;renderSkyCurrentPlayer(users);return}
+ if(!ranked.length){status.textContent="No players yet.";status.hidden=false;status.classList.remove("is-loading");list.hidden=true;renderSkyCurrentPlayer(users);return}
  ranked.forEach((user,index)=>{
   const rank=index+1,monthlyPoints=user.monthlyPointsMonth===month?Number(user.monthlyPoints)||0:0;
   const card=document.createElement("a");
