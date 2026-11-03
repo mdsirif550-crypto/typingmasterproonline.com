@@ -739,7 +739,7 @@ function renderSkyTopThree(users){
  }
  if(skyLeaderboardEmptyTimer){clearTimeout(skyLeaderboardEmptyTimer);skyLeaderboardEmptyTimer=null;}
  status.classList.remove("is-loading");
- const list=$("skyLeaderboardList"),status=$("skyLeaderboardStatus"),month=getGameMonthKey();
+ const month=getGameMonthKey();
  const ranked=[...users].sort((a,b)=>{
   const pointsA=a.monthlyPointsMonth===month?Number(a.monthlyPoints)||0:0;
   const pointsB=b.monthlyPointsMonth===month?Number(b.monthlyPoints)||0:0;
