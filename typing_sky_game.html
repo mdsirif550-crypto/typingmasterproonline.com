@@ -437,8 +437,8 @@ html[data-theme="dark"] .lesson-label{color:#f1f5f9!important;background:#1e293b
 <section class="game">
   <div class="sky" id="sky">
     <span class="countdown" id="countdown" aria-live="polite">1:00</span>
-    <button class="mobile-start-btn" id="mobileStartBtn" type="button">▶ Start Game</button>
-    <button class="primary desktop-start-btn" id="startBtn" type="button">✈️ Start Game</button>
+    <button class="mobile-start-btn" id="mobileStartBtn" type="button" disabled>⏳ Loading Game…</button>
+    <button class="primary desktop-start-btn" id="startBtn" type="button" disabled>⏳ Loading Game…</button>
     <section class="stats" aria-label="Live typing statistics">
       <div class="stat"><div class="label">✈️ LIVE TYPING SPEED</div><div class="value" id="wpm">0</div><small>WPM</small></div>
       <div class="stat"><div class="label">⌨️ CHARACTERS TYPED</div><div class="value" id="typed">0</div><small>characters</small></div>
@@ -950,6 +950,7 @@ function activateSkyTypingField(){
 }
 function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)$("typing").scrollIntoView({behavior:"auto",block:"center"});$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function launchSkyGame(){
+ if(startedAt&&!finished)return;
  try{
   startGame();
  }catch(error){
@@ -1036,6 +1037,9 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)safeGameLea
 window.addEventListener("online",processPendingSkyScores);
 setPassage();
 initializeSkyLeaderboard();
+// Enable the buttons only after the game and its first passage are ready.
+$("startBtn").disabled=false;$("startBtn").textContent="✈️ Start Game";
+$("mobileStartBtn").disabled=false;$("mobileStartBtn").textContent="▶ Start Game";
 </script>
 </body>
 </html>
