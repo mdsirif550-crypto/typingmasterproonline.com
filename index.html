@@ -2119,7 +2119,7 @@
         closeShareFallback();
       }
     });
-    window.onload = () => {
+    window.addEventListener("DOMContentLoaded", () => {
       updateWelcomeBannerProfile();
       if (
         window.matchMedia("(display-mode: standalone)").matches ||
@@ -2167,7 +2167,7 @@
           console.error("Service worker registration failed:", error);
         });
       }
-    };
+    });
   </script>
 
 </body>
