@@ -929,13 +929,11 @@ function activateSkyTypingField(){
   field.style.display = "block";
   field.style.visibility = "visible";
   field.setAttribute("aria-hidden", "false");
-  window.setTimeout(() => {
-    field.focus();
-    const len = field.value.length;
-    try { field.setSelectionRange(len, len); } catch (error) {}
-  }, 120);
+  try { field.focus({ preventScroll: true }); } catch (error) { field.focus(); }
+  const len = field.value.length;
+  try { field.setSelectionRange(len, len); } catch (error) {}
 }
-function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)$("typing").scrollIntoView({behavior:"auto",block:"center"});$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function launchSkyGame(){
  try{
   startGame();
