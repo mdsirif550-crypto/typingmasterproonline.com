@@ -572,7 +572,7 @@
       .key.pressed, .key:active { transform: translateY(2px); }
       #key-control, #key-meta, #key-alt, #key-altright, #key-metaright, #key-controlright { min-width: 0 !important; }
     }
-  </style>
+  .header-download-links .welcome-install-banner { grid-column: 1 / -1; justify-self: center; width: auto; min-width: 112px; padding: 6px 18px; border: 1px solid rgba(255,255,255,0.28); border-radius: 8px; background: linear-gradient(135deg, #075985, #0f766e); color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .5px; text-align: center; cursor: default; pointer-events: none; box-shadow: 0 3px 9px rgba(0,0,0,.16); }\n</style>
 </head>
 <body>
   <section class="welcome-banner" aria-label="TypingMaster Pro introduction and mobile typing help">
@@ -772,7 +772,7 @@
       <div class="header-compact-rows">
         <div class="header-compact-row header-primary-row">
           <div class="header-download-links" aria-label="App installation options">
-            <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()" aria-label="Install web app" title="Install TypingMaster as an app">⬇ Install App</button>
+            <div id="installAppButton" class="download-btn welcome-install-banner" role="note" aria-label="Welcome">Welcome</div>
             <a class="download-btn install-btn mobile-app-download" href="/typingmaster.apk" download aria-label="Install mobile app APK" title="Install mobile app">📲 Mobile App</a>
             <a class="download-btn pc-guide-btn" href="https://github.com/mdsirif550-crypto/typingmasterproonline.com/releases/download/typingmaster-windows-latest/TypingMaster-Pro-Online-Setup.exe" aria-label="Download Windows desktop app" title="Download Windows installer">🖥 Windows PC</a>
             <a href="#" onclick="alert('To install the app on a computer or laptop:\n1. Click the plus or install icon on the right side of the address bar in Chrome.\n2. Or, click the three dots and select Save and share -> Create shortcut.'); return false;" class="download-btn pc-guide-btn" aria-label="PC app installation guide" title="PC app installation guide">💻 PC Guide</a>
