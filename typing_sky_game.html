@@ -936,6 +936,21 @@ function activateSkyTypingField(){
   }, 120);
 }
 function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)window.setTimeout(()=>$("typing").scrollIntoView({behavior:"smooth",block:"center"}),150);$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function launchSkyGame(){
+ try{
+  startGame();
+ }catch(error){
+  console.error("Typing Sky Game could not start:",error);
+  clearInterval(timer);startedAt=0;finished=false;
+  $("duration").disabled=false;
+  $("typing").disabled=true;
+  $("sky").classList.remove("game-running");
+  document.body.classList.remove("typing-active");
+  $("startBtn").textContent="✈️ Start Game";
+  $("message").textContent="The game could not start. Please refresh the page and try again.";
+  updateCountdown();
+ }
+}
 function updateStats(){
  if(!startedAt)return;
  const timeUp=Date.now()-startedAt>=durationMs;
@@ -996,8 +1011,8 @@ function updateFinal(reason){
 }
 $("typing").addEventListener("input",()=>{if(!startedAt||finished)return;spawnTypingLights(recordTypingSpeed());updateStats();if(!finished)safeGameLeaderboard("setTypingStatus", true, lastWpm)});
 $("typing").addEventListener("focus",()=>{if(window.innerWidth <= 700){try{window.scrollTo({ top: 0, left: 0, behavior: 'instant' });}catch(e){window.scrollTo(0,0);}}});
-$("startBtn").addEventListener("click",()=>{setPassage();startGame()});
-$("mobileStartBtn").addEventListener("click",()=>{setPassage();startGame()});
+$("startBtn").addEventListener("click",launchSkyGame);
+$("mobileStartBtn").addEventListener("click",launchSkyGame);
 $("duration").addEventListener("change",()=>{durationMs=Number($("duration").value)*60000;updateCountdown()});
 $("nextBtn").addEventListener("click",()=>{if(startedAt&&!finished){clearInterval(timer);startedAt=0;finished=false;$("typing").disabled=true;$("duration").disabled=false;$("startBtn").textContent="▶ Start Game";correct=0;wrong=0;typed=0;points=0;completedCorrect=0;completedWrong=0;completedTyped=0;speedSamples=[]}setPassage()});
 $("againBtn").addEventListener("click",()=>{setPassage();startGame()});
