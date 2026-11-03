@@ -541,6 +541,13 @@
             background: rgba(15, 23, 42, 0.82) !important;
             color: #fde68a !important;
         }
+        html[data-theme="dark"] #monthly-event-member-panel { background: #1e293b !important; border-color: #475569 !important; color: #e2e8f0 !important; }
+        html[data-theme="dark"] #monthly-event-member-panel h3,
+        html[data-theme="dark"] #monthly-event-member-count { color: #93c5fd !important; }
+        html[data-theme="dark"] #monthly-event-member-list li { background: #0f172a !important; border-color: #475569 !important; }
+        html[data-theme="dark"] #monthly-event-member-list li span:first-child { color: #f1f5f9 !important; }
+        html[data-theme="dark"] #monthly-event-member-list li span:last-child { color: #93c5fd !important; }
+        html[data-theme="dark"] #monthly-event-member-empty { color: #cbd5e1 !important; }
         html[data-theme="dark"] #monthly-reset-banner {
             background: #1e293b !important;
             border-color: #475569 !important;
@@ -891,6 +898,14 @@
                 </div>
                 <p id="monthly-event-previous-winner" class="mt-2 hidden rounded-lg bg-white/70 p-2 font-bold text-amber-900"></p>
             </div>
+            <section id="monthly-event-member-panel" class="mb-3 rounded-2xl border border-blue-200 bg-blue-50/70 p-3 text-[10px] text-slate-700" aria-label="Monthly event participants">
+                <div class="mb-2 flex items-center justify-between gap-2">
+                    <h3 class="font-black text-blue-800">👥 Event Participants</h3>
+                    <span id="monthly-event-member-count" class="font-bold text-blue-700">0 shown</span>
+                </div>
+                <ol id="monthly-event-member-list" class="grid grid-cols-1 gap-1 sm:grid-cols-2"></ol>
+                <p id="monthly-event-member-empty" class="font-semibold text-slate-500">No participants yet. Save a typing score to join the event.</p>
+            </section>
             <div id="monthly-reset-banner" class="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-[10px] font-bold text-slate-700">
                 <span id="monthly-reset-text">Monthly leaderboard resets on 1st of every month.</span>
                 <span id="monthly-reset-countdown" class="ml-3 text-blue-600">Next reset in -- days --:--:--</span>
@@ -1558,8 +1573,33 @@
             });
             document.getElementById('monthly-event-title').textContent = `${monthKey} Typing Event`;
             document.getElementById('monthly-event-dates').textContent = `Event dates: ${formatDate(monthStart)} – ${formatDate(monthEnd)}. Monthly points are the event score.`;
-            const participants = allUsers.filter(user => user.monthlyPointsMonth === monthKey && (user.monthlyPoints || 0) > 0).length;
-            document.getElementById('monthly-event-participants').textContent = `${participants} participant${participants === 1 ? '' : 's'}`;
+            const eventParticipants = allUsers
+                .filter(user => user.monthlyPointsMonth === monthKey && (Number(user.monthlyPoints) || 0) > 0)
+                .sort((a, b) => (Number(b.monthlyPoints) || 0) - (Number(a.monthlyPoints) || 0) || String(a.name || a.id).localeCompare(String(b.name || b.id)));
+            document.getElementById('monthly-event-participants').textContent = `${eventParticipants.length} participant${eventParticipants.length === 1 ? '' : 's'}`;
+
+            const memberList = document.getElementById('monthly-event-member-list');
+            const memberCount = document.getElementById('monthly-event-member-count');
+            const emptyMessage = document.getElementById('monthly-event-member-empty');
+            if (memberList && memberCount && emptyMessage) {
+                memberList.replaceChildren();
+                const visibleParticipants = eventParticipants.slice(0, 100);
+                visibleParticipants.forEach((user, index) => {
+                    const item = document.createElement('li');
+                    item.className = 'flex min-w-0 items-center justify-between gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1.5';
+                    const name = document.createElement('span');
+                    name.className = 'min-w-0 truncate font-bold text-slate-700';
+                    name.textContent = `${index + 1}. ${user.name || user.id || 'User'}`;
+                    const score = document.createElement('span');
+                    score.className = 'shrink-0 font-black text-blue-700';
+                    score.textContent = `${Number(user.monthlyPoints) || 0} pts`;
+                    item.append(name, score);
+                    memberList.appendChild(item);
+                });
+                memberCount.textContent = `${visibleParticipants.length} of ${eventParticipants.length} shown`;
+                emptyMessage.hidden = eventParticipants.length > 0;
+                if (eventParticipants.length > 100) memberCount.textContent = `100 of ${eventParticipants.length} shown`;
+            }
         }
 
         function archiveMonthlyEvent(monthKey, userData) {
