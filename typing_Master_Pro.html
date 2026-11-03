@@ -709,6 +709,34 @@
         .leaderboard-loading-row td { color: #64748b; font-size: 12px; font-weight: 900; text-align: center; }
         .leaderboard-loading-row td::before { content: "⌛"; margin-right: 7px; }
         html[data-theme="dark"] .leaderboard-loading-row td { color: #bfdbfe !important; }
+
+        /* Keep leaderboard player names bold and readable in both themes, including custom banner rows and All Users. */
+        html:not([data-theme="dark"]) #leaderboard-section .leaderboard-table tbody tr .leaderboard-player-details .leaderboard-player-name,
+        html:not([data-theme="dark"]) #leaderboard-section .all-users-table tbody tr .all-users-player-details .all-users-player-name {
+            color: #111827 !important;
+            -webkit-text-fill-color: #111827 !important;
+            font-weight: 1000 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.65) !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody tr .leaderboard-player-details .leaderboard-player-name,
+        html[data-theme="dark"] #leaderboard-section .all-users-table tbody tr .all-users-player-details .all-users-player-name {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            font-weight: 1000 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95) !important;
+        }
+        html:not([data-theme="dark"]) #leaderboard-section .leaderboard-player-id,
+        html:not([data-theme="dark"]) #leaderboard-section .all-users-player-id {
+            color: #111827 !important;
+            -webkit-text-fill-color: #111827 !important;
+            font-weight: 900 !important;
+            opacity: 1 !important;
+        }
+
 </style>
     <script>
         if (window.parent !== window) {
