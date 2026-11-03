@@ -1,0 +1,46 @@
+{
+  "name": "typingmaster-pro-online-desktop",
+  "version": "1.0.0",
+  "description": "TypingMaster Pro Online desktop app for Windows",
+  "main": "electron/main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^34.3.3",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.typingmasterproonline.desktop",
+    "productName": "TypingMaster Pro Online",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/.cache/**",
+      "!.git/**",
+      "!.github/**",
+      "!dist/**",
+      "!electron-builder.*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TypingMaster Pro Online"
+    }
+  }
+}
