@@ -575,6 +575,25 @@
             background: hsl(var(--id-hue) 45% 20%) !important;
             color: hsl(var(--id-hue) 90% 88%) !important;
         }
+        /* High-specificity overrides: keep player names and IDs readable over custom banners. */
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody tr .leaderboard-player-details .leaderboard-player-name,
+        html[data-theme="dark"] #leaderboard-section .all-users-table tbody tr .all-users-player-details .all-users-player-name {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody tr .leaderboard-player-details .leaderboard-player-id,
+        html[data-theme="dark"] #leaderboard-section .all-users-table tbody tr .all-users-player-details .all-users-player-id {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            background: rgba(15, 23, 42, 0.88) !important;
+            border: 1px solid hsl(var(--id-hue) 75% 68%) !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
         html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td:not(.leaderboard-player-cell) {
             background: #1e293b !important;
             border-color: #475569 !important;
