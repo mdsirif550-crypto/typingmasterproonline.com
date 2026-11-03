@@ -25,8 +25,9 @@
     :root { color-scheme: light; --navy:#172554; --red:#dc2626; --gold:#fff200; }
     * { box-sizing:border-box; }
     body { margin:0; font-family:Arial,Helvetica,sans-serif; color:#172033; background:#f7f8fc; line-height:1.65; }
-    .hero { position:relative; overflow:hidden; padding:clamp(58px,9vw,112px) 20px; color:white; background-color:#101b42; background-image:linear-gradient(90deg,#101b42 0%,#101b42f5 35%,#101b42a8 65%,#101b4260 100%),url("assets/english-learning-hero.svg"); background-position:center,right center; background-size:cover,auto 100%; background-repeat:no-repeat; }
+    .hero { position:relative; overflow:hidden; padding:clamp(58px,9vw,112px) 20px; color:white; background:#101b42; }
     .hero::before { content:""; position:absolute; width:420px; height:420px; right:-180px; bottom:-270px; border:1px solid #ffffff20; border-radius:50%; box-shadow:0 0 0 38px #ffffff08,0 0 0 78px #ffffff06; }
+    .hero::after { content:""; position:absolute; inset:0 0 0 38%; background-image:linear-gradient(90deg,#101b42 0%,#101b4260 30%,#101b4210 100%),url("assets/007.png"); background-position:center,right center; background-size:cover,auto 135%; background-repeat:no-repeat; }
     .hero-inner { position:relative; z-index:1; max-width:1120px; margin:0 auto; }
     .hero-copy { max-width:650px; }
     .hero-kicker { display:inline-flex; align-items:center; gap:9px; margin:0 0 18px; padding:7px 12px; border:1px solid #ffffff35; border-radius:999px; background:#ffffff10; color:#f8df7c; font-size:.82rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; }
@@ -40,7 +41,7 @@
     .hero .button-secondary { border-color:#ffffff55; background:#ffffff10; }
     .hero .button:hover { transform:translateY(-1px); }
     .hero-note { margin:17px 0 0; color:#c6d3f5; font-size:.9rem; }
-    main { max-width:1050px; margin:24px auto; padding:0 16px; }
+    main { width:100%; max-width:none; margin:24px auto; padding:0 16px; }
     .intro,.panel { background:white; border-radius:16px; padding:24px; margin:18px 0; box-shadow:0 4px 18px #15234a12; }
     h2 { color:var(--navy); margin-top:0; }
     .courses { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
@@ -50,10 +51,17 @@
     .contact { background:#fff8c5; border-left:5px solid var(--red); padding:18px; border-radius:10px; }
     a { color:#123a9b; }
     .button { display:inline-block; padding:11px 18px; border-radius:9px; background:var(--red); color:white; text-decoration:none; font-weight:bold; margin:5px 8px 5px 0; }
+    .button-icon { width:19px; height:19px; flex:0 0 19px; fill:currentColor; vertical-align:middle; }
+    .button-inline { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+    .button-whatsapp { background:#168c4a; color:white; }
+    .button-facebook { background:#1877f2; color:white; }
+    .hero .button-whatsapp { background:#168c4a; }
+    .hero .button-facebook { border-color:#ffffff55; background:#1877f2; }
     .fb-frame { width:100%; min-height:620px; border:0; }
     footer { text-align:center; padding:26px 16px; color:#586174; }
     @media (max-width:760px) {
-      .hero { padding:54px 18px 60px; background-image:linear-gradient(90deg,#101b42f2,#101b42cf),url("assets/english-learning-hero.svg"); background-position:center,right center; background-size:cover,auto 85%; }
+      .hero { padding:54px 18px 60px; }
+      .hero::after { inset:0; background-image:linear-gradient(90deg,#101b42ed,#101b42b8),url("assets/007.png"); background-position:center,right center; background-size:cover,auto 100%; }
       .hero-copy { margin:0 auto; text-align:center; }
       .hero-actions { justify-content:center; }
     }
@@ -92,6 +100,17 @@
   </script>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="icon-phone" viewBox="0 0 24 24">
+    <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.56 3.58.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.19 2.46.56 3.58a1 1 0 0 1-.25 1.01l-2.19 2.2Z"/>
+  </symbol>
+  <symbol id="icon-whatsapp" viewBox="0 0 24 24">
+    <path d="M12.04 2a9.9 9.9 0 0 0-8.48 15.02L2 22l5.12-1.52A9.9 9.9 0 1 0 12.04 2Zm0 17.98a8.04 8.04 0 0 1-4.1-1.12l-.3-.18-3.04.9.91-2.96-.2-.3a8.08 8.08 0 1 1 6.73 3.66Zm4.44-6.05c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.95-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.1-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.4h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.04.4 1.4.5.58.18 1.1.15 1.5.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/>
+  </symbol>
+  <symbol id="icon-facebook" viewBox="0 0 24 24">
+    <path d="M13.5 21v-8.2h2.8l.4-3.2h-3.2v-2c0-.9.3-1.5 1.6-1.5h1.7V3.2c-.3 0-1.4-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.1H7v3.2h2.8V21h3.7Z"/>
+  </symbol>
+</svg>
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-copy">
@@ -100,8 +119,9 @@
       <p class="hero-lead">IELTS preparation, Spoken English and step-by-step Basic English learning at Rayhan's English Academy.</p>
       <p class="hero-bangla">নিজের ইংরেজি দক্ষতা গড়ে তুলুন অভিজ্ঞ নির্দেশনা ও নিয়মিত অনুশীলনে।</p>
       <div class="hero-actions">
-        <a class="button button-primary" href="tel:+8801715905430">Call: 01715-905430</a>
-        <a class="button button-secondary" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener">Visit Facebook Page</a>
+        <a class="button button-primary button-inline" href="tel:+8801715905430"><svg class="button-icon" aria-hidden="true"><use href="#icon-phone"></use></svg>Call: 01715-905430</a>
+        <a class="button button-whatsapp button-inline" href="https://wa.me/8801715905430" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>WhatsApp Call / Message</a>
+        <a class="button button-facebook button-inline" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-facebook"></use></svg>Facebook Page</a>
         <a class="button button-secondary" href="https://typingmasterproonline.com/" aria-label="Go to TypingMaster Pro homepage">🏠 Home</a>
       </div>
       <p class="hero-note">IELTS Preparation · Spoken English · Basic to Advanced</p>
@@ -113,8 +133,9 @@
     <h2>IELTS & Spoken English in Feni</h2>
     <p><strong>Rayhan's English Academy</strong> is an English learning centre in Feni. The academy's public information describes IELTS learning, Spoken English, basic-level teaching, English structure lessons and group conversation practice. Online and offline course options have also been advertised on its public page.</p>
     <p>এই পেজে Rayhan's English Academy-এর IELTS Preparation, Spoken English এবং Basic থেকে ইংরেজি শেখার তথ্য দেওয়া হয়েছে।</p>
-    <a class="button" href="tel:+8801715905430">Call: 01715-905430</a>
-    <a class="button" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener">Facebook Page</a>
+    <a class="button button-inline" href="tel:+8801715905430"><svg class="button-icon" aria-hidden="true"><use href="#icon-phone"></use></svg>Call: 01715-905430</a>
+    <a class="button button-whatsapp button-inline" href="https://wa.me/8801715905430" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>WhatsApp Call / Message</a>
+    <a class="button button-facebook button-inline" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-facebook"></use></svg>Facebook Page</a>
   </section>
 
   <section class="panel">
@@ -145,9 +166,9 @@
     <div class="contact">
       <p><strong>Rayhan's English Academy</strong></p>
       <p>Gulshan Market Lane, Trunk Road, Feni 3900, Bangladesh</p>
-      <p>Phone / WhatsApp: <a href="tel:+8801715905430">01715-905430</a></p>
-      <a class="button" href="https://wa.me/8801715905430" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="button" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener">Visit Facebook</a>
+      <p><svg class="button-icon" aria-hidden="true"><use href="#icon-phone"></use></svg> Phone: <a href="tel:+8801715905430">01715-905430</a></p>
+      <a class="button button-whatsapp button-inline" href="https://wa.me/8801715905430" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>WhatsApp Call / Message · 01715-905430</a>
+      <a class="button button-facebook button-inline" href="https://www.facebook.com/rayhansenglish2" target="_blank" rel="noopener"><svg class="button-icon" aria-hidden="true"><use href="#icon-facebook"></use></svg>Visit Facebook Page</a>
     </div>
   </section>
 
