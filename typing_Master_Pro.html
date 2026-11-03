@@ -519,7 +519,50 @@
         .theme-toggle:hover { background: #e2e8f0; }
         html[data-theme="dark"] .theme-toggle { border-color: #475569; background: #1e293b; color: #f1f5f9; }
         html[data-theme="dark"] .theme-toggle:hover { background: #334155; }
-    </style>
+    
+        /* Night mode contrast fixes for leaderboard controls, table labels and filters */
+        html[data-theme="dark"] #leaderboard-section,
+        html[data-theme="dark"] #leaderboard-section *:not(button):not(a):not(img):not(svg):not(path) {
+            color: #e2e8f0;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table th,
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table td,
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table td::before,
+        html[data-theme="dark"] #leaderboard-section .leaderboard-player-id,
+        html[data-theme="dark"] #leaderboard-section .sprint-wpm,
+        html[data-theme="dark"] #leaderboard-section .lvl-badge {
+            color: #e2e8f0 !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody td.leaderboard-player-cell {
+            background: transparent !important;
+        }
+        html[data-theme="dark"] #leaderboard-section input,
+        html[data-theme="dark"] #leaderboard-section select,
+        html[data-theme="dark"] #leaderboard-section select option {
+            background: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #64748b !important;
+        }
+        html[data-theme="dark"] #leaderboard-section button {
+            color: #f8fafc !important;
+        }
+        html[data-theme="dark"] #leaderboard-section a {
+            color: #93c5fd !important;
+        }
+        html[data-theme="dark"] #leaderboard-section .text-blue-700,
+        html[data-theme="dark"] #leaderboard-section .text-blue-600,
+        html[data-theme="dark"] #leaderboard-section .text-slate-700,
+        html[data-theme="dark"] #leaderboard-section .text-slate-600,
+        html[data-theme="dark"] #leaderboard-section .text-amber-800,
+        html[data-theme="dark"] #leaderboard-section .text-amber-900 {
+            color: #bfdbfe !important;
+        }
+
+</style>
     <script>
         if (window.parent !== window) {
             document.documentElement.classList.add('embedded-messages');
