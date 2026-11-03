@@ -659,7 +659,7 @@ const safeGameLeaderboard = (methodName, ...args) => {
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 let activeSkyLesson=null,skySentenceDeck=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;let skyLeaderboardEmptyTimer=null;
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0;let skyLeaderboardLoadState="loading";
 const $=id=>document.getElementById(id);
 function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
  const oscillator=context.createOscillator(),gain=context.createGain();
@@ -730,15 +730,13 @@ function renderSkyTopThree(users){
  skyLeaderboardUsers=users;
  const list=$("skyLeaderboardList"),status=$("skyLeaderboardStatus");
  if(!users.length){
-  status.textContent="Loading players…";status.hidden=false;status.classList.add("is-loading");list.hidden=true;
-  if(!skyLeaderboardEmptyTimer)skyLeaderboardEmptyTimer=setTimeout(()=>{
-   if(!skyLeaderboardUsers.length){status.textContent="No players yet.";status.classList.remove("is-loading");}
-   skyLeaderboardEmptyTimer=null;
-  },10000);
+  status.hidden=false;list.hidden=true;
+  status.classList.toggle("is-loading",skyLeaderboardLoadState==="loading");
+  status.textContent=skyLeaderboardLoadState==="loading"?"Loading players…":skyLeaderboardLoadState==="error"?"Could not load players. Check your connection.":"No players yet.";
   renderSkyCurrentPlayer(users);return;
  }
- if(skyLeaderboardEmptyTimer){clearTimeout(skyLeaderboardEmptyTimer);skyLeaderboardEmptyTimer=null;}
  status.classList.remove("is-loading");
+ status.hidden=true;
  const month=getGameMonthKey();
  const ranked=[...users].sort((a,b)=>{
   const pointsA=a.monthlyPointsMonth===month?Number(a.monthlyPoints)||0:0;
@@ -794,11 +792,13 @@ function listenForSkyTopThree(){
  if(!gameDatabase)return;
  try{
   gameDatabase.ref("users").on("value",snapshot=>{
+   skyLeaderboardLoadState="loaded";
    const data=snapshot.val()||{};
    renderSkyTopThree(Object.entries(data).map(([id,user])=>({...user,id})));
   },error=>{
+   skyLeaderboardLoadState="error";
    console.error("Sky game top-three leaderboard listener failed:",error);
-   $("skyLeaderboardStatus").textContent="Could not load the leaderboard. Check your connection.";$("skyLeaderboardStatus").hidden=false;$("skyLeaderboardList").hidden=true;
+   renderSkyTopThree([]);
   });
    gameDatabase.ref("online_users").on("value",snapshot=>{
     const typingSpeeds=Object.create(null),onlineUsers=snapshot.val()||{};
