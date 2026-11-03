@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#041e12"><meta name="robots" content="noindex,follow">
+<title>Offline Typing Practice | TypingMaster Pro Online</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#071b12;color:#f8fafc;font:16px/1.6 Arial,sans-serif;padding:18px}.wrap{max-width:850px;margin:0 auto}.card{background:#10271b;border:1px solid #28513a;border-radius:18px;padding:20px;margin:14px 0}h1{font-size:clamp(24px,5vw,36px);margin:4px 0 8px}p{color:#cbd5e1}.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}a{color:#86efac}select,button,textarea{font:inherit;border-radius:10px;padding:11px;border:1px solid #52745f}select,textarea{background:#f8fafc;color:#111827}button{background:#16a34a;color:white;border:0;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.passage{white-space:pre-wrap;background:#07130d;border:1px solid #345a43;padding:18px;border-radius:12px;min-height:130px;font-size:19px;line-height:1.8}.typed{width:100%;min-height:145px;margin-top:12px;resize:vertical}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#07130d;border-radius:12px;padding:12px;text-align:center}.stat strong{display:block;font-size:25px;color:#86efac}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.hint{font-size:13px;color:#a7f3d0}@media(max-width:500px){.stats{grid-template-columns:1fr 1fr}.card{padding:15px}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><a href="/">← TypingMaster Home</a><span>✈ Offline Practice Mode</span></div>
+<section class="card"><h1>Free Offline Typing Practice</h1><p>Practise typing even when your device has no internet connection. Your practice result is calculated on this device and is not uploaded to the online leaderboard while offline.</p>
+<label for="language">Practice language</label><br><select id="language"><option value="en">English</option><option value="bn">বাংলা</option></select>
+<div class="actions"><button id="newText" type="button">New Practice Text</button><button id="start" type="button">Start 60-Second Test</button></div></section>
+<section class="card"><h2>Type the text below</h2><div id="passage" class="passage" lang="en"></div><textarea id="entry" class="typed" placeholder="Press Start, then type here..." disabled spellcheck="false" autocapitalize="off"></textarea>
+<div class="stats" style="margin-top:14px"><div class="stat"><strong id="time">60</strong>Seconds</div><div class="stat"><strong id="wpm">0</strong>WPM</div><div class="stat"><strong id="accuracy">100%</strong>Accuracy</div></div>
+<p id="status" aria-live="polite">This offline practice works without login or internet.</p></section>
+<section class="card"><h2>Offline practice notes</h2><p>• Your typing is checked locally on this device.<br>• Your best WPM is saved in this browser on this device.<br>• Online lessons, account login, messages and leaderboard syncing require an internet connection.</p><p>Your best offline WPM: <strong id="best">0</strong></p></section>
+</main>
+<script>
+(()=>{
+const texts={
+en:["The quick brown fox jumps over the lazy dog. Practise every day to improve your typing speed and accuracy. Keep your fingers relaxed and use the correct keys.","Typing is a useful skill for study, work and communication. Start slowly, focus on accuracy, and gradually build your words per minute.","Learning touch typing takes patience and regular practice. Sit comfortably, keep your eyes on the screen, and let your fingers learn the keyboard."],
+bn:["আমি প্রতিদিন বাংলা টাইপিং অনুশীলন করি। ধীরে ধীরে সঠিকভাবে টাইপ করলে গতি এবং নির্ভুলতা দুটোই বাড়ে।","নিয়মিত অনুশীলনের মাধ্যমে কিবোর্ডে হাতের অবস্থান এবং আঙুলের ব্যবহার ভালোভাবে শেখা যায়।","মনোযোগ দিয়ে টাইপ করুন। প্রথমে নির্ভুলতার দিকে খেয়াল রাখুন, পরে ধীরে ধীরে টাইপিংয়ের গতি বাড়ান।"]
+};
+const $=id=>document.getElementById(id);let target="",started=false,remaining=60,timer=null,startedAt=0;
+const bestKey="tmpro-offline-best-wpm";
+function showText(){const lang=$("language").value;target=texts[lang][Math.floor(Math.random()*texts[lang].length)];$("passage").textContent=target;$("passage").lang=lang;$("entry").value="";$("entry").disabled=true;$("status").textContent="Press Start when you are ready."}
+function score(){const typed=$("entry").value;let correct=0;for(let i=0;i<typed.length;i++)if(typed[i]===target[i])correct++;const elapsed=Math.max(1,(Date.now()-startedAt)/60000);const wpm=Math.round((correct/5)/elapsed);const accuracy=typed.length?Math.round(correct/typed.length*100):100;$("wpm").textContent=wpm;$("accuracy").textContent=accuracy+"%";return wpm}
+function finish(){clearInterval(timer);started=false;$("entry").disabled=true;$("start").disabled=false;const wpm=score();const best=Math.max(Number(localStorage.getItem(bestKey)||0),wpm);localStorage.setItem(bestKey,String(best));$("best").textContent=best;$("status").textContent="Practice complete. Your result is saved on this device only."}
+$("best").textContent=localStorage.getItem(bestKey)||"0";
+$("language").addEventListener("change",showText);$("newText").addEventListener("click",()=>{if(started)finish();showText()});
+$("start").addEventListener("click",()=>{if(started)return;remaining=60;startedAt=Date.now();started=true;$("time").textContent=remaining;$("entry").disabled=false;$("entry").value="";$("entry").focus();$("start").disabled=true;$("status").textContent="Timer started. Keep typing!";timer=setInterval(()=>{remaining--; $("time").textContent=remaining;score();if(remaining<=0)finish()},1000)});
+$("entry").addEventListener("input",()=>{if(started)score()});showText();
+})();
+</script></body></html>
