@@ -987,7 +987,7 @@ function activateSkyTypingField(){
   const len = field.value.length;
   try { field.setSelectionRange(len, len); } catch (error) {}
 }
-function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)$("typing").scrollIntoView({behavior:"auto",block:"center"});$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);startGameMusic();updateCountdown();timer=setInterval(updateStats,250);updateStats()}
+function startGame(){clearInterval(timer);clearTimeout(crashRevealTimer);durationMs=Number($("duration").value)*60000;startedAt=Date.now();gameRunId=createSkyGameRunId();skyQueuedPointTotal=0;skyGuestStatusShown=false;zeroWpmSince=0;finished=false;correct=0;wrong=0;typed=0;points=0;lastWpm=0;completedCorrect=0;completedWrong=0;completedTyped=0;lastInputValue="";speedSamples=[];$("resultOverlay").style.display="none";$("duration").disabled=true;activateSkyTypingField();document.body.classList.add("typing-active");$("sky").classList.add("game-running");if(window.matchMedia("(max-width: 700px)").matches)$("typing").scrollIntoView({behavior:"auto",block:"center"});$("startBtn").textContent="↻ Restart Game";$("againBtn").textContent="✈ Play Again";$("message").textContent="Type faster to keep your plane away from the spikes!";if(!gameUser)setLeaderboardStatus("You can play without logging in, or log in to add points to the leaderboard.",false,true);try{startGameMusic()}catch(audioError){console.warn("Game audio unavailable; continuing without sound.",audioError)}updateCountdown();timer=setInterval(updateStats,250);updateStats()}
 function launchSkyGame(){
  if(startedAt&&!finished)return;
  try{
@@ -1076,11 +1076,11 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)safeGameLea
 window.addEventListener("online",processPendingSkyScores);
 try{gameAudioEnabled=localStorage.getItem("typingSkyAudioEnabled")!=="false"}catch(error){}
 updateGameAudioButton();
-setPassage();
-initializeSkyLeaderboard();
-// Enable the buttons only after the game and its first passage are ready.
+// Enable Start immediately; optional leaderboard setup must never block gameplay.
 $("startBtn").disabled=false;$("startBtn").textContent="✈️ Start Game";
 $("mobileStartBtn").disabled=false;$("mobileStartBtn").textContent="▶ Start Game";
+try{setPassage()}catch(error){console.error("Could not prepare the first typing passage:",error);$("message").textContent="Game is ready. Press Start Game to begin."}
+try{initializeSkyLeaderboard()}catch(error){console.error("Sky leaderboard initialization failed:",error);setLeaderboardStatus("Leaderboard is temporarily unavailable. You can still play.",false,true)}
 </script>
 </body>
 </html>
