@@ -112,7 +112,7 @@
     .header-compact-rows { display: grid; gap: 8px; width: 100%; }
     .header-compact-row { display: flex; align-items: center; justify-content: center; gap: 12px; min-width: 0; }
     .header-primary-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; row-gap: 8px; }
-    .header-download-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 4px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(15,23,42,0.42); }
+    .header-download-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 4px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(15,23,42,0.42); }
     .header-primary-row .brand-wrap { flex-direction: row; width: 100%; }
     .header-primary-row .brand-wrap > * { flex: 0 0 auto; }
     .header-secondary-row { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; align-items: center; gap: 7px; }
@@ -529,7 +529,7 @@
       .header-secondary-row .mode-container { flex-wrap: nowrap; gap: 6px; padding: 3px; }
       .header-secondary-row .lang-btn { min-height: 32px; padding: 6px 12px; font-size: 11px; }
       .keyboard-guide-button { min-height: 32px; padding: 6px 7px; font-size: 10px; }
-      .header-download-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 3px; }
+      .header-download-links { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 3px; }
       .download-btn { min-height: 28px; padding: 4px 2px; font-size: 8px; }
       .header-compact-row .academy-tag { font-size: 9px; letter-spacing: 0.6px; }
       .brand-domain-row { gap: 4px; }
@@ -772,8 +772,9 @@
       <div class="header-compact-rows">
         <div class="header-compact-row header-primary-row">
           <div class="header-download-links" aria-label="App installation options">
-            <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()" aria-label="Welcome" title="Welcome">Welcome</button>
+            <button id="installAppButton" type="button" class="download-btn install-btn" onclick="installPwaApp()" aria-label="Install web app" title="Install TypingMaster as an app">⬇ Install App</button>
             <a class="download-btn install-btn mobile-app-download" href="/typingmaster.apk" download aria-label="Install mobile app APK" title="Install mobile app">📲 Mobile App</a>
+            <a class="download-btn pc-guide-btn" href="https://github.com/mdsirif550-crypto/typingmasterproonline.com/releases/download/typingmaster-windows-latest/TypingMaster-Pro-Online-Setup.exe" aria-label="Download Windows desktop app" title="Download Windows installer">🖥 Windows PC</a>
             <a href="#" onclick="alert('To install the app on a computer or laptop:\n1. Click the plus or install icon on the right side of the address bar in Chrome.\n2. Or, click the three dots and select Save and share -> Create shortcut.'); return false;" class="download-btn pc-guide-btn" aria-label="PC app installation guide" title="PC app installation guide">💻 PC Guide</a>
           </div>
           <div class="brand-wrap">
@@ -1773,7 +1774,7 @@
     async function installPwaApp() {
       const installButton = document.getElementById("installAppButton");
       if (!deferredInstallPrompt) {
-        alert("Android Chrome: tap ⋮ and choose Install app or Add to Home screen. On iPhone Safari: tap Share, then Add to Home Screen. After installation, tap the TypingMaster icon on your home screen to open the app.");
+        alert("To install TypingMaster on your computer:\\n\\nChrome or Edge: click the install icon in the address bar, or open the browser menu and choose Install TypingMaster.\\n\\nIf the install option is not available, use the Windows PC button to download the desktop installer.");
         return;
       }
       const installPrompt = deferredInstallPrompt;
