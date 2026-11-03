@@ -391,6 +391,7 @@
         .chat-bubble.admin { background: #2563eb; color: white; margin-left: auto; }
         .chat-bubble.user { background: #f1f5f9; color: #1e293b; }
         .chat-bubble .time { font-size: 9px; opacity: 0.7; display: block; margin-top: 4px; }
+        .help-message-status{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;font-size:12px;font-weight:900;letter-spacing:-2px;vertical-align:middle;color:#64748b}.help-message-status.delivered{color:#e2e8f0}.help-message-status.seen{width:17px;height:17px;border-radius:50%;background:#38bdf8;color:#fff;letter-spacing:-2px;font-size:9px;box-shadow:0 0 0 1px #fff5}
         .chat-bubble .sender { font-size: 10px; font-weight: 700; display: block; margin-bottom: 2px; }
         
         #help-chat { min-height: 120px; max-height: 200px; overflow-y: auto; }
@@ -4045,10 +4046,10 @@
             helpListener = db.ref('chat_messages');
             helpListenerCallback = snap => {
                 const data = snap.val() || {};
-                const msgs = Object.values(data)
-                    .filter(m => (m.from === sender.id && m.to === 'admin') ||
-                                 (m.from === 'admin' && m.to === sender.id))
-                    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                const msgs = Object.entries(data)
+                    .filter(([, m]) => (m.from === sender.id && m.to === 'admin') ||
+                                      (m.from === 'admin' && m.to === sender.id))
+                    .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
                 
                 const container = document.getElementById('help-chat');
                 container.replaceChildren();
@@ -4058,7 +4059,7 @@
                     empty.textContent = 'No messages yet. Send a message to admin.';
                     container.appendChild(empty);
                 } else {
-                    msgs.forEach(m => {
+                    msgs.forEach(([messageId, m]) => {
                         const isAdmin = m.from === 'admin';
                         const bubble = document.createElement('div');
                         bubble.className = `chat-bubble ${isAdmin ? 'admin' : 'user'}`;
@@ -4070,6 +4071,17 @@
                         const time = document.createElement('span');
                         time.className = 'time';
                         time.textContent = m.timestamp ? new Date(m.timestamp).toLocaleTimeString() : '';
+                        if (!isAdmin) {
+                            const receipt = document.createElement('span');
+                            const isSeen = Boolean(m.readAt || m.read);
+                            const isDelivered = Boolean(m.deliveredAt || isSeen);
+                            receipt.className = 'help-message-status' + (isSeen ? ' seen' : isDelivered ? ' delivered' : '');
+                            receipt.textContent = isSeen ? '✓✓' : isDelivered ? '✓✓' : '✓';
+                            receipt.title = isSeen ? 'Seen by admin' : isDelivered ? 'Delivered to admin' : 'Sent';
+                            receipt.setAttribute('aria-label', receipt.title);
+                            receipt.dataset.messageId = messageId;
+                            time.appendChild(receipt);
+                        }
                         bubble.append(label, text, time);
                         container.appendChild(bubble);
                     });
@@ -4097,17 +4109,20 @@
             }
             const fullMessage = `Name: ${sender.name}\nID: ${sender.id}\nMessage: ${msg}`;
             
-            db.ref('chat_messages').push({
+            const messageRef = db.ref('chat_messages').push();
+            messageRef.set({
                 from: sender.id,
                 to: 'admin',
                 message: fullMessage,
                 timestamp: Date.now(),
                 type: 'help',
                 senderName: sender.name,
-                senderId: sender.id
+                senderId: sender.id,
+                read: false
             }).then(() => {
-                status.textContent = '✅ Sent!';
+                status.textContent = '✅ Message sent';
                 document.getElementById('help-msg').value = '';
+                listenHelp();
                 setTimeout(() => status.textContent = '', 3000);
                 const safeId = String(sender.id).replace(/\./g, '_');
                 db.ref('help_tickets/' + safeId).push({
