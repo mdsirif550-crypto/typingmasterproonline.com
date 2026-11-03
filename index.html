@@ -2120,6 +2120,15 @@
       }
     });
     window.addEventListener("DOMContentLoaded", () => {
+      // Failsafe: never leave visitors stuck on the loading overlay if startup code fails.
+      window.setTimeout(() => {
+        const loader = document.getElementById("loadingScreen");
+        const welcome = document.getElementById("trainerWelcomeScreen");
+        if (loader && getComputedStyle(loader).display !== "none") {
+          loader.style.display = "none";
+          if (welcome && !hasStartedTrainerSession()) welcome.style.display = "flex";
+        }
+      }, 3000);
       updateWelcomeBannerProfile();
       if (
         window.matchMedia("(display-mode: standalone)").matches ||
