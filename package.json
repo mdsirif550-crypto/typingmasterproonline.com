@@ -30,9 +30,12 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
-      ]
+      ],
+      "artifactName": "TypingMaster-Pro-Online-Setup.exe"
     },
     "nsis": {
       "oneClick": false,
