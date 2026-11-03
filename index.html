@@ -20,7 +20,7 @@
         window.matchMedia("(display-mode: standalone)").matches ||
         window.matchMedia("(display-mode: fullscreen)").matches ||
         navigator.standalone === true ||
-        /;\\s*wv\\)/i.test(ua) ||
+        /;\s*wv\)/i.test(ua) ||
         /\\bElectron\\//i.test(ua);
       if (isInstalledApp) document.documentElement.classList.add("installed-app-mode");
     })();
@@ -2134,7 +2134,7 @@
         window.matchMedia("(display-mode: standalone)").matches ||
         window.matchMedia("(display-mode: fullscreen)").matches ||
         window.navigator.standalone === true ||
-        /;\\s*wv\\)/i.test(navigator.userAgent || "") ||
+        /;\s*wv\)/i.test(navigator.userAgent || "") ||
         /\\bElectron\\//i.test(navigator.userAgent || "")
       ) {
         document.documentElement.classList.add("installed-app-mode");
