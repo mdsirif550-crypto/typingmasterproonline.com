@@ -624,6 +624,84 @@
             color: #bfdbfe !important;
         }
 
+
+        /* Rich, high-contrast Night Mode styling for leaderboard banners and controls. */
+        html[data-theme="dark"] #banner.golden-banner {
+            background: linear-gradient(125deg, #111827 0%, #172554 38%, #312e81 72%, #164e63 100%) !important;
+            border: 1px solid rgba(125, 211, 252, 0.55) !important;
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.42), inset 0 1px rgba(255,255,255,0.12);
+            animation: none;
+        }
+        html[data-theme="dark"] #banner .banner-announcement,
+        html[data-theme="dark"] #banner .banner-announcement h2,
+        html[data-theme="dark"] #banner .banner-announcement p { color: #f8fafc !important; }
+        html[data-theme="dark"] #banner .banner-announcement .announcement-highlight { color: #fcd34d !important; }
+        html[data-theme="dark"] #banner .banner-website-glow {
+            background: linear-gradient(90deg, #67e8f9, #c4b5fd, #f9a8d4, #67e8f9);
+            background-size: 220% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+        html[data-theme="dark"] #banner-name {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            font-size: 13px !important;
+            font-weight: 1000 !important;
+            letter-spacing: 0.04em;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+        }
+        html[data-theme="dark"] #banner-rank,
+        html[data-theme="dark"] #banner-level,
+        html[data-theme="dark"] #banner-points,
+        html[data-theme="dark"] #banner-id {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            font-weight: 900 !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        html[data-theme="dark"] .banner-winner-card {
+            background: linear-gradient(135deg, #1e293b, #312e81 58%, #164e63) !important;
+            border: 1px solid rgba(129, 140, 248, 0.55) !important;
+            color: #f8fafc !important;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.3);
+        }
+        html[data-theme="dark"] .banner-winner-card:nth-child(1) { border-color: rgba(250,204,21,0.7) !important; }
+        html[data-theme="dark"] .banner-winner-card:nth-child(2) { border-color: rgba(203,213,225,0.7) !important; }
+        html[data-theme="dark"] .banner-winner-card:nth-child(3) { border-color: rgba(251,146,60,0.7) !important; }
+        html[data-theme="dark"] .banner-winner-name {
+            color: #ffffff !important;
+            font-weight: 1000 !important;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        html[data-theme="dark"] .banner-winner-rank { color: #fde68a !important; }
+        html[data-theme="dark"] .banner-winner-score { color: #bfdbfe !important; font-weight: 900 !important; }
+        html[data-theme="dark"] .banner-toggle-button,
+        html[data-theme="dark"] #banner.is-collapsed .banner-toggle-button {
+            border: 1px solid rgba(125,211,252,0.65) !important;
+            background: linear-gradient(135deg, #1d4ed8, #6d28d9) !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+        html[data-theme="dark"] #leaderboard-section button[onclick="openAllUsers()"] {
+            background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(191,219,254,0.5);
+            box-shadow: 0 3px 10px rgba(37,99,235,0.28);
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-table tbody tr {
+            border: 1px solid rgba(148,163,184,0.25);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+        }
+        html[data-theme="dark"] #leaderboard-section .leaderboard-player-name {
+            font-weight: 1000 !important;
+            letter-spacing: 0.01em;
+        }
+        .leaderboard-loading-row td { color: #64748b; font-size: 12px; font-weight: 900; text-align: center; }
+        .leaderboard-loading-row td::before { content: "⌛"; margin-right: 7px; }
+        html[data-theme="dark"] .leaderboard-loading-row td { color: #bfdbfe !important; }
 </style>
     <script>
         if (window.parent !== window) {
@@ -933,7 +1011,7 @@
                     <thead class="bg-slate-900 text-white uppercase tracking-wider">
                         <tr><th class="p-2 text-left">Player</th><th class="p-2 text-center">Typing speed</th><th class="p-2 text-center">LVL</th><th class="p-2 text-center">Total</th><th class="p-2 text-center">Monthly</th><th class="p-2 text-center">WPM</th></tr>
                     </thead>
-                    <tbody id="leaderboard-body" class="divide-y divide-slate-100 font-bold"></tbody>
+                    <tbody id="leaderboard-body" class="divide-y divide-slate-100 font-bold"><tr class="leaderboard-loading-row"><td colspan="6" class="p-4 text-center">Loading leaderboard…</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -1207,6 +1285,7 @@
         let loggedInUser = null;
         let shouldOpenMessagesAfterLogin = false;
         let allUsers = [];
+        let usersLoadState = 'loading';
         let allLessons = [];
         const supplementaryEnglishPoems = [
             {
@@ -1778,6 +1857,7 @@
         // ============================================
         function syncUsers() {
             db.ref('users').on('value', snap => {
+                usersLoadState = 'ready';
                 const data = snap.val() || {};
                 const currentMonth = getCurrentMonthKey();
                 if (serverTimeOffsetReady) archiveStaleMonthlyEvents(data, currentMonth);
@@ -1818,7 +1898,9 @@
                     if (requestedProfile) viewProfile(requestedProfile.id);
                 }
             }, err => {
+                usersLoadState = 'error';
                 console.error('Users listener failed:', err);
+                renderLeaderboard(allUsers);
             });
         }
 
@@ -2305,6 +2387,12 @@
         function getRankRowBackground(rank) {
             const hue = rank === 1 ? 45 : rank === 2 ? 215 : rank === 3 ? 25 : ((rank - 4) * 47 + 145) % 360;
             const saturation = rank === 2 ? 35 : 75;
+            if (document.documentElement.dataset.theme === 'dark') {
+                if (rank === 1) return 'linear-gradient(115deg, #604510, #30230c)';
+                if (rank === 2) return 'linear-gradient(115deg, #334155, #172033)';
+                if (rank === 3) return 'linear-gradient(115deg, #713f12, #321d10)';
+                return `linear-gradient(115deg, hsl(${hue} 48% 22%), hsl(${hue} 42% 14%))`;
+            }
             return `linear-gradient(to left, hsl(${hue} ${saturation}% 88%), hsl(${hue} ${saturation}% 96%))`;
         }
 
@@ -2455,13 +2543,21 @@
         }
 
         function renderLeaderboard(users) {
+            const tbody = document.getElementById('leaderboard-body');
+            if (usersLoadState === 'loading') {
+                tbody.innerHTML = '<tr class="leaderboard-loading-row"><td colspan="6" class="p-4 text-center">Loading leaderboard…</td></tr>';
+                return;
+            }
+            if (usersLoadState === 'error') {
+                tbody.innerHTML = '<tr class="leaderboard-loading-row"><td colspan="6" class="p-4 text-center">Could not load leaderboard. Please check your connection.</td></tr>';
+                return;
+            }
             const sorted = [...users].sort((a, b) => {
                 const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
                 if (mb !== ma) return mb - ma;
                 return (b.points || 0) - (a.points || 0);
             });
             const top = sorted.slice(0, 10);
-            const tbody = document.getElementById('leaderboard-body');
             if (top.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No players yet</td></tr>';
                 return;
