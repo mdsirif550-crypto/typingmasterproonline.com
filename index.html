@@ -307,7 +307,7 @@
     .welcome-banner-controls .whatsapp-help-widget { padding: 3px; border-color: rgba(255,255,255,0.3); box-shadow: 0 4px 12px rgba(37, 211, 102, 0.22); }
     .welcome-banner-controls .whatsapp-help { padding: 5px 8px; font-size: 10px; }
     .welcome-banner-controls .whatsapp-help-icon { font-size: 14px; }
-    .mobile-notice-banner { display: block; position: relative; width: 100%; margin: 0; padding: 14px; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 14px; background: linear-gradient(135deg, rgba(66, 32, 6, 0.78), rgba(113, 63, 18, 0.7)); color: #fef3c7; text-align: left; }
+    .mobile-notice-banner { display: none; position: relative; width: 100%; margin: 0; padding: 14px; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 14px; background: linear-gradient(135deg, rgba(66, 32, 6, 0.78), rgba(113, 63, 18, 0.7)); color: #fef3c7; text-align: left; }
     .mobile-notice-banner h2 { margin: 0 28px 8px 0; color: #fde68a; font-size: 16px; line-height: 1.5; }
     .mobile-notice-banner p { margin: 0 0 12px; font-size: 13px; line-height: 1.7; }
     .mobile-notice-banner .mobile-notice-close { position: absolute; top: 8px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.2); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
@@ -1164,6 +1164,15 @@
         exitTypingFullscreenFallback();
       }
       panel.focus();
+    });
+    // Show the mobile keyboard guidance only after the visitor taps the first-page typing practice card.
+    document.querySelector('.welcome-image-actions a[href="#typingPanel"]').addEventListener("click", event => {
+      const isMobile = window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768;
+      if (!isMobile) return;
+      event.preventDefault();
+      const notice = document.getElementById("mobile-notice-banner");
+      notice.style.display = "block";
+      notice.scrollIntoView({ behavior: "smooth", block: "center" });
     });
     document.getElementById("typingPanel").addEventListener("pointerdown", event => {
       if (event.pointerType !== "touch") return;
