@@ -12,6 +12,9 @@
   "theme_color": "#041e12",
   "lang": "en",
   "categories": ["education", "productivity"],
+  "shortcuts": [
+    { "name": "Offline Typing Practice", "short_name": "Offline Practice", "url": "/offline-practice.html", "icons": [{ "src": "/app-icon-192.png", "sizes": "192x192" }] }
+  ],
   "icons": [
     {
       "src": "/app-icon-192.png",
