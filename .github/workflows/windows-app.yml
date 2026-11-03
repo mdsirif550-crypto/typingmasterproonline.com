@@ -1,0 +1,54 @@
+name: Build Windows Desktop Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "manifest.json"
+      - "sw.js"
+      - "electron/**"
+      - "package.json"
+      - ".github/workflows/windows-app.yml"
+      - "*.html"
+      - "*.js"
+      - "*.css"
+      - "*.png"
+      - "*.jpg"
+      - "*.webp"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install desktop app dependencies
+        run: npm install
+
+      - name: Build Windows installer
+        run: npm run build:win
+
+      - name: Publish installer download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: typingmaster-windows-latest
+          name: TypingMaster Pro Online - Windows Installer
+          body: |
+            Windows desktop installer for TypingMaster Pro Online.
+            Download the Setup.exe file and run it on a 64-bit Windows computer.
+          files: dist/*.exe
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          make_latest: false
