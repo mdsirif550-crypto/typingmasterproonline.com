@@ -66,7 +66,7 @@ footer{text-align:center;color:#777fa8;font-size:12px;margin-top:26px}
 /* Existing Firebase web app configuration found in the public project.
    Firebase client config is not an admin secret; protect data with Security Rules. */
 const firebaseConfig = {
-  apiKey: "AIzaSyBdgUL7C3FhhdMSGMy4DiB5AvX0egXgz84E",
+  apiKey: "AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",
   authDomain: "eirnbooster.firebaseapp.com",
   databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
   projectId: "eirnbooster",
