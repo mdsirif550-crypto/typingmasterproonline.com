@@ -186,11 +186,14 @@
     .welcome-banner-topline { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .welcome-banner-account { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; }
     .welcome-banner-identity, .welcome-banner-controls { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+    .welcome-banner-controls { width: 100%; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .welcome-banner-controls::-webkit-scrollbar { display: none; }
+    .welcome-banner-controls > * { flex: 0 0 auto; }
     .welcome-banner-logo { display: block; width: 84px; height: 84px; flex: 0 0 84px; object-fit: contain; border: 2px solid rgba(255,255,255,0.85); border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.28); }
     .welcome-banner-identity h1 { color: #fff; font-size: clamp(22px, 4vw, 34px); font-weight: 900; line-height: 1.1; letter-spacing: 0.3px; text-shadow: 0 3px 12px rgba(0,0,0,0.35); }
     .welcome-banner-identity h1 span { color: #7dd3fc; }
-    .welcome-banner-about { margin-left: 8px; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.26); border-radius: 999px; background: linear-gradient(135deg, #047857, #0f766e); color: #fff; font-size: 12px; font-weight: 800; text-decoration: none; white-space: nowrap; }
-    .welcome-banner-about:hover { filter: brightness(1.12); }
+    .welcome-banner-social { margin-left: 0; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.26); border-radius: 999px; background: linear-gradient(135deg, #047857, #0f766e); color: #fff; font-size: 12px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+    .welcome-banner-social:hover { filter: brightness(1.12); }
     .welcome-banner-academy { padding: 7px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; background: linear-gradient(135deg, #b45309, #b91c1c); color: #fff; font-size: 12px; font-weight: 800; text-decoration: none; white-space: nowrap; }
     .welcome-banner-academy:hover { filter: brightness(1.12); }
     .welcome-banner-login { padding: 7px 12px; border: 1px solid rgba(255,255,255,0.28); border-radius: 999px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; font-size: 12px; font-weight: 900; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(37,99,235,0.24); }
@@ -352,8 +355,15 @@
     .btn-reset:hover { background-color: var(--primary-hover); }
     .status-feedback { background-color: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 10px; text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 15px; min-height: 44px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
     .typing-panel { background-color: var(--panel-bg); border-radius: 16px; padding: 12px 30px 30px; margin: 0 auto 25px; width: min(100%, 900px); min-height: 430px; box-shadow: 0 4px 20px rgba(0,0,0,0.25); position: relative; border: 2px solid transparent; transition: border-color 0.2s; }
-    .typing-panel .dashboard { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(230px, 1.7fr) repeat(4, minmax(66px, 0.65fr)) minmax(170px, 1.1fr); align-items: center; justify-content: initial; gap: 6px; margin: 0 0 20px; padding: 8px; background: rgba(4, 30, 18, 0.48); box-shadow: none; }
+    .typing-panel .dashboard { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); align-items: center; justify-content: initial; gap: 6px; margin: 0 0 20px; padding: 8px; background: rgba(4, 30, 18, 0.48); box-shadow: none; }
     .typing-panel .stat-box { min-width: 0; }
+    .typing-panel .dashboard > .stat-box:nth-child(1) { grid-column: span 2; }
+    .typing-panel .dashboard > .stat-box:nth-child(2) { grid-column: span 3; }
+    .typing-panel .dashboard > .stat-box:nth-child(3) { grid-column: span 2; }
+    .typing-panel .dashboard > .stat-box:nth-child(4),
+    .typing-panel .dashboard > .stat-box:nth-child(5),
+    .typing-panel .dashboard > .stat-box:nth-child(6) { grid-column: span 1; }
+    .typing-panel .dashboard > .typing-zoom-controls { position: static; grid-column: 1 / -1; justify-self: end; }
     .typing-panel .stat-label { font-size: 9px; }
     .typing-panel .stat-val { font-size: 15px; white-space: nowrap; }
     .typing-panel .controls { justify-content: center; gap: 4px; flex-wrap: nowrap; }
@@ -399,6 +409,12 @@
     .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) { grid-column: 1 / -1; }
     .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) .controls { display: flex; justify-content: stretch; width: 100%; }
     .typing-panel.bengali-mode #lessonSelect { width: 100%; max-width: none; padding: 9px 12px; font-size: 14px; }
+    .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2) { grid-column: 1 / -1; }
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(3),
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(6) { grid-column: span 2; }
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(4),
+    .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(5) { grid-column: span 1; }
     .bijoy-notice-button { display: none; flex: 0 0 auto; padding: 8px 12px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
     .bijoy-notice-button:hover { background: #1d4ed8; }
     .typing-panel.bengali-mode .bijoy-notice-button { display: inline-flex; align-items: center; justify-content: center; }
@@ -488,9 +504,9 @@
       .welcome-banner-account { position: absolute; top: 0; right: 0; width: auto; }
       .welcome-banner-logo { width: 58px; height: 58px; flex-basis: 58px; border-radius: 13px; }
       .welcome-banner-identity h1 { min-width: 0; font-size: clamp(18px, 5vw, 24px); }
-      .welcome-banner-controls { width: 100%; gap: 8px; flex-wrap: wrap; }
+      .welcome-banner-controls { width: 100%; gap: 8px; flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; }
       .welcome-banner-login { overflow: hidden; }
-      .welcome-banner-about { margin-left: 0; padding: 6px 9px; font-size: 10px; }
+      .welcome-banner-social { padding: 6px 9px; font-size: 10px; }
       .welcome-banner-academy { padding: 6px 9px; font-size: 10px; }
       .welcome-banner-login { width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: 0; }
       .welcome-banner-login::after { content: "👤"; font-size: 17px; }
@@ -574,7 +590,7 @@
       select { max-width: 100%; }
       .typing-panel { width: 100%; padding: 50px 14px 18px; }
       .typing-panel { min-height: 430px; padding: 50px 10px 18px; }
-      .typing-panel .dashboard { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; min-width: 0; gap: 7px 4px; margin-bottom: 14px; padding: 6px 4px; }
+      .typing-panel .dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; min-width: 0; gap: 7px 8px; margin-bottom: 14px; padding: 6px 4px; }
       .typing-panel .typing-zoom-controls { position: absolute; top: 9px; right: 9px; }
       .typing-panel .dashboard .stat-box { min-width: 0; }
       .typing-panel .dashboard .stat-box:nth-child(1), .typing-panel .dashboard .stat-box:nth-child(2) { grid-column: 1 / -1; }
@@ -584,6 +600,15 @@
       .typing-panel .dashboard .stat-box:nth-child(2) .controls { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px; width: 100%; }
       .typing-panel .dashboard .stat-box:nth-child(2) .controls select { width: 100%; min-width: 0; padding: 7px 6px; font-size: 11px; }
       .typing-panel .dashboard .stat-box:nth-child(2) .controls .btn-reset { padding: 7px 8px; font-size: 10px; }
+      .typing-panel .dashboard > .stat-box:nth-child(3),
+      .typing-panel .dashboard > .stat-box:nth-child(6) { grid-column: 1 / -1; }
+      .typing-panel .dashboard > .stat-box:nth-child(4),
+      .typing-panel .dashboard > .stat-box:nth-child(5) { grid-column: span 1; }
+      .typing-panel .dashboard > .typing-zoom-controls { position: static; grid-column: 1 / -1; justify-self: end; }
+      .typing-panel.bengali-mode .dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(2),
+      .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(3),
+      .typing-panel.bengali-mode .dashboard > .stat-box:nth-child(6) { grid-column: 1 / -1; }
       .typing-zoom-controls { top: 9px; right: 9px; }
       .keyboard-container { width: calc(100% + 30px); margin-right: -15px; margin-left: -15px; padding: 8px 5px; border-radius: 12px; }
       .keyboard-row { gap: 3px; margin-bottom: 6px; flex-wrap: nowrap; }
@@ -685,7 +710,7 @@
         </div>
       </div>
       <div class="welcome-banner-controls">
-        <a class="welcome-banner-about" href="/about.html">About Us</a>
+        <a class="welcome-banner-social" href="Social Media.html">Social Media</a>
         <a class="welcome-banner-academy" href="Rayhans_English_Academy.html" aria-label="Visit Rayhan's English Academy in Feni">Rayhan's English Academy</a>
         <div class="adu-office-app-widget" id="aduOfficeAppWidget">
           <a class="adu-office-app-link" href="https://play.google.com/store/apps/details?id=com.smart.aduoffice" target="_blank" rel="noopener noreferrer" aria-label="Google Play-এ Adu Office অ্যাপ ডাউনলোড করুন">
@@ -1545,7 +1570,7 @@
       document.getElementById("nextLessonButton").hidden = currentLanguage === "bn" && Number(lessonSelect.value) >= 9;
       resetExercise(options);
     }
-    function resetExercise(options = {}) { if (timerInterval) clearInterval(timerInterval); setLiveTypingPresence(false); currentIndex = 0; userInputs = []; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; const targetLength = currentLanguage === "bn" ? getTypingCharacters(targetText).length : targetText.length; document.getElementById("progressVal").innerText = `0 / ${targetLength} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; document.getElementById("bengaliTypingBox").value = ""; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; if (options.focus === false) return; const panel = document.getElementById("typingPanel"); if (currentLanguage === "bn") document.getElementById("bengaliTypingBox").focus(); else if (panel) panel.focus(); }
+    function resetExercise(options = {}) { if (timerInterval) clearInterval(timerInterval); timerInterval = null; startTime = null; setLiveTypingPresence(false); currentIndex = 0; userInputs = []; isStarted = false; totalSeconds = 0; totalKeystrokes = 0; totalErrors = 0; hasErrorAtCurrent = false; const targetLength = currentLanguage === "bn" ? getTypingCharacters(targetText).length : targetText.length; document.getElementById("progressVal").innerText = `0 / ${targetLength} (0%)`; document.getElementById("wpmVal").innerText = "00"; document.getElementById("accuracyVal").innerText = "100%"; document.getElementById("timeVal").innerText = "00:00"; document.getElementById("bengaliTypingBox").value = ""; renderText(); highlightKeyboardKey(); updateFeedbackPrompt(); const feedbackEl = document.getElementById("statusFeedback"); feedbackEl.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; if (options.focus === false) return; const panel = document.getElementById("typingPanel"); if (currentLanguage === "bn") document.getElementById("bengaliTypingBox").focus(); else if (panel) panel.focus(); }
     function renderText() {
       const container = document.getElementById("textDisplay");
       if (currentLanguage === "bn") {
@@ -1609,6 +1634,7 @@
         clearInterval(timerInterval);
         timerInterval = null;
         isStarted = false;
+        startTime = null;
         totalSeconds = 0;
         document.getElementById("timeVal").innerText = "00:00";
         document.getElementById("wpmVal").innerText = "00";
@@ -1618,9 +1644,11 @@
         ? Math.round(((totalKeystrokes - totalErrors) / totalKeystrokes) * 100) + "%"
         : "100%";
       document.getElementById("progressVal").innerText = `${currentIndex} / ${targetChars.length} (${Math.round((currentIndex / targetChars.length) * 100)}%)`;
+      if (isStarted) updateTypingStats();
       document.getElementById("summaryModal").style.display = checkedChars.length === targetChars.length ? "flex" : "none";
       if (checkedChars.length === targetChars.length) {
         clearInterval(timerInterval);
+        timerInterval = null;
         setLiveTypingPresence(false);
       }
     }
@@ -1632,7 +1660,21 @@
       updateBengaliTypingProgress(event.currentTarget);
     });
     function triggerErrorEffect() { const panel = document.getElementById('typingPanel'); const feedback = document.getElementById('statusFeedback'); panel.classList.add('panel-shake'); feedback.style.backgroundColor = "rgba(239, 68, 68, 0.4)"; feedback.innerHTML = `<span style="color: #fff; font-size: 18px;">❌ ভুল হয়েছে! সঠিক কী চাপুন।</span>`; setTimeout(() => { panel.classList.remove('panel-shake'); feedback.style.backgroundColor = "rgba(30, 41, 59, 0.5)"; updateFeedbackPrompt(); }, 400); }
-    function startTimer() { timerInterval = setInterval(() => { totalSeconds++; const mins = Math.floor(totalSeconds / 60); const secs = totalSeconds % 60; document.getElementById("timeVal").innerText = `${mins < 10 ? "0":""}${mins}:${secs < 10 ? "0":""}${secs}`; const wpm = Math.round((currentIndex / 5) / (totalSeconds / 60)) || 0; document.getElementById("wpmVal").innerText = wpm < 10 ? "0" + wpm : wpm; }, 1000); }
+    function updateTypingStats() {
+      if (!startTime) return;
+      const elapsedMs = Math.max(0, Date.now() - startTime);
+      totalSeconds = Math.floor(elapsedMs / 1000);
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      document.getElementById("timeVal").innerText = `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
+      const wpm = elapsedMs > 0 ? Math.round((currentIndex / 5) * 60000 / elapsedMs) : 0;
+      document.getElementById("wpmVal").innerText = wpm < 10 ? "0" + wpm : String(wpm);
+    }
+    function startTimer() {
+      if (timerInterval) return;
+      startTime = Date.now();
+      timerInterval = setInterval(updateTypingStats, 1000);
+    }
     document.addEventListener("keydown", function(event) {
       const activeElement = document.activeElement;
       if (document.getElementById("keyboardGuideModal").getAttribute("aria-hidden") === "false") return;
@@ -1654,10 +1696,11 @@
       let isMatch = (typedChar === targetChar);
       if (!isMatch && currentLanguage === 'bn' && bijoyToEnglishGuide[targetChar]) { if (bijoyToEnglishGuide[targetChar].key === typedChar) isMatch = true; }
       if (isMatch) { if (currentLanguage !== "bn") playKeySound(true); currentIndex++; hasErrorAtCurrent = false; } else { if (currentLanguage !== "bn") { playKeySound(false); triggerErrorEffect(); hasErrorAtCurrent = true; } else hasErrorAtCurrent = false; totalErrors++; }
+      updateTypingStats();
       renderText(); highlightKeyboardKey(); updateFeedbackPrompt();
       document.getElementById("accuracyVal").innerText = Math.round(((totalKeystrokes - totalErrors) / totalKeystrokes) * 100) + "%";
       document.getElementById("progressVal").innerText = `${currentIndex} / ${targetText.length} (${Math.round((currentIndex / targetText.length) * 100)}%)`;
-      if (currentIndex === targetText.length) { clearInterval(timerInterval); setLiveTypingPresence(false); document.getElementById("modalWpm").innerText = document.getElementById("wpmVal").innerText; document.getElementById("modalAccuracy").innerText = document.getElementById("accuracyVal").innerText; document.getElementById("modalTime").innerText = document.getElementById("timeVal").innerText; document.getElementById("modalErrors").innerText = totalErrors; document.getElementById("summaryModal").style.display = "flex"; }
+      if (currentIndex === targetText.length) { clearInterval(timerInterval); timerInterval = null; setLiveTypingPresence(false); document.getElementById("modalWpm").innerText = document.getElementById("wpmVal").innerText; document.getElementById("modalAccuracy").innerText = document.getElementById("accuracyVal").innerText; document.getElementById("modalTime").innerText = document.getElementById("timeVal").innerText; document.getElementById("modalErrors").innerText = totalErrors; document.getElementById("summaryModal").style.display = "flex"; }
     });
     function openCustomModal() { document.getElementById("customTextModal").style.display = "flex"; }
     function closeCustomModal() { document.getElementById("customTextModal").style.display = "none"; }
@@ -2202,5 +2245,7 @@
       }
     });
   </script>
+
+
 </body>
 </html>
