@@ -2609,7 +2609,7 @@
                 return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}')">
                     <td class="leaderboard-player-cell">
                         <div class="leaderboard-player">
-                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
+                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'" class="leader-img"><span class="rank-avatar-decoration rank-${rank <= 3 ? rank : 'other'}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</span></span>
                             <div class="leaderboard-player-details"><p class="leaderboard-player-name font-black text-slate-800">${u.name || u.id}${renderVerifiedBadge(u)}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</p>
                             <span class="user-id-chip leaderboard-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
@@ -2650,7 +2650,7 @@
                 return `<tr class="clickable-row ${isMe ? 'bg-blue-50' : ''}" style="background:${getRankRowBackground(rank)}" onclick="viewProfile('${u.id}'); closeAllUsers();">
                     <td class="all-users-player-cell">
                         <div class="all-users-player">
-                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
+                            <span class="rank-avatar-wrap level-color-ring" style="${getLevelFrameStyle(calcLevel(u.points || 0))}"><img src="${u.pic || DEFAULT_AVATAR}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'" class="leader-img"><span class="rank-avatar-decoration rank-${i < 3 ? i + 1 : 'other'}">${i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span></span>
                             <div class="all-users-player-details"><span class="all-users-player-name font-black">${u.name || u.id}${renderVerifiedBadge(u)}${renderOnlineIndicator(u.id)}${renderTypingSignal(u.id)}</span>
                             <span class="user-id-chip all-users-player-id" style="--id-hue:${getUserIdHue(u.id)}">${u.id}</span></div>
                         </div>
