@@ -2247,6 +2247,100 @@
   </script>
 
 
-<a href="/social-publisher/" aria-label="Open Social Media Publisher" style="position:fixed;left:14px;bottom:14px;z-index:99999;padding:11px 15px;border:1px solid #6ee7b7;border-radius:999px;background:linear-gradient(135deg,#047857,#059669);color:#fff;text-decoration:none;font:800 13px system-ui;box-shadow:0 5px 18px #0006">🚀 Social Publisher</a>
+
+<style id="tm-social-publisher-style">
+#tmSocialOpen{position:fixed;left:14px;bottom:14px;z-index:99999;padding:11px 15px;border:1px solid #6ee7b7;border-radius:999px;background:linear-gradient(135deg,#047857,#059669);color:#fff;font:800 13px system-ui;box-shadow:0 5px 18px #0006;cursor:pointer}
+#tmSocialModal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);overflow:auto;padding:18px}
+#tmSocialModal.tm-open{display:block}
+#tmSocialModal *{box-sizing:border-box}
+#tmSocialModal .tm-shell{max-width:920px;margin:22px auto;background:linear-gradient(145deg,#0b2116,#102c1d);color:#f2fff6;border:1px solid #315b40;border-radius:20px;padding:20px;box-shadow:0 20px 70px #0009;font:15px system-ui,'Noto Sans Bengali',sans-serif}
+#tmSocialModal .tm-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#tmSocialModal h2{font-size:26px;margin:0;color:#8cf0b6}
+#tmSocialModal .tm-close{border:1px solid #52755d;border-radius:10px;padding:8px 12px;background:#193d2a;color:#fff;cursor:pointer}
+#tmSocialModal .tm-sub{color:#b3cbbb;line-height:1.6;margin:10px 0 18px}
+#tmSocialModal .tm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#tmSocialModal .tm-card{background:#10291c;border:1px solid #315b40;border-radius:14px;padding:14px}
+#tmSocialModal .tm-platform{display:flex;align-items:center;gap:10px}
+#tmSocialModal .tm-logo{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;font-weight:900;font-size:20px;color:white}
+#tmSocialModal .tm-fb{background:#1877f2}#tmSocialModal .tm-yt{background:#f22}#tmSocialModal .tm-ig{background:linear-gradient(135deg,#7c3aed,#ec4899,#f59e0b)}#tmSocialModal .tm-tt{background:#111;border:1px solid #555}
+#tmSocialModal .tm-state{font-size:12px;color:#ffd27a;margin-top:3px}
+#tmSocialModal .tm-connect{margin-left:auto;border:1px solid #3c6950;background:#193d2a;color:#d8ffe6;border-radius:9px;padding:8px 10px;font-weight:700;cursor:pointer}
+#tmSocialModal label{display:block;font-weight:750;margin:15px 0 7px}
+#tmSocialModal input[type=file],#tmSocialModal textarea{width:100%;color:#f2fff6;background:#07170f;border:1px solid #315b40;border-radius:10px;padding:12px;font:inherit}
+#tmSocialModal textarea{min-height:90px;resize:vertical}
+#tmSocialModal .tm-preview{display:none;max-width:100%;max-height:250px;margin-top:12px;border-radius:12px}
+#tmSocialModal .tm-checks{display:flex;gap:16px;flex-wrap:wrap}
+#tmSocialModal .tm-checks label{margin:3px 0;font-weight:600}
+#tmSocialModal .tm-publish{margin-top:16px;width:100%;padding:13px;border:0;border-radius:11px;background:linear-gradient(135deg,#20c879,#0a9b5a);color:#032012;font-weight:900;font-size:15px;cursor:pointer}
+#tmSocialModal .tm-publish:disabled{opacity:.5;cursor:not-allowed}
+#tmSocialModal .tm-note{margin-top:14px;border:1px solid #80642b;background:#332914;color:#ffe4a3;padding:12px;border-radius:11px;line-height:1.6;font-size:13px}
+#tmSocialModal .tm-history{font-size:13px;color:#b3cbbb;margin-top:12px;white-space:pre-wrap}
+@media(max-width:600px){#tmSocialModal{padding:8px}#tmSocialModal .tm-shell{margin:8px auto;padding:14px}#tmSocialModal .tm-grid{grid-template-columns:1fr}#tmSocialModal h2{font-size:21px}}
+</style>
+<button id="tmSocialOpen" type="button">🚀 Social Publisher</button>
+<div id="tmSocialModal" role="dialog" aria-modal="true" aria-labelledby="tmSocialTitle">
+ <section class="tm-shell">
+  <div class="tm-head"><h2 id="tmSocialTitle">Social Media Publisher</h2><button class="tm-close" id="tmSocialClose" type="button">✕ Close</button></div>
+  <p class="tm-sub">একটি ভিডিও নির্বাচন করে Facebook, YouTube, Instagram ও TikTok-এর জন্য এক জায়গা থেকে প্রকাশের প্রস্তুতি নিন।</p>
+  <div class="tm-grid">
+   <div class="tm-card"><div class="tm-platform"><div class="tm-logo tm-fb">f</div><div><b>Facebook Page</b><div class="tm-state" id="tm-fb-state">সংযোগ করা হয়নি</div></div><button class="tm-connect" data-platform="facebook">Connect</button></div></div>
+   <div class="tm-card"><div class="tm-platform"><div class="tm-logo tm-yt">▶</div><div><b>YouTube</b><div class="tm-state" id="tm-yt-state">সংযোগ করা হয়নি</div></div><button class="tm-connect" data-platform="youtube">Connect</button></div></div>
+   <div class="tm-card"><div class="tm-platform"><div class="tm-logo tm-ig">◎</div><div><b>Instagram</b><div class="tm-state" id="tm-ig-state">সংযোগ করা হয়নি</div></div><button class="tm-connect" data-platform="instagram">Connect</button></div></div>
+   <div class="tm-card"><div class="tm-platform"><div class="tm-logo tm-tt">♪</div><div><b>TikTok</b><div class="tm-state" id="tm-tt-state">সংযোগ করা হয়নি</div></div><button class="tm-connect" data-platform="tiktok">Connect</button></div></div>
+  </div>
+  <div class="tm-card" style="margin-top:12px">
+   <label for="tmSocialVideo">ভিডিও নির্বাচন করুন</label><input id="tmSocialVideo" type="file" accept="video/mp4,video/quicktime,video/*">
+   <video id="tmSocialPreview" class="tm-preview" controls playsinline></video>
+   <label for="tmSocialCaption">ক্যাপশন</label><textarea id="tmSocialCaption" placeholder="ভিডিও সম্পর্কে লিখুন... #TypingMasterPro"></textarea>
+   <label>যে প্ল্যাটফর্মে প্রকাশ করতে চান</label>
+   <div class="tm-checks">
+    <label><input type="checkbox" value="facebook" checked> Facebook</label>
+    <label><input type="checkbox" value="youtube" checked> YouTube</label>
+    <label><input type="checkbox" value="instagram" checked> Instagram</label>
+    <label><input type="checkbox" value="tiktok" checked> TikTok</label>
+   </div>
+   <button id="tmSocialPublish" class="tm-publish" type="button" disabled>🚀 Publish to selected platforms</button>
+   <div class="tm-note" id="tmSocialNotice" role="status">ভিডিও নির্বাচন ও প্রিভিউ কাজ করবে। সরাসরি পোস্ট করতে নিরাপদ Backend/API, OAuth সংযোগ এবং প্রতিটি প্ল্যাটফর্মের অনুমোদন প্রয়োজন। GitHub Pages একা ভিডিও আপলোড করতে পারে না।</div>
+   <div class="tm-history" id="tmSocialHistory">এই ব্রাউজারে এখনো কোনো প্রকাশের রেকর্ড নেই।</div>
+  </div>
+ </section>
+</div>
+<script id="tm-social-publisher-script">
+(()=>{
+ const modal=document.getElementById('tmSocialModal'),open=document.getElementById('tmSocialOpen'),close=document.getElementById('tmSocialClose');
+ const file=document.getElementById('tmSocialVideo'),preview=document.getElementById('tmSocialPreview'),publish=document.getElementById('tmSocialPublish'),notice=document.getElementById('tmSocialNotice');
+ let selected=null,objectUrl=null;
+ const say=t=>notice.textContent=t;
+ open.addEventListener('click',()=>{modal.classList.add('tm-open');document.body.style.overflow='hidden'});
+ const shut=()=>{modal.classList.remove('tm-open');document.body.style.overflow=''};
+ close.addEventListener('click',shut);modal.addEventListener('click',e=>{if(e.target===modal)shut()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('tm-open'))shut()});
+ file.addEventListener('change',()=>{
+  selected=file.files&&file.files[0]||null;
+  if(objectUrl)URL.revokeObjectURL(objectUrl);
+  preview.removeAttribute('src');preview.style.display='none';
+  if(!selected){publish.disabled=true;return}
+  if(!selected.type.startsWith('video/')){say('সঠিক ভিডিও ফাইল নির্বাচন করুন।');file.value='';selected=null;publish.disabled=true;return}
+  objectUrl=URL.createObjectURL(selected);preview.src=objectUrl;preview.style.display='block';publish.disabled=false;
+  say('ভিডিও প্রস্তুত। প্রকাশের জন্য Backend/API সংযোগ এখনো প্রয়োজন।');
+ });
+ document.querySelectorAll('#tmSocialModal .tm-connect').forEach(btn=>btn.addEventListener('click',async()=>{
+  const platform=btn.dataset.platform;
+  try{const response=await fetch('/api/social/'+platform+'/start',{credentials:'same-origin'});if(!response.ok)throw new Error('OAuth endpoint is not configured');const data=await response.json();if(data.url)location.href=data.url;else throw new Error('Authorization URL missing')}
+  catch(error){say(platform+' সংযোগ চালু হয়নি। সার্ভার-side OAuth এবং developer app এখনো সেটআপ করা হয়নি।')}
+ }));
+ const history=document.getElementById('tmSocialHistory');
+ try{const items=JSON.parse(localStorage.getItem('tm_social_history')||'[]');if(items.length)history.textContent='সর্বশেষ রেকর্ড: '+items.slice(0,8).map(x=>x.name+' — '+x.date+' — '+x.result).join('\n')}catch(e){}
+ publish.addEventListener('click',async()=>{
+  const targets=[...document.querySelectorAll('#tmSocialModal .tm-checks input:checked')].map(x=>x.value);
+  if(!selected){say('প্রথমে ভিডিও নির্বাচন করুন।');return}if(!targets.length){say('কমপক্ষে একটি প্ল্যাটফর্ম নির্বাচন করুন।');return}
+  publish.disabled=true;publish.textContent='⏳ অনুরোধ পাঠানো হচ্ছে...';
+  const data=new FormData();data.append('video',selected);data.append('caption',document.getElementById('tmSocialCaption').value);data.append('platforms',JSON.stringify(targets));
+  try{const response=await fetch('/api/social/publish',{method:'POST',body:data,credentials:'same-origin'});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Publishing backend is not configured');say('সার্ভারের ফলাফল: '+JSON.stringify(result));}
+  catch(error){say('এখনই ভিডিও পোস্ট করা যাচ্ছে না: '+error.message+'. আগে Backend/API ও চারটি প্ল্যাটফর্মের অনুমোদিত সংযোগ তৈরি করতে হবে।')}
+  finally{publish.disabled=!selected;publish.textContent='🚀 Publish to selected platforms'}
+ });
+})();
+</script>
 </body>
 </html>
