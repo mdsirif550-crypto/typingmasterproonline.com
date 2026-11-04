@@ -1,1 +1,141 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10112a">
+<title>Social Media Master Pro</title>
+<style>
+:root{--bg:#0d1023;--panel:#171a35;--panel2:#202448;--text:#f6f7ff;--muted:#aab0d0;--line:#30365f;--accent:#8b7cff;--accent2:#38d5c4;--danger:#ff737d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#25245a 0,#0d1023 48%);color:var(--text);font:15px/1.5 Inter,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 16px;font-weight:700;background:linear-gradient(100deg,var(--accent),#6a8cff);color:white}
+button:disabled{opacity:.5;cursor:not-allowed}.wrap{max-width:1180px;margin:auto;padding:26px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8b7cff,#38d5c4);display:grid;place-items:center;font-size:22px;font-weight:900;color:#10112a}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:10px;align-items:center}.subtle{background:#272b50;color:#dce0ff}
+.hero{padding:28px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(120deg,rgba(139,124,255,.18),rgba(56,213,196,.08));margin-bottom:20px}.hero h2{font-size:clamp(24px,4vw,36px);line-height:1.15;margin:0 0 10px}.hero p{max-width:720px;color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.card{background:rgba(23,26,53,.94);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0}.card h3{margin:0 0 14px;font-size:17px}.field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field label{color:#dce0ff;font-size:13px;font-weight:650}.field input,.field textarea{width:100%;border:1px solid var(--line);background:#10132b;color:var(--text);padding:12px;border-radius:11px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}textarea{min-height:90px;resize:vertical}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}.muted{color:var(--muted)}.small{font-size:12px}.hidden{display:none!important}.status{padding:10px 12px;border-radius:10px;background:#222747;color:#cbd0f5;margin:12px 0;font-size:13px;overflow-wrap:anywhere}.status.error{background:#49252f;color:#ffd9dc}.status.good{background:#163e3c;color:#c9fff5}
+.platforms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.platform{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;border:1px solid var(--line);background:#11152d;border-radius:13px}.platform strong{display:block}.platform span{font-size:11px;color:var(--muted)}.tag{font-size:10px!important;padding:4px 7px;border-radius:20px;background:#35305e;color:#d8d0ff!important;white-space:nowrap}
+.preview{margin-top:12px;background:#0d1023;border:1px dashed #505780;border-radius:14px;min-height:120px;display:grid;place-items:center;overflow:hidden;color:var(--muted);padding:10px}.preview video{max-width:100%;max-height:300px}.account{display:flex;align-items:center;justify-content:space-between;gap:10px}.notice{border-left:3px solid var(--accent2);padding:10px 12px;background:#132c35;border-radius:0 10px 10px 0;color:#c8f5ee;font-size:13px;margin-top:14px}
+footer{text-align:center;color:#777fa8;font-size:12px;margin-top:26px}
+@media(max-width:780px){.grid{grid-template-columns:1fr}.top-actions{flex-wrap:wrap;justify-content:flex-end}.hero{padding:22px}.platforms{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="brand"><div class="logo">S</div><div><h1>Social Media Master Pro</h1><p>One workspace for your social content</p></div></div>
+ <div class="top-actions"><span id="userLabel" class="muted small">Not signed in</span><button id="logoutBtn" class="subtle hidden">Sign out</button></div>
+</header>
+<section class="hero"><h2>Create once.<br>Prepare content for every platform.</h2><p>Manage your content from one dashboard. Sign in to keep your workspace private to your account.</p></section>
+<section id="authPanel" class="card">
+ <h3 id="authTitle">Create your account</h3>
+ <div class="row"><div class="field"><label for="name">Your name (for registration)</label><input id="name" autocomplete="name" placeholder="Your name"></div></div>
+ <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div>
+ <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div>
+ <div class="row"><button id="signupBtn">Create account</button><button id="loginBtn" class="subtle">I already have an account</button></div>
+ <div id="authStatus" class="status">Connect Firebase Authentication and enable Email/Password sign-in to use accounts.</div>
+</section>
+<main id="appPanel" class="grid hidden">
+ <section class="card">
+  <h3>Prepare a video post</h3>
+  <div class="field"><label for="videoFile">Choose a video</label><input id="videoFile" type="file" accept="video/*"></div>
+  <div id="videoPreview" class="preview">Your selected video preview will appear here.</div>
+  <div class="field"><label for="caption">Post caption</label><textarea id="caption" placeholder="Write your caption here..."></textarea></div>
+  <div class="row"><button id="saveBtn">Save to my workspace</button><button id="clearBtn" class="subtle">Clear</button></div>
+  <div id="saveStatus" class="status">Your saved caption will be stored under your own Firebase user ID.</div>
+  <div class="notice">Video preview is local to this browser. This starter version does not upload video files to cloud storage or publish posts.</div>
+ </section>
+ <section class="card">
+  <h3>Social accounts</h3>
+  <p class="muted small">Connectors are shown here as setup points. Real publishing requires each platform's official API, OAuth approval and permissions.</p>
+  <div class="platforms">
+   <div class="platform"><div><strong>Facebook</strong><span>Pages / official API</span></div><span class="tag">Setup pending</span></div>
+   <div class="platform"><div><strong>Instagram</strong><span>Professional accounts</span></div><span class="tag">Setup pending</span></div>
+   <div class="platform"><div><strong>YouTube</strong><span>Upload API / OAuth</span></div><span class="tag">Setup pending</span></div>
+   <div class="platform"><div><strong>TikTok</strong><span>Content Posting API</span></div><span class="tag">Setup pending</span></div>
+  </div>
+  <div class="notice">Never enter your social-media passwords here. Account connections should use each platform's official secure authorization flow.</div>
+  <div class="field"><label>My saved workspace</label><div id="savedCaption" class="status">No saved caption loaded yet.</div></div>
+ </section>
+</main>
+<footer>Social Media Master Pro · Independent project · Platform API access is subject to each provider's approval.</footer>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* Existing Firebase web app configuration found in the public project.
+   Firebase client config is not an admin secret; protect data with Security Rules. */
+const firebaseConfig = {
+  apiKey: "AIzaSyBdgUL7C3FhhdMSGMy4DiB5AvX0egXgz84E",
+  authDomain: "eirnbooster.firebaseapp.com",
+  databaseURL: "https://eirnbooster-default-rtdb.firebaseio.com",
+  projectId: "eirnbooster",
+  messagingSenderId: "1062288115898",
+  appId: "1:1062288115898:web:952df73a31a3acdc2e5a83"
+};
+const $ = id => document.getElementById(id);
+let auth = null, db = null, currentUser = null, previewUrl = null;
+function message(id, text, type=""){const el=$(id);el.textContent=text;el.className="status "+type;}
+try {
+  if (!firebase.apps.some(a => a.name === "socialMaster")) firebase.initializeApp(firebaseConfig, "socialMaster");
+  const app = firebase.app("socialMaster");
+  auth = app.auth(); db = app.database();
+  message("authStatus","Firebase connected. If sign-in fails, enable Email/Password in Firebase Authentication and check Database Rules.","good");
+} catch(e) { message("authStatus","Firebase setup error: "+e.message,"error"); }
+function setSignedIn(user){
+ currentUser=user;
+ $("authPanel").classList.toggle("hidden",!!user);
+ $("appPanel").classList.toggle("hidden",!user);
+ $("logoutBtn").classList.toggle("hidden",!user);
+ $("userLabel").textContent=user ? (user.email || "Signed in") : "Not signed in";
+ if(user) loadWorkspace();
+}
+if(auth) auth.onAuthStateChanged(setSignedIn);
+$("signupBtn").onclick=async()=>{
+ if(!auth)return message("authStatus","Firebase is not configured.","error");
+ const email=$("email").value.trim(), pass=$("password").value, name=$("name").value.trim();
+ if(!email||pass.length<6)return message("authStatus","Enter a valid email and a password with at least 6 characters.","error");
+ try{
+  const cred=await auth.createUserWithEmailAndPassword(email,pass);
+  await cred.user.updateProfile({displayName:name});
+  await db.ref("socialMaster/users/"+cred.user.uid+"/profile").update({name,email,createdAt:firebase.database.ServerValue.TIMESTAMP});
+  message("authStatus","Account created successfully.","good");
+ }catch(e){message("authStatus",e.message,"error");}
+};
+$("loginBtn").onclick=async()=>{
+ if(!auth)return message("authStatus","Firebase is not configured.","error");
+ try{await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value);}
+ catch(e){message("authStatus",e.message,"error");}
+};
+$("logoutBtn").onclick=()=>auth&&auth.signOut();
+$("videoFile").onchange=()=>{
+ const f=$("videoFile").files[0];
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+ if(!f){$("videoPreview").textContent="Your selected video preview will appear here.";return;}
+ previewUrl=URL.createObjectURL(f);
+ const v=document.createElement("video");v.src=previewUrl;v.controls=true;v.playsInline=true;
+ $("videoPreview").replaceChildren(v);
+};
+$("saveBtn").onclick=async()=>{
+ if(!currentUser)return;
+ const caption=$("caption").value.trim();
+ try{
+  await db.ref("socialMaster/users/"+currentUser.uid+"/workspace").update({
+   caption, updatedAt:firebase.database.ServerValue.TIMESTAMP
+  });
+  message("saveStatus","Caption saved to your private workspace.","good");
+  $("savedCaption").textContent=caption||"(Caption is empty)";
+ }catch(e){message("saveStatus","Could not save. Check Firebase Realtime Database Rules: "+e.message,"error");}
+};
+$("clearBtn").onclick=()=>{$("caption").value="";$("videoFile").value="";$("videoPreview").textContent="Your selected video preview will appear here.";if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}};
+async function loadWorkspace(){
+ try{
+  const snap=await db.ref("socialMaster/users/"+currentUser.uid+"/workspace").once("value");
+  const data=snap.val()||{};
+  $("caption").value=data.caption||"";
+  $("savedCaption").textContent=data.caption||"No saved caption yet.";
+ }catch(e){message("saveStatus","Workspace could not be loaded. Check Firebase Database Rules: "+e.message,"error");}
+}
+</script>
+</body>
+</html>
