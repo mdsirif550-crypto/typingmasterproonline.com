@@ -306,7 +306,7 @@
     .welcome-leaderboard-group > .welcome-image-action > img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .welcome-leaderboard-group > .welcome-image-action > .leaderboard-action-label { position: absolute; right: 7px; bottom: 7px; left: 7px; z-index: 1; min-height: 28px; padding: 5px 7px; border: 1px solid rgba(255,255,255,0.45); border-radius: 999px; background: linear-gradient(135deg, rgba(3,105,161,0.96), rgba(30,64,175,0.96)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
     .welcome-leaderboard-group > .home-top-three { position: relative; inset: auto; width: 100%; padding: 4px; border: 0; background: transparent; }
-    .welcome-image-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+    .welcome-image-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
     .welcome-image-action { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid rgba(125, 211, 252, 0.42); border-radius: 12px; background: #082f49; box-shadow: 0 5px 14px rgba(0,0,0,0.24); color: #fff; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
     .welcome-image-action:hover { transform: translateY(-3px); border-color: #7dd3fc; box-shadow: 0 9px 20px rgba(0,0,0,0.32); }
     .welcome-image-action:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
@@ -328,6 +328,7 @@
     .welcome-image-action-racer-art::before { content: ""; width: 100%; height: 13px; align-self: end; grid-area: 1 / 1; background: repeating-linear-gradient(90deg, #f8fafc 0 22px, transparent 22px 40px); opacity: 0.9; }
     .welcome-image-action-racer-art strong { grid-area: 1 / 1; color: #fff; font-size: clamp(24px, 5vw, 42px); filter: drop-shadow(0 5px 4px rgba(0,0,0,.45)); }
     .welcome-image-action-racer span { background: linear-gradient(135deg, #b91c1c, #ea580c); }
+    .welcome-image-action-football > span { background: linear-gradient(135deg, #047857, #065f46); }
     .welcome-banner-controls .adu-office-app-widget { position: static; flex: 0 0 auto; max-width: none; padding: 3px 22px 3px 4px; border-color: rgba(255,255,255,0.25); border-radius: 999px; }
     .welcome-banner-controls .adu-office-app-link { gap: 4px; font-size: 10px; }
     .welcome-banner-controls .adu-office-app-link img { width: 24px; height: 24px; }
@@ -743,6 +744,11 @@
         <img src="home-action-sky-game.jpg" alt="" loading="lazy" decoding="async">
         <span>✈️ Typing Sky Game</span>
         <span class="game-points-caption">Play, earn points, and become #1 on the leaderboard—start now!</span>
+      </a>
+      <a class="welcome-image-action welcome-image-action-football" href="typing-football-game.html" aria-label="Open Typing Football Game">
+        <img src="home-action-football-game.png" alt="Typing Football Challenge — start the game" loading="lazy" decoding="async">
+        <span>⚽ Typing Football Game</span>
+        <span class="game-points-caption">Type fast, score goals, and earn leaderboard points!</span>
       </a>
        <a class="welcome-image-action" href="typing_car_racer.html" aria-label="Open Typing Car Racer">
         <img src="home-action-car_racer.jpg" alt="" loading="lazy" decoding="async">
@@ -2245,8 +2251,6 @@
       }
     });
   </script>
-
-
 
 
 </body>
