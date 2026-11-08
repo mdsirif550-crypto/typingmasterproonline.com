@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Typing Football Challenge</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#071526;color:#fff;font-family:Arial,sans-serif}
+header{text-align:center;padding:18px;background:linear-gradient(110deg,#092c4c,#075a50)}
+h1{margin:0}
+main{max-width:950px;margin:auto;padding:14px}
+.stats,.settings{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:12px}
+.pill,.setting{background:#16334b;padding:10px 16px;border-radius:10px}
+.pill b{color:#ffe36b;font-size:22px}
+button,select{padding:11px 15px;border:0;border-radius:9px;font-weight:bold}
+button{background:#ffc928;cursor:pointer}
+button:disabled,select:disabled{opacity:.55;cursor:not-allowed}
+select{background:#fff;color:#10243a}
+.setting label{margin-right:7px}
+.field{position:relative;overflow:hidden;border:3px solid white;border-radius:16px;background:repeating-linear-gradient(0deg,#087943 0 80px,#0b874c 80px 160px);height:360px}
+.field svg{width:100%;height:100%}
+.player,.ball,.keeper{position:absolute;z-index:1;transition:left .2s ease,transform .2s ease;font-size:48px;filter:drop-shadow(0 4px 3px #003)}
+.player{bottom:23%;width:48px;height:58px;line-height:1;transform-origin:center}
+.player svg{display:block;width:100%;height:100%;overflow:visible}
+.ball{bottom:23%;font-size:38px;z-index:2;transition:left .35s ease,bottom .35s ease}
+.keeper{top:43%;width:8%;text-align:center;line-height:1}
+.keeper.left{left:2%}
+.keeper.right{right:2%}
+.keeper small{display:block;font-size:12px;background:#082a;color:white;border-radius:4px;padding:2px}
+.fx{position:absolute;z-index:3;inset:0;display:grid;place-items:center;font-size:42px;font-weight:bold;text-shadow:0 3px 6px black;opacity:0;pointer-events:none;transition:opacity .2s}
+.panel,.result{margin-top:14px;padding:18px;border-radius:14px;background:#122b42;text-align:center}
+.word{font-size:30px;color:#ffe36b;font-weight:bold;margin:10px}
+input{width:100%;padding:15px;font-size:20px;text-align:center;border-radius:10px;border:2px solid #64869b}
+.meter{height:10px;background:#334b5e;border-radius:10px;margin-top:10px;overflow:hidden}
+.meter div{height:100%;width:0;background:#37e68a;transition:width .1s}
+.timer-meter div{background:#ffc928}
+.msg{color:#c9deeb;font-size:14px}
+.account-status{margin:8px 0 0;color:#c9deeb;font-size:13px}
+.account-status a{color:#ffe36b;font-weight:bold}
+.retry-save{display:none;margin-left:8px;padding:5px 9px;font-size:12px}
+.result{display:none;background:#174052}
+@media(max-width:600px){.field{height:250px}.player,.keeper{font-size:36px}.ball{font-size:30px}.keeper{width:12%}.word{font-size:24px}.setting{padding:9px}}
+</style>
+</head>
+<body>
+<header><h1>⚽ TYPING FOOTBALL CHALLENGE</h1>টাইপ করুন, বল এগিয়ে নিন, গোল করুন!</header>
+<main>
+<div class="settings">
+  <div class="setting"><label for="level">লেভেল</label><select id="level"><option value="basic">বেসিক — ৮ সেকেন্ড/শব্দ</option><option value="inter" selected>ইন্টার — ৫ সেকেন্ড/শব্দ</option><option value="advanced">অ্যাডভান্সড — ৩ সেকেন্ড/শব্দ</option></select></div>
+  <div class="setting"><label for="duration">ম্যাচের সময়</label><select id="duration"><option value="30">৩০ সেকেন্ড</option><option value="60">১ মিনিট</option><option value="90" selected>১ মিনিট ৩০ সেকেন্ড</option><option value="120">২ মিনিট</option></select></div>
+</div>
+<div class="stats">
+  <div class="pill">সময় <b id="time">01:30</b></div><div class="pill">আপনার গোল <b id="goals">0</b></div><div class="pill">প্রতিপক্ষের গোল <b id="opponentGoals">0</b></div><div class="pill">এই ম্যাচ <b id="gamePoints">0</b></div><div class="pill">লিডারবোর্ড পয়েন্ট <b id="leaderboardPoints">0</b></div><div class="pill">সঠিক মুভ <b id="moves">0</b></div>
+  <button id="start">▶ খেলা শুরু</button><button id="reset">↻ নতুন ম্যাচ</button>
+</div>
+<div class="field">
+  <svg viewBox="0 0 1000 360" aria-hidden="true"><rect x="15" y="15" width="970" height="330" fill="none" stroke="white" stroke-width="4"/><line x1="500" y1="15" x2="500" y2="345" stroke="white" stroke-width="4"/><circle cx="500" cy="180" r="70" fill="none" stroke="white" stroke-width="4"/><rect x="15" y="95" width="140" height="170" fill="none" stroke="white" stroke-width="4"/><rect x="845" y="95" width="140" height="170" fill="none" stroke="white" stroke-width="4"/></svg>
+  <div class="keeper left" id="keeperLeft">🧤<small>গোলকিপার</small></div><div class="keeper right" id="keeperRight">🧤<small>গোলকিপার</small></div>
+  <div class="player" id="playerLeft" role="img" aria-label="বলমুখী খেলোয়াড়"><svg viewBox="0 0 52 64" aria-hidden="true"><circle cx="31" cy="12" r="9" fill="#f3bd8c"/><path d="M24 7q8-10 16 1l-2 4H26z" fill="#38251f"/><path d="m39 12 5 2-5 2z" fill="#f3bd8c"/><path d="m25 23 14 2 2 17-17-2z" fill="#2995dc" stroke="#fff" stroke-width="1"/><path d="m29 26-9 10 3 3 11-8m3-5 9 8-3 3-10-7" fill="none" stroke="#f3bd8c" stroke-width="4" stroke-linecap="round"/><path d="m27 40-9 11 3 3 12-9m4-4 5 12-4 2-9-10" fill="none" stroke="#f3bd8c" stroke-width="4" stroke-linecap="round"/><path d="m18 51-5 5 9 1m19-2 6 3-9 1" fill="none" stroke="#192637" stroke-width="4" stroke-linecap="round"/></svg></div><div class="player" id="playerRight" role="img" aria-label="বলমুখী খেলোয়াড়"><svg viewBox="0 0 52 64" aria-hidden="true"><circle cx="31" cy="12" r="9" fill="#f3bd8c"/><path d="m24 7q8-10 16 1l-2 4H26z" fill="#38251f"/><path d="m39 12 5 2-5 2z" fill="#f3bd8c"/><path d="m25 23 14 2 2 17-17-2z" fill="#e34e63" stroke="#fff" stroke-width="1"/><path d="m29 26-9 10 3 3 11-8m3-5 9 8-3 3-10-7" fill="none" stroke="#f3bd8c" stroke-width="4" stroke-linecap="round"/><path d="m27 40-9 11 3 3 12-9m4-4 5 12-4 2-9-10" fill="none" stroke="#f3bd8c" stroke-width="4" stroke-linecap="round"/><path d="m18 51-5 5 9 1m19-2 6 3-9 1" fill="none" stroke="#192637" stroke-width="4" stroke-linecap="round"/></svg></div><div class="ball" id="ball">⚽</div><div class="fx" id="fx"></div>
+</div>
+<div class="panel">শব্দটি টাইপ করুন — প্রতিটি সঠিক অক্ষরে বল এগোবে
+  <div class="word" id="word">football</div>
+  <input id="typing" placeholder="খেলা শুরু করে এখানে টাইপ করুন..." disabled autocomplete="off" spellcheck="false">
+  <div class="meter" aria-label="শব্দ টাইপের অগ্রগতি"><div id="progress"></div></div>
+  <p id="deadlineLabel">শব্দ শেষ করার সময়: <b id="wordTime">৫.০</b> সেকেন্ড</p>
+  <div class="meter timer-meter" aria-label="শব্দ টাইপ করার বাকি সময়"><div id="deadline"></div></div>
+  <p class="msg" id="msg">লেভেল ও ম্যাচের সময় বেছে নিয়ে খেলা শুরু করুন। সময়মতো শব্দ টাইপ না করলে নিজের গোলে গোল হবে!</p>
+  <p class="account-status" role="status" aria-live="polite"><span id="accountStatus"></span> <a id="loginLink" href="typing_Master_Pro.html">TypingMaster Pro-তে লগইন করুন</a></p><button class="retry-save" id="retrySave" type="button">পয়েন্ট সেভ আবার চেষ্টা করুন</button>
+</div>
+<div class="result" id="result"><h2 id="headline">ম্যাচ শেষ!</h2><p id="summary"></p><button id="playAgain">আবার খেলুন</button></div>
+</main>
+<script>
+const words=["football","pass","dribble","speed","teamwork","shoot","goal","winner","practice","champion","defence","attack","stadium","victory","player","skill"];
+const levels={basic:{seconds:8,save:.2},inter:{seconds:5,save:.35},advanced:{seconds:3,save:.5}};
+const $=id=>document.getElementById(id);
+const POINTS_PER_GOAL=20;
+const firebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",storageBucket:"eirnbooster.firebasestorage.app",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
+let currentUser=null,db=null,databaseConnected=false,serverTimeOffset=0,databasePoints=0,databaseGoalReceipts={},goalPointQueue=[],savingGoalPoints=false,goalPointsEarned=0;
+let remaining=90,wordRemaining=5,playerGoals=0,opponent=0,moves=0,typedProgress=0,active=false,ended=false,resolving=false,currentWord="",wordTimer,matchTimer,fxTimeout,playTimeout,ballBase=50;
+function setAccountStatus(message,isError=false){$("accountStatus").textContent=message;$("accountStatus").style.color=isError?"#ff9da7":"#c9deeb";}
+function loadCurrentUser(){try{const user=JSON.parse(localStorage.getItem("currentUser")||"null"),id=user&&user.id;if(typeof id!=="string"||!id.trim()||/[.#$/\[\]]/.test(id))return null;return {...user,id:id.trim()};}catch(error){console.error("Could not read the signed-in TypingMaster Pro account:",error);setAccountStatus("লগইন তথ্য পড়া যায়নি। TypingMaster Pro-তে আবার লগইন করুন।",true);return null;}}
+function goalQueueKey(){return "typingFootballPendingGoalScores:"+currentUser.id;}
+function persistGoalQueue(){try{localStorage.setItem(goalQueueKey(),JSON.stringify(goalPointQueue));return true;}catch(error){console.error("Could not save pending football points locally:",error);setAccountStatus("পয়েন্ট সাময়িকভাবে স্থানীয়ভাবে সেভ করা যায়নি; ইন্টারনেট সংযোগ পরীক্ষা করুন।",true);return false;}}
+function readGoalQueue(){try{const queue=JSON.parse(localStorage.getItem(goalQueueKey())||"[]");if(!Array.isArray(queue))throw new Error("Saved football goal queue is invalid.");goalPointQueue=queue.filter(entry=>entry&&typeof entry.id==="string"&&entry.userId===currentUser.id&&entry.points===POINTS_PER_GOAL);}catch(error){console.error("Could not read pending football points:",error);goalPointQueue=[];setAccountStatus("অপেক্ষমাণ পয়েন্ট পড়া যায়নি; আবার লগইন করে চেষ্টা করুন।",true);}}
+function paintLeaderboardPoints(){const pending=goalPointQueue.reduce((sum,entry)=>sum+(databaseGoalReceipts["football-"+entry.id]?0:entry.points),0);$("leaderboardPoints").textContent=databasePoints+pending;}
+function currentMonthKey(){const now=new Date(Date.now()+serverTimeOffset);return now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");}
+function initializeGoalPoints(){currentUser=loadCurrentUser();if(!currentUser){setAccountStatus("লিডারবোর্ডে পয়েন্ট পেতে আগে TypingMaster Pro-তে লগইন করুন।",true);return;}$("loginLink").style.display="none";databasePoints=Number(currentUser.points)||0;paintLeaderboardPoints();readGoalQueue();paintLeaderboardPoints();try{firebase.initializeApp(firebaseConfig);db=firebase.database();setAccountStatus("লিডারবোর্ডের ডাটাবেসে সংযোগ হচ্ছে…");db.ref("users/"+currentUser.id).on("value",snapshot=>{const user=snapshot.val();if(!user){setAccountStatus("এই অ্যাকাউন্ট লিডারবোর্ডে পাওয়া যায়নি। TypingMaster Pro-তে লগইন করে আবার খুলুন।",true);return;}databasePoints=Number(user.points)||0;databaseGoalReceipts=user.typingScoreReceipts&&typeof user.typingScoreReceipts==="object"?user.typingScoreReceipts:{};currentUser.points=databasePoints;currentUser.monthlyPoints=Number(user.monthlyPoints)||0;currentUser.monthlyPointsMonth=user.monthlyPointsMonth;try{localStorage.setItem("currentUser",JSON.stringify(currentUser));}catch(error){console.error("Could not update the cached leaderboard score:",error);}paintLeaderboardPoints();},error=>{console.error("Football leaderboard score listener failed:",error);setAccountStatus("লিডারবোর্ডের মোট পয়েন্ট পড়া যাচ্ছে না: "+(error.code||error.message||"ডাটাবেস ত্রুটি"),true);});db.ref(".info/serverTimeOffset").on("value",snapshot=>{const offset=snapshot.val();if(typeof offset==="number")serverTimeOffset=offset;},error=>console.error("Football leaderboard server-time listener failed:",error));db.ref(".info/connected").on("value",snapshot=>{databaseConnected=snapshot.val()===true;if(databaseConnected){setAccountStatus((currentUser.name||currentUser.id)+" হিসেবে লগইন আছে। প্রতি গোলে "+POINTS_PER_GOAL+" পয়েন্ট লিডারবোর্ডে সেভ হবে.");saveQueuedGoalPoints();}else setAccountStatus(goalPointQueue.length?"ইন্টারনেট ফিরলে "+goalPointQueue.length+"টি গোলের পয়েন্ট একই লিডারবোর্ডে সেভ হবে।":"ডাটাবেস অফলাইন। গোলের পয়েন্ট সংযোগ ফিরলে সেভ হবে।");},error=>{console.error("Football score connection listener failed:",error);setAccountStatus("লিডারবোর্ডের ডাটাবেসে সংযোগ করা যাচ্ছে না: "+(error.code||error.message||"ডাটাবেস ত্রুটি"),true);});}catch(error){console.error("Could not initialize the shared leaderboard database:",error);setAccountStatus("লিডারবোর্ডের ডাটাবেস চালু করা যায়নি: "+(error.code||error.message||"ডাটাবেস ত্রুটি"),true);}}
+function saveOneGoal(entry){return new Promise((resolve,reject)=>{db.ref("users/"+entry.userId).transaction(user=>{if(!user||typeof user!=="object")return;const receipts=user.typingScoreReceipts&&typeof user.typingScoreReceipts==="object"?{...user.typingScoreReceipts}:{};const receiptId="football-"+entry.id;if(receipts[receiptId])return user;const month=currentMonthKey(),oldMonth=/^\d{4}-\d{2}$/.test(user.monthlyPointsMonth||"")?user.monthlyPointsMonth:"";const receiptIds=Object.keys(receipts);receipts[receiptId]=entry.createdAt;if(receiptIds.length>=200){receiptIds.sort((a,b)=>(receipts[a]||0)-(receipts[b]||0));for(const id of receiptIds.slice(0,receiptIds.length-199))delete receipts[id];}return {...user,points:(Number(user.points)||0)+entry.points,monthlyPoints:(oldMonth===month?Number(user.monthlyPoints)||0:0)+entry.points,monthlyPointsMonth:month,typingScoreReceipts:receipts};},(error,committed,snapshot)=>{if(error)return reject(error);if(!committed||!snapshot)return reject(new Error("Football points transaction was not committed; check that the signed-in user still exists in the leaderboard."));resolve(snapshot.val());},false);});}
+async function saveQueuedGoalPoints(){if(savingGoalPoints||!databaseConnected||!db||!currentUser)return;savingGoalPoints=true;$("retrySave").style.display="none";try{while(goalPointQueue.length&&databaseConnected){const entry=goalPointQueue[0],savedUser=await saveOneGoal(entry);if(savedUser&&currentUser.id===entry.userId){databasePoints=Number(savedUser.points)||0;databaseGoalReceipts=savedUser.typingScoreReceipts&&typeof savedUser.typingScoreReceipts==="object"?savedUser.typingScoreReceipts:databaseGoalReceipts;currentUser.points=databasePoints;currentUser.monthlyPoints=Number(savedUser.monthlyPoints)||0;currentUser.monthlyPointsMonth=savedUser.monthlyPointsMonth;try{localStorage.setItem("currentUser",JSON.stringify(currentUser));}catch(error){console.error("Could not refresh the cached TypingMaster Pro account:",error);}}goalPointQueue.shift();persistGoalQueue();paintLeaderboardPoints();setAccountStatus("গোলের "+POINTS_PER_GOAL+" পয়েন্ট লিডারবোর্ডে যোগ হয়েছে।");}}catch(error){console.error("Could not save football goal points to the shared leaderboard:",error);const detail=error&&error.code?error.code:error&&error.message?error.message:"unknown database error";setAccountStatus("পয়েন্ট ডাটাবেসে সেভ হয়নি ("+detail+")। সংযোগ ও লগইন পরীক্ষা করে আবার চেষ্টা করুন।",true);$("retrySave").style.display="inline-block";}finally{savingGoalPoints=false;}}
+function awardGoalPoints(){if(!currentUser||!db){setAccountStatus("লিডারবোর্ড পয়েন্ট পেতে TypingMaster Pro-তে লগইন করুন।",true);return;}goalPointQueue.push({id:"football-"+Date.now()+"-"+Math.random().toString(36).slice(2),userId:currentUser.id,points:POINTS_PER_GOAL,createdAt:Date.now()});goalPointsEarned+=POINTS_PER_GOAL;$("gamePoints").textContent=goalPointsEarned;paintLeaderboardPoints();const queueStored=persistGoalQueue();if(queueStored)setAccountStatus(databaseConnected?"গোলের "+POINTS_PER_GOAL+" পয়েন্ট লিডারবোর্ডে যোগ হচ্ছে…":"ইন্টারনেট ফিরলে গোলের "+POINTS_PER_GOAL+" পয়েন্ট লিডারবোর্ডে সেভ হবে।");saveQueuedGoalPoints();}
+function nextWord(){let next=currentWord;while(next===currentWord)next=words[Math.floor(Math.random()*words.length)];currentWord=next;$("word").textContent=currentWord;$("typing").value="";$("typing").style.borderColor="";$("progress").style.width="0%";typedProgress=0;wordRemaining=levels[$("level").value].seconds;paintWordTimer();setBallPosition(ballBase);}
+function formatTime(seconds){return Math.floor(seconds/60).toString().padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");}
+function paint(){ $("time").textContent=formatTime(remaining);$("goals").textContent=playerGoals;$("opponentGoals").textContent=opponent;$("moves").textContent=moves;}
+function paintWordTimer(){$("wordTime").textContent=wordRemaining.toFixed(1);$("deadline").style.width=(wordRemaining/levels[$("level").value].seconds*100)+"%";}
+function setBallPosition(position){let x=Math.max(2,Math.min(98,position)),leftPlayer=Math.max(3,Math.min(87,x-12)),rightPlayer=Math.max(3,Math.min(87,x+4)),ballCenter=x+2; $("ball").style.left=x+"%";$("playerLeft").style.left=leftPlayer+"%";$("playerRight").style.left=rightPlayer+"%";$("playerLeft").style.transform="scaleX("+(ballCenter>=leftPlayer+3?1:-1)+")";$("playerRight").style.transform="scaleX("+(ballCenter>=rightPlayer+3?1:-1)+")";}
+function updateBallPressure(){let levelTime=levels[$("level").value].seconds,pressure=(1-wordRemaining/levelTime)*40;setBallPosition(ballBase+typedProgress*9-pressure);if(ballBase+typedProgress*9-pressure<=10)ownGoal();}
+function showFx(text){clearTimeout(fxTimeout);$("fx").textContent=text;$("fx").style.opacity=1;fxTimeout=setTimeout(()=>$("fx").style.opacity=0,850);}
+function resetPlay(){ballBase=50;setBallPosition(ballBase);$("keeperLeft").style.transform="none";$("keeperRight").style.transform="none";}
+function resumeAfterPlay(){if(!active)return;resetPlay();resolving=false;$("typing").disabled=false;nextWord();$("typing").focus();}
+function ownGoal(){if(!active||resolving)return;resolving=true;$("typing").disabled=true;$("typing").value="";$("progress").style.width="0%";$("msg").textContent="সময় শেষ—বল নিজের গোলের দিকে যাচ্ছে!";setBallPosition(8);clearTimeout(playTimeout);playTimeout=setTimeout(()=>{if(!active)return;setBallPosition(2);$("keeperLeft").style.transform="translateY(-15px) scale(1.2)";opponent++;showFx("😱 উল্টা গোল!");$("msg").textContent="সময়মতো টাইপ করতে পারেননি—বল নিজের জালে, প্রতিপক্ষের +১ গোল!";paint();wordRemaining=levels[$("level").value].seconds;paintWordTimer();playTimeout=setTimeout(resumeAfterPlay,650);},260);}
+function scoreShot(){if(resolving)return;resolving=true;$("typing").disabled=true;$("typing").value="";$("progress").style.width="0%";$("msg").textContent="শট! বল প্রতিপক্ষের গোলের দিকে যাচ্ছে...";setBallPosition(91);clearTimeout(playTimeout);playTimeout=setTimeout(()=>{if(!active)return;let keeper=$("keeperRight");if(Math.random()<levels[$("level").value].save){setBallPosition(88);keeper.style.transform="translateX(-18px) scale(1.25)";showFx("🧤 সেভ!");$("msg").textContent="গোলকিপার বল ঠেকিয়েছে!";paint();playTimeout=setTimeout(resumeAfterPlay,650);return;}setBallPosition(98);$("msg").textContent="বল গোলপোস্ট পেরিয়ে জালে ঢুকছে!";playTimeout=setTimeout(()=>{if(!active)return;playerGoals++;awardGoalPoints();showFx("⚽ গোল!");$("msg").textContent="গোল! বল প্রতিপক্ষের জালে ঢুকেছে! +"+POINTS_PER_GOAL+" পয়েন্ট";paint();playTimeout=setTimeout(resumeAfterPlay,650);},380);},380);}
+function missWord(){if(!active)return;wordRemaining=0;paintWordTimer();ownGoal();}
+function start(){if(active||ended)return;if(!currentUser){setAccountStatus("পয়েন্ট লিডারবোর্ডে যোগ করতে আগে TypingMaster Pro-তে লগইন করুন।",true);$("loginLink").style.display="inline";return;}if(!db){setAccountStatus("লিডারবোর্ড ডাটাবেসে সংযোগ করা যাচ্ছে না; ইন্টারনেট পরীক্ষা করুন।",true);return;}active=true;resolving=false;remaining=Number($("duration").value);$("level").disabled=true;$("duration").disabled=true;$("start").disabled=true;$("typing").disabled=false;$("typing").focus();paint();$("msg").textContent="প্রতিটি সঠিক অক্ষরে বল এগোবে—ধীরে টাইপ করলে বল প্রতি সেকেন্ডে আপনার গোলকিপারের দিকে ফিরবে!";matchTimer=setInterval(()=>{remaining--;paint();if(remaining<=0)finish();},1000);wordTimer=setInterval(()=>{if(!active||resolving)return;wordRemaining=Math.max(0,wordRemaining-.1);paintWordTimer();updateBallPressure();if(active&&!resolving&&wordRemaining<=0)missWord();},100);}
+function finish(){if(ended)return;ended=true;active=false;clearInterval(matchTimer);clearInterval(wordTimer);clearTimeout(playTimeout);$("typing").disabled=true;$("result").style.display="block";$("headline").textContent=playerGoals>opponent?"🏆 আপনি জিতেছেন!":playerGoals===opponent?"🤝 ম্যাচ ড্র!":"⚽ প্রতিপক্ষ জিতেছে!";$("summary").textContent="আপনার গোল: "+playerGoals+" · প্রতিপক্ষের গোল: "+opponent+" · সঠিক মুভ: "+moves+" · এই ম্যাচের পয়েন্ট: "+goalPointsEarned;$("msg").textContent="নির্বাচিত সময়ের ম্যাচ শেষ।";}
+function resetGame(){clearInterval(matchTimer);clearInterval(wordTimer);clearTimeout(fxTimeout);clearTimeout(playTimeout);remaining=Number($("duration").value);wordRemaining=levels[$("level").value].seconds;playerGoals=opponent=moves=goalPointsEarned=0;typedProgress=0;active=ended=resolving=false;ballBase=50;$("gamePoints").textContent=0;$("typing").value="";$("typing").disabled=true;$("level").disabled=false;$("duration").disabled=false;$("start").disabled=false;$("result").style.display="none";$("fx").style.opacity=0;$("keeperLeft").style.transform="none";$("keeperRight").style.transform="none";setBallPosition(ballBase);$("msg").textContent="লেভেল ও ম্যাচের সময় বেছে নিয়ে খেলা শুরু করুন। সময়মতো শব্দ টাইপ না করলে নিজের গোলে গোল হবে!";nextWord();paint();}
+$("typing").addEventListener("input",()=>{if(!active||resolving)return;let value=$("typing").value,index=0;while(index<value.length&&value[index]===currentWord[index])index++;if(value!==currentWord.slice(0,value.length)){$("typing").style.borderColor="#ff596c";$("msg").textContent="ভুল অক্ষর—সঠিক করে টাইপ করুন।";return;}$("typing").style.borderColor="#37e68a";typedProgress=index/currentWord.length;$("progress").style.width=(typedProgress*100)+"%";updateBallPressure();if(!active||resolving)return;if(value===currentWord){moves++;ballBase+=9;paint();if(ballBase>=77){scoreShot();return;}nextWord();}});
+$("start").onclick=start;$("reset").onclick=resetGame;$("playAgain").onclick=resetGame;$("retrySave").onclick=saveQueuedGoalPoints;$("duration").addEventListener("change",()=>{remaining=Number($("duration").value);paint();});$("level").addEventListener("change",()=>{wordRemaining=levels[$("level").value].seconds;paintWordTimer();});resetGame();initializeGoalPoints();
+</script>
+</body>
+</html>
