@@ -819,6 +819,7 @@
             <div class="flex items-center gap-2">
                 <a href="index.html" class="bg-slate-800 text-white px-3 py-1 rounded-lg font-bold text-[9px] uppercase hover:bg-slate-900">Home</a>
                 <a href="typing_sky_game.html" class="bg-sky-600 text-white px-3 py-1 rounded-lg font-bold text-[9px] uppercase hover:bg-sky-700 whitespace-nowrap" aria-label="Open Typing Sky Game">✈️ Sky Game</a>
+                <a href="typing-football-game.html" class="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-[9px] uppercase hover:bg-emerald-700 whitespace-nowrap" aria-label="Open Typing Football Game">⚽ Football Game</a>
                 <h1 class="text-sm font-black italic uppercase text-slate-800">typing<span class="text-blue-600">Leaderboard🏆</span></h1>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
@@ -2254,7 +2255,9 @@
                     if (typingLang === 'en') {
                         const hasPendingSessionScore = loggedInUser &&
                             readPendingTypingScores(loggedInUser.id).some(entry => entry.sessionId === timeUpNoticeSessionId);
-                        showTimeUpNotice(!hasPendingSessionScore ? 'saved' : isFirebaseConnected ? 'saving' : 'offline');
+                        showTimeUpNotice(!loggedInUser
+                            ? 'login-required'
+                            : !hasPendingSessionScore ? 'saved' : isFirebaseConnected ? 'saving' : 'offline');
                     }
                 }
             }, 1000);
@@ -2274,15 +2277,19 @@
             document.getElementById('time-up-points').textContent = timeUpNoticePoints;
             const saveMessage = saveState === 'saved'
                 ? 'আপনার পয়েন্ট সেভ হয়েছে।'
-                : saveState === 'offline'
-                    ? 'ইন্টারনেট এলে আপনার স্কোর সিঙ্ক হবে।'
-                    : 'আপনার স্কোর সেভ হচ্ছে…';
+                : saveState === 'login-required'
+                    ? 'লিডারবোর্ডে স্কোর সেভ করতে লগইন করুন।'
+                    : saveState === 'offline'
+                        ? 'ইন্টারনেট এলে আপনার স্কোর সিঙ্ক হবে।'
+                        : 'আপনার স্কোর সেভ হচ্ছে…';
             message.textContent = saveMessage;
             if (saveState === 'saved' && loggedInUser) {
                 const rank = getRank(loggedInUser.id);
                 rankMessage.textContent = rank && rank <= 10
                     ? `অভিনন্দন! আপনি লিডারবোর্ডের Top 10-এ আছেন (#${rank})।`
                     : 'Top 10-এ জায়গা করতে আবার টাইপ করুন!';
+            } else if (saveState === 'login-required') {
+                rankMessage.textContent = 'টাইপিং অনুশীলনের জন্য লগইন লাগবে না; স্কোর জমা দিতে উপরের Login বোতাম ব্যবহার করুন।';
             } else if (saveState === 'offline') {
                 rankMessage.textContent = 'স্কোর সিঙ্ক হলে আপনার Top 10 অবস্থান দেখা যাবে।';
             } else {
@@ -4662,11 +4669,6 @@
             typingInput.addEventListener('input', function() {
                 if (!isPracticeReady) {
                     this.value = '';
-                    return;
-                }
-                if (!loggedInUser) {
-                    this.value = '';
-                    openAuth();
                     return;
                 }
                 if (isTimeOver) {
