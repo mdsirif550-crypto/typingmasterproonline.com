@@ -5280,9 +5280,17 @@
             const stored = localStorage.getItem('currentUser');
             if (stored) {
                 try {
-                    loggedInUser = JSON.parse(stored);
+                    const savedAccount = JSON.parse(stored);
+                    if (!savedAccount || !savedAccount.id) throw new Error('Saved login is invalid.');
+
+                    // Restore the saved same-device login immediately, without waiting
+                    // for Firebase. A temporary network problem must not ask the user
+                    // to log in again.
+                    loggedInUser = savedAccount;
                     updateNav();
-                    const storedId = String(loggedInUser.id || '').toLowerCase();
+                    afterLogin();
+
+                    const storedId = String(loggedInUser.id).toLowerCase();
                     db.ref('users').once('value').then(snap => {
                         const users = snap.val() || {};
                         const entry = Object.entries(users).find(([key, user]) =>
@@ -5293,22 +5301,13 @@
                             const [userId, userData] = entry;
                             loggedInUser = { ...userData, id: userId };
                             localStorage.setItem('currentUser', JSON.stringify(loggedInUser));
-                            afterLogin();
-                            console.log('👤 Logged in:', loggedInUser.id);
-                        } else {
-                            localStorage.removeItem('currentUser');
-                            loggedInUser = null;
                             updateNav();
-                            if (openMessagesOnLoad) {
-                                shouldOpenMessagesAfterLogin = false;
-                                closeMessages();
-                                openAuth();
-                            }
+                            console.log('👤 Restored saved login:', loggedInUser.id);
+                        } else {
+                            console.warn('Saved account was not found during background refresh; keeping local session.');
                         }
                     }).catch(err => {
-                        console.error('Session restore failed:', err);
-                        recoverSavedTypingDraft();
-                        processPendingTypingScores();
+                        console.error('Background account refresh failed; keeping saved login:', err);
                     });
                 } catch(e) {
                     localStorage.removeItem('currentUser');
