@@ -175,8 +175,10 @@ html[data-theme="dark"] .sky-leaderboard-status.is-loading{color:#93c5fd}
 .typing-light{position:absolute;bottom:20px;width:7px;height:7px;border-radius:50%;background:#c9f5ff;box-shadow:0 0 8px 3px #8be5ff,0 0 18px 5px #4ccaff88;animation:light-rise .95s ease-out forwards}
 @keyframes light-rise{0%{opacity:0;transform:translate3d(0,0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate3d(var(--drift),-125px,0) scale(0)}}
 .hud{position:absolute;right:12px;bottom:10px;left:auto;z-index:5;background:#101c35e8;border:1px solid #ffffff66;border-radius:12px;padding:8px 12px;color:#f5faff;font-size:13px;font-weight:800}
-.sky-promo-banner{position:absolute;top:14px;left:50%;z-index:7;display:flex;width:min(620px,calc(100% - 110px));min-height:64px;align-items:center;justify-content:center;gap:12px;padding:9px 18px;transform:translateX(-50%);border:1px solid #b9e8ff;border-radius:16px;background:linear-gradient(110deg,#071a35ed,#124b7ded 55%,#342b78ed);color:#fff;text-align:center;box-shadow:0 7px 22px #0008,inset 0 1px #ffffff55}.sky-promo-plane{flex:none;font-size:34px;filter:drop-shadow(0 3px 5px #0008);animation:sky-promo-fly 2.8s ease-in-out infinite alternate}@keyframes sky-promo-fly{to{transform:translate(9px,-5px) rotate(-8deg)}}.sky-promo-copy{display:grid;gap:3px;min-width:0}.sky-promo-title{font-size:clamp(15px,2.5vw,21px);font-weight:950;letter-spacing:.3px;text-shadow:0 2px 5px #0009}.sky-promo-subtitle{font-size:clamp(10px,1.5vw,12px);font-weight:700;color:#d8f2ff}.sky-promo-sound{flex:none;padding:6px 9px;border:1px solid #ffffff66;border-radius:999px;background:#ffffff20;color:#fff;font-size:11px;font-weight:850}.sky.game-running .sky-promo-banner{display:none}.mobile-start-btn{display:none;position:absolute;top:77%;left:50%;z-index:8;transform:translate(-50%,-50%);white-space:nowrap;border:1px solid #ffffffa8;border-radius:999px;padding:13px 22px;background:#10294de8;color:#fff;font-size:16px;box-shadow:0 6px 24px #0008,0 0 0 5px #ffffff26}
-.mobile-start-btn:active{transform:translate(-50%,-50%) scale(.96)}
+.sky-promo-banner{position:absolute;top:14px;left:50%;z-index:7;display:flex;width:min(620px,calc(100% - 110px));min-height:64px;align-items:center;justify-content:center;gap:12px;padding:9px 18px;transform:translateX(-50%);border:1px solid #b9e8ff;border-radius:16px;background:linear-gradient(110deg,#071a35ed,#124b7ded 55%,#342b78ed);color:#fff;text-align:center;box-shadow:0 7px 22px #0008,inset 0 1px #ffffff55;pointer-events:none}.sky-promo-plane{flex:none;font-size:34px;filter:drop-shadow(0 3px 5px #0008);animation:sky-promo-fly 2.8s ease-in-out infinite alternate}@keyframes sky-promo-fly{to{transform:translate(9px,-5px) rotate(-8deg)}}.sky-promo-copy{display:grid;gap:3px;min-width:0}.sky-promo-title{font-size:clamp(15px,2.5vw,21px);font-weight:950;letter-spacing:.3px;text-shadow:0 2px 5px #0009}.sky-promo-subtitle{font-size:clamp(10px,1.5vw,12px);font-weight:700;color:#d8f2ff}.sky-promo-sound{flex:none;padding:6px 9px;border:1px solid #ffffff66;border-radius:999px;background:#ffffff20;color:#fff;font-size:11px;font-weight:850}.sky.game-running .sky-promo-banner{display:none}.mobile-start-btn{display:none;position:absolute;top:77%;left:50%;z-index:8;transform:translate(-50%,-50%);white-space:nowrap;border:1px solid #ffffffa8;border-radius:999px;padding:13px 22px;background:#10294de8;color:#fff;font-size:16px;box-shadow:0 6px 24px #0008,0 0 0 5px #ffffff26}
+.sky-audio-toggle{position:absolute;top:12px;right:12px;z-index:10;padding:8px 11px;border:1px solid #ffffffa8;border-radius:999px;background:#10294de8;color:#fff;font-size:12px;white-space:nowrap;box-shadow:0 4px 14px #0008}
+.sky-promo-banner{left:calc(50% - 70px);width:min(620px,calc(100% - 160px))}
+.mobile-start-btn:active,.mobile-start-btn:not(:disabled):active{transform:translate(-50%,-50%) scale(.96)}
 .sky.game-running .mobile-start-btn{display:none}
 .ground{height:25px;background:repeating-linear-gradient(120deg,#72ce6a 0 35px,#8cdb73 35px 70px)}
 .playarea{padding:22px;min-width:0}
@@ -315,6 +317,11 @@ html[data-theme="dark"] .result-item span{color:#a7b6c8}
   .sky .stat .value{font-size:clamp(15px,4vw,21px)}
   .countdown{top:162px;right:8px;left:auto;min-width:50px;padding:5px 8px;font-size:13px}
   .plane{top:60%;width:clamp(130px,42%,190px)}
+  .sky-promo-banner{top:105px;left:10px;width:calc(100% - 20px);min-height:44px;gap:6px;padding:5px 8px;transform:none}
+  .sky-promo-plane{font-size:23px}
+  .sky-promo-title{font-size:12px}
+  .sky-promo-subtitle{font-size:9px}
+  .sky-promo-sound{padding:4px 6px;font-size:9px}
   .desktop-start-btn{display:none}
   .mobile-start-btn{top:62%;padding:11px 17px;border:2px solid #ffffffd9;background:linear-gradient(135deg,#12a76c,#087bcb 58%,#5946d5);font-weight:900;box-shadow:0 5px 0 #123a75,0 10px 20px #0e234b80}
   .playarea{padding:12px}
@@ -409,7 +416,6 @@ html[data-theme="dark"] .sky-current-player-name{
   <div class="header-tools">
     <div class="pill">🌤️ Beginner Flight School</div>
     <button class="sky-theme-toggle" id="sky-theme-toggle" type="button" onclick="toggleNightMode()" aria-pressed="false" aria-label="Switch to night mode">🌙 Night Mode</button>
-    <button class="sky-theme-toggle" id="sky-audio-toggle" type="button" onclick="toggleGameAudio()" aria-pressed="true" aria-label="Turn game sounds off">🔊 Sound On</button>
   </div>
 </header>
 <div class="leaderboard-sync" role="status" aria-live="polite">
@@ -450,6 +456,7 @@ html[data-theme="dark"] .sky-current-player-name{
 
 <section class="game">
   <div class="sky" id="sky">
+    <button class="sky-audio-toggle" id="sky-audio-toggle" type="button" onclick="toggleGameAudio()" aria-pressed="true" aria-label="Turn game sounds off">🔊 Sound On</button>
     <div class="sky-promo-banner" aria-label="Typing Sky Game music and flight banner"><span class="sky-promo-plane" aria-hidden="true">✈️</span><div class="sky-promo-copy"><div class="sky-promo-title">✈️ TYPING SKY GAME</div><div class="sky-promo-subtitle">🎵 Background Music &nbsp;•&nbsp; 🔊 Aircraft Engine Sound</div></div><span class="sky-promo-sound">READY TO FLY</span></div>
     <span class="countdown" id="countdown" aria-live="polite">1:00</span>
     <button class="mobile-start-btn" id="mobileStartBtn" type="button" disabled>⏳ Loading Game…</button>
@@ -523,6 +530,7 @@ html[data-theme="dark"] .sky-current-player-name{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="game-lessons.js"></script>
+<audio id="skyBackgroundMusic" src="typing-sky-music.mp3" preload="none" loop></audio>
 <script>
 window.GameLeaderboard = window.GameLeaderboard || (() => {
   let database = null;
@@ -674,39 +682,33 @@ const safeGameLeaderboard = (methodName, ...args) => {
 let target="",startedAt=0,timer=null,crashRevealTimer=null,zeroWpmSince=0,finished=false,correct=0,wrong=0,typed=0,points=0,lastWpm=0,completedCorrect=0,completedWrong=0,completedTyped=0,durationMs=60000,lastInputValue="",speedSamples=[];
 let activeSkyLesson=null,skySentenceDeck=[];
 const gameFirebaseConfig={apiKey:"AIzaSyBdg7ULfChhdMSGMy4DiB5AvX0egXgz84E",authDomain:"eirnbooster.firebaseapp.com",databaseURL:"https://eirnbooster-default-rtdb.firebaseio.com",projectId:"eirnbooster",messagingSenderId:"1062288115898",appId:"1:1062288115898:web:952df73a31a3acdc2e5a83"};
-let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioTimer=null,gameAudioStep=0,gameAudioEnabled=true,gameEngineNodes=[];let skyLeaderboardLoadState="loading";
+let gameDatabase=null,gameUser=null,gameUserRef=null,gameScoreConnected=false,gameScoreQueueProcessing=false,gameRunId=null,skyQueuedPointTotal=0,skyLeaderboardUsers=[],skyLiveTypingSpeeds=Object.create(null),skyGuestStatusShown=false,gameAudioContext=null,gameAudioEnabled=true,gameEngineNodes=[];let skyLeaderboardLoadState="loading";
 const $=id=>document.getElementById(id);
-function playGameTone(context,frequency,startAt,duration,volume,type="sine"){
- const oscillator=context.createOscillator(),gain=context.createGain();
- oscillator.type=type;oscillator.frequency.setValueAtTime(frequency,startAt);
- gain.gain.setValueAtTime(.0001,startAt);gain.gain.linearRampToValueAtTime(volume,startAt+.035);gain.gain.exponentialRampToValueAtTime(.0001,startAt+duration);
- oscillator.connect(gain);gain.connect(context.destination);oscillator.start(startAt);oscillator.stop(startAt+duration+.02)
-}
-function playGameMusicStep(){
- const context=gameAudioContext;if(!context||context.state!=="running"||!gameAudioEnabled)return;
- const melody=[523.25,659.25,783.99,659.25,587.33,698.46,783.99,698.46],startAt=context.currentTime+.03;
- playGameTone(context,melody[gameAudioStep%melody.length],startAt,.31,.095,"triangle");
- if(gameAudioStep%4===0)playGameTone(context,gameAudioStep%8===0?261.63:349.23,startAt,.95,.055);
- gameAudioStep++
-}
 function startGameMusic(){
  if(!gameAudioEnabled)return false;
+ const music=$("skyBackgroundMusic");
+ music.volume=.7;
+ const playback=music.play();
+ if(playback&&typeof playback.then==="function"){
+  playback.then(()=>{const status=document.querySelector(".sky-promo-sound");if(status)status.textContent="🎵 MUSIC ON";})
+   .catch(error=>{console.error("Could not play Typing Sky.mp3:",error);const status=document.querySelector(".sky-promo-sound");if(status)status.textContent="MUSIC UNAVAILABLE";});
+ }else{
+  const status=document.querySelector(".sky-promo-sound");if(status)status.textContent="🎵 MUSIC ON";
+ }
  const AudioContextConstructor=window.AudioContext||window.webkitAudioContext;
- if(!AudioContextConstructor){console.error("Web Audio API is not supported; game audio cannot play.");return false}
+ if(!AudioContextConstructor){console.error("Web Audio API is not supported; aircraft engine sound cannot play.");return true}
  try{
-  if(gameAudioContext&&gameAudioContext.state!=="closed")return true;
-  gameAudioContext=new AudioContextConstructor();gameAudioStep=0;
-  const context=gameAudioContext;
+  const context=gameAudioContext&&gameAudioContext.state!=="closed"?gameAudioContext:new AudioContextConstructor();
+  gameAudioContext=context;
   const beginAudio=()=>{
-   if(gameAudioContext!==context||context.state!=="running"||!gameAudioEnabled)return;
+   if(gameAudioContext!==context||context.state!=="running"||!gameAudioEnabled||gameEngineNodes.length)return;
    // Gentle aircraft-engine hum generated locally; no MP3 file is required.
    const engine=context.createOscillator(),engineGain=context.createGain(),lfo=context.createOscillator(),lfoGain=context.createGain();
    engine.type="sawtooth";engine.frequency.setValueAtTime(92,context.currentTime);
-   engineGain.gain.setValueAtTime(.012,context.currentTime);
+   engineGain.gain.setValueAtTime(.006,context.currentTime);
    lfo.type="sine";lfo.frequency.setValueAtTime(7,context.currentTime);lfoGain.gain.setValueAtTime(2.5,context.currentTime);
    lfo.connect(lfoGain);lfoGain.connect(engine.frequency);engine.connect(engineGain);engineGain.connect(context.destination);
    engine.start();lfo.start();gameEngineNodes=[engine,engineGain,lfo,lfoGain];
-   playGameMusicStep();gameAudioTimer=window.setInterval(playGameMusicStep,360);
   };
   if(context.state==="running")beginAudio();
   else context.resume().then(beginAudio).catch(error=>console.error("Could not start game audio:",error));
@@ -714,7 +716,8 @@ function startGameMusic(){
  }catch(error){console.error("Could not initialize game audio:",error);return false}
 }
 function stopGameMusic(){
- if(gameAudioTimer!==null){clearInterval(gameAudioTimer);gameAudioTimer=null}
+ const music=$("skyBackgroundMusic");music.pause();music.currentTime=0;
+ const status=document.querySelector(".sky-promo-sound");if(status)status.textContent=gameAudioEnabled?"READY TO FLY":"SOUND OFF";
  const context=gameAudioContext;gameAudioContext=null;gameEngineNodes=[];
  if(context&&context.state!=="closed")context.close().catch(error=>console.error("Could not stop game audio:",error))
 }
@@ -725,10 +728,17 @@ function updateGameAudioButton(){
  button.setAttribute("aria-label",gameAudioEnabled?"Turn game sounds off":"Turn game sounds on");
 }
 function toggleGameAudio(){
+ const music=$("skyBackgroundMusic");
+ if(gameAudioEnabled&&music.paused){
+  startGameMusic();
+  updateGameAudioButton();
+  return;
+ }
  gameAudioEnabled=!gameAudioEnabled;
  try{localStorage.setItem("typingSkyAudioEnabled",String(gameAudioEnabled))}catch(error){}
  updateGameAudioButton();
- if(startedAt&&!finished){if(gameAudioEnabled)startGameMusic();else stopGameMusic()}
+ if(gameAudioEnabled)startGameMusic();
+ else stopGameMusic()
 }
 function scheduleCrashSound(context){
  try{
@@ -746,7 +756,6 @@ function scheduleCrashSound(context){
  }catch(error){console.error("Could not play the crash sound:",error);if(context.state!=="closed")context.close().catch(closeError=>console.error("Could not close crash sound audio:",closeError))}
 }
 function playCrashSound(){
- if(gameAudioTimer!==null){clearInterval(gameAudioTimer);gameAudioTimer=null}
  const AudioContextConstructor=window.AudioContext||window.webkitAudioContext;
  if(!AudioContextConstructor){console.error("Web Audio API is not supported; crash sound cannot play.");return}
  try{
@@ -1034,7 +1043,7 @@ function updateStats(){
  if(v===target){completedTyped=typed;completedCorrect=correct;completedWrong=wrong;$("typing").value="";lastInputValue="";target=pickPassage();renderPrompt();$("message").textContent=`Sentence complete! Start the next one • Correct ${correct} • Incorrect ${wrong} • Time left ${timeText()}`}
 }
 function finishGame(reason="time"){
- if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");if(reason==="crash"&&gameAudioEnabled)playCrashSound();else stopGameMusic();$("typing").disabled=true;
+ if(finished)return;finished=true;clearInterval(timer);safeGameLeaderboard("setTypingStatus", false);document.body.classList.remove("typing-active");$("sky").classList.remove("game-running");if(reason==="crash"&&gameAudioEnabled){$("skyBackgroundMusic").pause();$("skyBackgroundMusic").currentTime=0;playCrashSound()}else stopGameMusic();$("typing").disabled=true;
  $("duration").disabled=false;
  updateCountdown();
  if(reason==="crash"){$("flightStatus").textContent="💥 Plane crashed!";$("againBtn").textContent="🔁 Try Again";$("plane").classList.add("crashed");crashRevealTimer=setTimeout(()=>{updateFinal(reason);$("againBtn").focus()},950)}
