@@ -916,7 +916,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
                 <span class="live-typing-pill" title="Visitors currently connected to the site"><span class="live-typing-dot"></span>Viewing now: <span id="live-viewer-count">0</span></span>
-                <span class="live-typing-pill" title="Logged-in users who typed in the last 5 seconds"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
+                <span class="live-typing-pill" title="All visitors, including guests, who are typing right now"><span class="live-typing-dot"></span>Typing now: <span id="live-typing-count">0</span></span>
                 <span class="live-logo" aria-label="Live typing count"><span class="live-logo-dot"></span>LIVE</span>
                 <span id="fullscreen-timer" class="stat-pill hidden">⏱ <span id="fullscreen-timer-display" class="num text-red-600">05:00</span></span>
                 <button type="button" onclick="openHelp()" class="help-button" aria-label="Help Line" title="Help Line"><span class="help-chat-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Help Line</span></button>
@@ -3308,14 +3308,18 @@
         }
 
         function listenViewerCount() {
+            // This shared presence feed includes both signed-in members and guests.
             db.ref('online_viewers').on('value', snap => {
                 const viewers = snap.val() || {};
-                const count = Object.keys(viewers).length;
-                document.getElementById('live-viewer-count').textContent = count;
+                const visitorEntries = Object.entries(viewers);
+                const typingVisitors = visitorEntries.filter(([, visitor]) => visitor && visitor.typing === true);
+                document.getElementById('live-viewer-count').textContent = String(visitorEntries.length);
+                document.getElementById('live-typing-count').textContent = String(typingVisitors.length);
                 renderLiveVisitors(viewers);
             }, err => {
                 console.error('Viewer count listener failed:', err);
                 document.getElementById('live-viewer-count').textContent = '—';
+                document.getElementById('live-typing-count').textContent = '—';
                 renderLiveVisitors({});
             });
         }
