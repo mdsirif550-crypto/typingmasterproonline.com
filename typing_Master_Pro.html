@@ -1292,6 +1292,18 @@
                 <h2>👥 All Players</h2>
                 <button onclick="closeAllUsers()" class="text-2xl font-bold text-red-500">×</button>
             </div>
+            <section class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3" aria-live="polite">
+                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-sm font-black text-emerald-900">🟢 Live Visitors</h3>
+                    <span class="rounded-full bg-white px-3 py-1 text-xs font-black text-emerald-800">Online: <span id="live-visitors-total">0</span></span>
+                </div>
+                <div id="live-visitors-list" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <p class="text-xs font-semibold text-slate-500">Loading visitors...</p>
+                </div>
+            </section>
+            <div class="mb-2 flex items-center justify-between rounded-lg bg-slate-100 px-3 py-2 text-xs font-black text-slate-700">
+                <span>Registered Accounts</span><span id="registered-users-total">0</span>
+            </div>
             <div class="overflow-x-auto max-h-96 overflow-y-auto">
                 <table class="leaderboard-table all-users-table text-[10px]">
                     <colgroup><col style="width:38%"><col style="width:22%"><col style="width:12%"><col style="width:14%"><col style="width:14%"></colgroup>
@@ -1570,6 +1582,7 @@
         let onlineUserIds = new Set();
         let isBannerCollapsed = false;
         let typingPresenceRef = null;
+        let viewerPresenceRef = null;
         let typingIdleTimer = null;
         let isTypingNow = false;
         let liveTypingSpeeds = Object.create(null);
@@ -3115,6 +3128,11 @@
                 document.getElementById('nav-rank-decoration').classList.add('hidden');
             }
             updateMessageButton();
+            updateViewerPresence(isTypingNow, 0);
+            if (document.getElementById('all-users-modal')?.classList.contains('active')) {
+                const registeredCount = document.getElementById('registered-users-total');
+                if (registeredCount) registeredCount.textContent = String(allUsers.length);
+            }
         }
 
         function setRankDecoration(element, rank) {
@@ -3175,6 +3193,8 @@
             if (active) {
                 typingIdleTimer = setTimeout(() => setTypingStatus(false), 5000);
             }
+            const currentWpm = active ? Math.max(0, Math.round(Number(wpm) || 0)) : 0;
+            updateViewerPresence(active, currentWpm);
             if (typingPresenceRef && loggedInUser) {
                 const now = Date.now();
                 if (!active || !wasTyping || now - lastTypingPresenceUpdateAt >= 1000) {
@@ -3217,23 +3237,86 @@
             });
         }
 
+        function getViewerIdentity() {
+            const guestSuffix = String(viewerSessionId || '').replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase() || 'LOCAL';
+            if (loggedInUser && loggedInUser.id) {
+                return {
+                    displayName: String(loggedInUser.name || loggedInUser.id),
+                    userId: String(loggedInUser.id),
+                    isRegistered: true
+                };
+            }
+            return { displayName: 'Guest-' + guestSuffix, userId: '', isRegistered: false };
+        }
+
+        function updateViewerPresence(active = isTypingNow, wpm = 0) {
+            if (!viewerPresenceRef) return;
+            const identity = getViewerIdentity();
+            viewerPresenceRef.update({
+                ...identity,
+                typing: active === true,
+                wpm: active ? Math.max(0, Math.round(Number(wpm) || 0)) : 0,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP
+            }).catch(err => console.error('Viewer status update failed:', err));
+        }
+
+        function escapeViewerText(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+        }
+
+        function renderLiveVisitors(viewers = null) {
+            const list = document.getElementById('live-visitors-list');
+            const total = document.getElementById('live-visitors-total');
+            if (!list || !total) return;
+            const entries = viewers || {};
+            const rows = Object.entries(entries).sort((a, b) => (Number(b[1]?.connectedAt) || 0) - (Number(a[1]?.connectedAt) || 0));
+            total.textContent = String(rows.length);
+            if (!rows.length) {
+                list.innerHTML = '<p class="text-xs font-semibold text-slate-500">No visitors online right now.</p>';
+                return;
+            }
+            list.innerHTML = rows.map(([sessionId, visitor]) => {
+                const name = escapeViewerText(visitor?.displayName || ('Guest-' + String(sessionId).slice(-6).toUpperCase()));
+                const userId = visitor?.isRegistered && visitor?.userId
+                    ? '<span class="text-[10px] text-slate-500">ID: ' + escapeViewerText(visitor.userId) + '</span>'
+                    : '<span class="text-[10px] text-slate-500">Visitor</span>';
+                const typing = visitor?.typing === true;
+                const status = typing
+                    ? '<span class="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-black text-emerald-800">Typing Now · ' + Math.max(0, Math.round(Number(visitor.wpm) || 0)) + ' WPM</span>'
+                    : '<span class="rounded-full bg-slate-200 px-2 py-1 text-[10px] font-bold text-slate-600">Viewing</span>';
+                return '<div class="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-emerald-100 bg-white px-3 py-2"><div class="min-w-0"><div class="truncate text-xs font-black text-slate-800">' + name + '</div>' + userId + '</div>' + status + '</div>';
+            }).join('');
+        }
+
         function trackViewerPresence() {
-            const viewerRef = db.ref(`online_viewers/${viewerSessionId}`);
+            viewerPresenceRef = db.ref(`online_viewers/${viewerSessionId}`);
             db.ref('.info/connected').on('value', snap => {
                 if (snap.val() !== true) return;
-                viewerRef.onDisconnect().remove().then(() => viewerRef.set({
-                    connectedAt: firebase.database.ServerValue.TIMESTAMP
-                })).catch(err => console.error('Viewer presence update failed:', err));
+                viewerPresenceRef.onDisconnect().remove().then(() => {
+                    const identity = getViewerIdentity();
+                    return viewerPresenceRef.set({
+                        ...identity,
+                        typing: isTypingNow === true,
+                        wpm: 0,
+                        connectedAt: firebase.database.ServerValue.TIMESTAMP,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }).catch(err => console.error('Viewer presence update failed:', err));
             }, err => console.error('Viewer connection listener failed:', err));
         }
 
         function listenViewerCount() {
             db.ref('online_viewers').on('value', snap => {
                 const viewers = snap.val() || {};
-                document.getElementById('live-viewer-count').textContent = Object.keys(viewers).length;
+                const count = Object.keys(viewers).length;
+                document.getElementById('live-viewer-count').textContent = count;
+                renderLiveVisitors(viewers);
             }, err => {
                 console.error('Viewer count listener failed:', err);
                 document.getElementById('live-viewer-count').textContent = '—';
+                renderLiveVisitors({});
             });
         }
 
@@ -3352,6 +3435,9 @@
         }
 
         function renderAllUsers() {
+            const registeredCount = document.getElementById('registered-users-total');
+            if (registeredCount) registeredCount.textContent = String(allUsers.length);
+            renderLiveVisitors();
             const sorted = [...allUsers].sort((a, b) => {
                 const ma = a.monthlyPoints || 0, mb = b.monthlyPoints || 0;
                 if (mb !== ma) return mb - ma;
