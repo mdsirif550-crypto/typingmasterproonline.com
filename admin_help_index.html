@@ -709,7 +709,7 @@
 
         function updateLessonWordCount() {
             const text = document.getElementById('lesson-text').value;
-            const letterCount = (text.match(/\\p{L}/gu) || []).length;
+            const letterCount = (text.match(/\p{L}/gu) || []).length;
             document.getElementById('lesson-word-count').textContent = countLessonWords(text);
             document.getElementById('lesson-character-count').textContent = text.length + ' characters';
             document.getElementById('lesson-letter-count').textContent = letterCount;
