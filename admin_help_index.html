@@ -141,7 +141,11 @@
                         </select>
                     </div>
                     <input id="lesson-title" class="slim-input mb-2" maxlength="80" placeholder="Lesson name (optional, e.g. Lesson 1)">
-                    <textarea id="lesson-text" class="slim-input mb-2 h-20" placeholder="Type lesson text here..."></textarea>
+                    <textarea id="lesson-text" class="slim-input mb-1 h-20" placeholder="Type lesson text here..." oninput="updateLessonWordCount()"></textarea>
+                    <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2">
+                        <span>Words typed: <strong id="lesson-word-count" class="text-blue-600">0</strong></span>
+                        <span id="lesson-character-count">0 characters</span>
+                    </div>
                     <button onclick="addLesson()" class="btn btn-primary">Add Lesson</button>
                 </div>
 
@@ -211,6 +215,7 @@
                             <img id="chat-user-avatar" class="w-10 h-10 rounded-full object-cover border-2 border-slate-200" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
                             <div>
                                 <div class="font-bold text-sm" id="chat-user-name">Select a chat</div>
+                                <div class="text-[10px] text-blue-600 font-semibold" id="chat-user-id">User ID: —</div>
                                 <div class="text-[10px] text-slate-500" id="chat-user-status">Offline</div>
                             </div>
                             <div class="ml-auto flex gap-1">
@@ -683,6 +688,7 @@
                     <div>
                         <span class="lang-tag ${l.language || 'en'}">${l.language === 'bn' ? '🇧🇩 বাংলা' : '🇬🇧 English'}</span>
                         <span class="font-medium text-sm ml-2">${escapeLessonHtml(l.title || 'Unnamed lesson')}</span>
+                        <span class="text-[10px] font-bold text-blue-600 ml-2">${countLessonWords(l.text || '')} words</span>
                         <p class="text-xs text-slate-500 mt-1">${escapeLessonHtml(l.text || '')}</p>
                     </div>
                     <div class="flex gap-1">
@@ -691,6 +697,17 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function countLessonWords(value) {
+            const text = String(value || '').trim();
+            return text ? text.split(/\\s+/u).filter(Boolean).length : 0;
+        }
+
+        function updateLessonWordCount() {
+            const text = document.getElementById('lesson-text').value;
+            document.getElementById('lesson-word-count').textContent = countLessonWords(text);
+            document.getElementById('lesson-character-count').textContent = text.length + ' characters';
         }
 
         function escapeLessonHtml(value) {
@@ -711,6 +728,7 @@
             db.ref('lessons').push({ title, text, language: lang, createdAt: Date.now() }).then(() => {
                 document.getElementById('lesson-title').value = '';
                 document.getElementById('lesson-text').value = '';
+                updateLessonWordCount();
                 alert('✅ Lesson added!');
             }).catch(error => {
                 console.error('Lesson add failed:', error);
@@ -833,13 +851,16 @@
                 info.className = 'info';
                 const name = document.createElement('div');
                 name.className = 'name';
-                name.textContent = user?.name || last?.senderName || uid;
+                name.textContent = user?.name || last?.senderName || 'Guest';
+                const userIdLabel = document.createElement('div');
+                userIdLabel.className = 'text-[10px] font-semibold text-blue-600 mt-0.5 break-all';
+                userIdLabel.textContent = 'ID: ' + (last?.senderId || uid);
                 const preview = document.createElement('div');
                 preview.className = 'last-msg';
                 preview.textContent = last
                     ? `${last.from === 'admin' ? '👤 You: ' : ''}${last.message || ''}`
                     : 'No messages';
-                info.append(name, preview);
+                info.append(name, userIdLabel, preview);
                 const details = document.createElement('div');
                 const online = document.createElement('span');
                 online.className = `online-status ${isOnline ? 'online' : 'offline'}`;
@@ -877,7 +898,8 @@
             // Update header
             const user = allUsers.find(u => u.id === userId);
             const lastMessage = getLastMessage(userId);
-            document.getElementById('chat-user-name').textContent = user?.name || lastMessage?.senderName || userId;
+            document.getElementById('chat-user-name').textContent = user?.name || lastMessage?.senderName || 'Guest';
+            document.getElementById('chat-user-id').textContent = 'User ID: ' + (lastMessage?.senderId || userId);
             document.getElementById('chat-user-avatar').src = user?.pic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
             const isOnline = isUserOnline(userId);
             document.getElementById('chat-user-status').textContent = isOnline ? '🟢 Online' : '⚪ Offline';
@@ -909,15 +931,17 @@
                     lastDate = date;
                 }
                 const isAdmin = m.from === 'admin';
+                const senderUser = allUsers.find(u => u.id === m.from);
                 const senderName = isAdmin
                     ? 'You'
-                    : (allUsers.find(u => u.id === m.from)?.name || m.senderName || m.from);
+                    : (senderUser?.name || m.senderName || 'Guest');
+                const senderId = isAdmin ? 'Admin' : (m.senderId || m.from);
                 const bubble = document.createElement('div');
                 bubble.className = `msg-bubble ${isAdmin ? 'sent' : 'received'}`;
                 if (!isAdmin) {
                     const sender = document.createElement('span');
                     sender.className = 'sender';
-                    sender.textContent = senderName;
+                    sender.textContent = senderName + ' · ID: ' + senderId;
                     bubble.appendChild(sender);
                 }
                 const text = document.createElement('span');
@@ -965,6 +989,7 @@
                 currentChatUser = null;
                 document.getElementById('chat-messages').innerHTML = '<div class="text-center text-slate-400 text-sm py-10">Select a user to start chatting</div>';
                 document.getElementById('chat-user-name').textContent = 'Select a chat';
+                document.getElementById('chat-user-id').textContent = 'User ID: —';
                 document.getElementById('chat-user-avatar').src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
                 document.getElementById('chat-user-status').textContent = 'Offline';
                 renderChatList();
