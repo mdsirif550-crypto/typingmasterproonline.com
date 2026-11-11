@@ -3098,15 +3098,23 @@
             stopMessagingListeners();
             closeMessages();
             closeAuth();
+            // Stop member typing presence before clearing the signed-in identity.
+            setTypingStatus(false);
             if (loggedInUser) {
                 const presenceRef = db.ref('online_users/' + loggedInUser.id + '/connections/' + presenceSessionId);
                 localStorage.removeItem('currentUser');
                 loggedInUser = null;
+                // The browser is still visiting the site after logout: keep it as a Guest viewer,
+                // but never leave the former member name/ID in the live visitors feed.
+                updateViewerPresence(false, 0);
+                typingPresenceRef = null;
                 hideFloatingBonusNotice();
                 updateNav();
                 presenceRef.remove().catch(error => console.error('Could not clear user presence during logout:', error));
             } else {
                 localStorage.removeItem('currentUser');
+                updateViewerPresence(false, 0);
+                typingPresenceRef = null;
                 hideFloatingBonusNotice();
                 updateNav();
             }
