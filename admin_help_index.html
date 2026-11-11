@@ -141,7 +141,10 @@
                         </select>
                     </div>
                     <input id="lesson-title" class="slim-input mb-2" maxlength="80" placeholder="Lesson name (optional, e.g. Lesson 1)">
-                    <textarea id="lesson-text" class="slim-input mb-1 h-20" placeholder="Type lesson text here..." oninput="updateLessonWordCount()"></textarea>
+                    <div class="relative mb-2">
+                        <textarea id="lesson-text" class="slim-input mb-0 h-20 pb-7" placeholder="Type lesson text here..." oninput="updateLessonWordCount()"></textarea>
+                        <span class="pointer-events-none absolute bottom-2 right-3 rounded-md bg-slate-100 px-2 py-1 text-[10px] font-extrabold text-blue-700">Letters: <span id="lesson-letter-count">0</span></span>
+                    </div>
                     <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2">
                         <span>Words typed: <strong id="lesson-word-count" class="text-blue-600">0</strong></span>
                         <span id="lesson-character-count">0 characters</span>
@@ -706,8 +709,10 @@
 
         function updateLessonWordCount() {
             const text = document.getElementById('lesson-text').value;
+            const letterCount = (text.match(/\\p{L}/gu) || []).length;
             document.getElementById('lesson-word-count').textContent = countLessonWords(text);
             document.getElementById('lesson-character-count').textContent = text.length + ' characters';
+            document.getElementById('lesson-letter-count').textContent = letterCount;
         }
 
         function escapeLessonHtml(value) {
