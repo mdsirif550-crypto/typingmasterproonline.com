@@ -3234,13 +3234,13 @@
                 });
                 onlineUserIds = activeUserIds;
                 liveTypingSpeeds = typingSpeeds;
-                document.getElementById('live-typing-count').textContent = Object.keys(typingSpeeds).length;
+                // The all-visitor listener owns the shared Typing now counter.
                 refreshTypingSprints();
             }, err => {
                 console.error('Typing count listener failed:', err);
                 onlineUserIds = new Set();
                 liveTypingSpeeds = Object.create(null);
-                document.getElementById('live-typing-count').textContent = '—';
+                // Do not overwrite the all-visitor counter when member presence fails.
                 refreshTypingSprints();
             });
         }
