@@ -1580,8 +1580,11 @@
         let rotationTimer = null;
         let observedMonthKey = null;
         let onlineUserIds = new Set();
+        const ONLINE_PRESENCE_TIMEOUT_MS = 90 * 1000;
+        const ONLINE_PRESENCE_HEARTBEAT_MS = 30 * 1000;
         let isBannerCollapsed = false;
         let typingPresenceRef = null;
+        let presenceHeartbeatTimer = null;
         let viewerPresenceRef = null;
         let typingIdleTimer = null;
         let isTypingNow = false;
@@ -3098,6 +3101,8 @@
             stopMessagingListeners();
             closeMessages();
             closeAuth();
+            clearInterval(presenceHeartbeatTimer);
+            presenceHeartbeatTimer = null;
             // Stop member typing presence before clearing the signed-in identity.
             setTypingStatus(false);
             if (loggedInUser) {
@@ -3183,15 +3188,27 @@
             typingPresenceRef = ref;
             db.ref('.info/connected').on('value', snap => {
                 if (snap.val() !== true || !loggedInUser || loggedInUser.id !== userId) return;
-                ref.onDisconnect().remove().then(() => ref.set({
-                    uid: userId,
-                    name: userName,
-                    online: true,
-                    typing: isTypingNow,
-                    wpm: 0,
-                    lastSeen: firebase.database.ServerValue.TIMESTAMP
-                })).catch(err => console.error('Presence update failed:', err));
+                ref.onDisconnect().remove().then(() => {
+                    if (!loggedInUser || loggedInUser.id !== userId) return null;
+                    return ref.set({
+                        uid: userId,
+                        name: userName,
+                        online: true,
+                        typing: isTypingNow,
+                        wpm: 0,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }).catch(err => console.error('Presence update failed:', err));
             });
+            if (!presenceHeartbeatTimer) {
+                presenceHeartbeatTimer = setInterval(() => {
+                    if (!isFirebaseConnected || !loggedInUser || loggedInUser.id !== userId) return;
+                    ref.update({
+                        online: true,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    }).catch(err => console.error('Presence heartbeat failed:', err));
+                }, ONLINE_PRESENCE_HEARTBEAT_MS);
+            }
         }
 
         function setTypingStatus(active, wpm = 0) {
@@ -3218,30 +3235,40 @@
         }
 
         function listenTypingCount() {
-            db.ref('online_users').on('value', snap => {
-                const onlineUsers = snap.val() || {};
+            let onlineUsersSnapshot = {};
+            const refreshOnlineUsers = () => {
+                const now = Date.now() + serverTimeOffset;
                 const typingSpeeds = Object.create(null);
                 const activeUserIds = new Set();
-                Object.entries(onlineUsers).forEach(([userId, user]) => {
+                Object.entries(onlineUsersSnapshot).forEach(([userId, user]) => {
                     const connections = user && user.connections;
                     if (!connections) return;
                     Object.values(connections).forEach(connection => {
-                        if (connection && connection.online === true) activeUserIds.add(userId);
-                        if (connection && connection.typing === true) {
+                        if (!connection) return;
+                        const lastSeen = Number(connection.lastSeen);
+                        const age = now - lastSeen;
+                        const isFresh = Number.isFinite(lastSeen) && age >= -5000 &&
+                            age <= ONLINE_PRESENCE_TIMEOUT_MS;
+                        if (!isFresh) return;
+                        if (connection.online === true) activeUserIds.add(userId);
+                        if (connection.typing === true) {
                             typingSpeeds[userId] = Math.max(typingSpeeds[userId] || 0, Number(connection.wpm) || 0);
                         }
                     });
                 });
                 onlineUserIds = activeUserIds;
                 liveTypingSpeeds = typingSpeeds;
-                // The all-visitor listener owns the shared Typing now counter.
                 refreshTypingSprints();
+            };
+            setInterval(refreshOnlineUsers, ONLINE_PRESENCE_HEARTBEAT_MS);
+            db.ref('online_users').on('value', snap => {
+                onlineUsersSnapshot = snap.val() || {};
+                refreshOnlineUsers();
             }, err => {
                 console.error('Typing count listener failed:', err);
-                onlineUserIds = new Set();
-                liveTypingSpeeds = Object.create(null);
+                onlineUsersSnapshot = {};
+                refreshOnlineUsers();
                 // Do not overwrite the all-visitor counter when member presence fails.
-                refreshTypingSprints();
             });
         }
 
